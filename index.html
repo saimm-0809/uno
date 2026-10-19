@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uno Money</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0b14;--panel:#171326;--line:#2e2750;--ink:#e9e4f7;--mute:#8d86a8;--red:#e5352b;--yel:#f7d117;--grn:#3aa655;--blu:#1f6fd0;--up:#5fe08a;--dn:#ff6b61}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'VT323',monospace;font-size:22px;padding:14px;max-width:900px;margin-inline:auto;
+ background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:24px 24px}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 1px,transparent 1px 3px)}
+h1,h2,h3,button,summary,th,.px{font-family:'Press Start 2P',monospace}
+h1{font-size:16px;margin:0;letter-spacing:1px}h2{font-size:11px;margin:0 0 12px;color:var(--yel)}h3{font-size:9px;margin:10px 0 6px;color:var(--mute)}
+.stripe{height:6px;background:linear-gradient(90deg,var(--red) 25%,var(--yel) 25% 50%,var(--grn) 50% 75%,var(--blu) 75%);margin-bottom:10px}
+.card{background:var(--panel);border:4px solid var(--line);box-shadow:6px 6px 0 #000;padding:14px;margin:14px 0}
+button{font-size:9px;border:0;padding:10px 12px;background:var(--blu);color:#fff;cursor:pointer;box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(255,255,255,.25)}
+button:hover{filter:brightness(1.15)}button:active{transform:translate(2px,2px)}button:disabled{opacity:.35;cursor:not-allowed}
+button.y{background:var(--yel);color:#000}button.r{background:var(--red)}button.g{background:var(--grn)}button.off{background:#4a4560}
+button:focus-visible,input:focus-visible,select:focus-visible,tr:focus-visible{outline:3px solid var(--yel);outline-offset:2px}
+input,select{font:inherit;background:#0d0b14;color:var(--ink);border:3px solid var(--line);padding:4px 8px;max-width:100%}
+input[type=number]{width:84px}input[type=text],input[type=password]{width:190px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.roundel{position:relative;width:38px;height:38px;border:7px solid var(--red);border-radius:50%;flex:none}
+.roundel i{position:absolute;left:-12px;right:-12px;top:50%;height:12px;margin-top:-6px;background:var(--blu);color:#fff;font:6px/12px 'Press Start 2P';text-align:center;font-style:normal}
+.bal{background:#000;border:3px solid var(--yel);color:var(--yel);padding:8px 10px;font:10px 'Press Start 2P'}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 4px}nav button{background:#241e3d}nav button.on{background:var(--yel);color:#000}
+#tapewrap{overflow:hidden;background:#000;border:3px solid var(--line);margin-top:10px;white-space:nowrap;font-size:20px}
+#tape{display:inline-block;animation:tp 40s linear infinite;padding:4px 0}@keyframes tp{to{transform:translateX(-50%)}}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0;border-bottom:3px dotted var(--line)}
+.row:last-child{border:0}.mute{color:var(--mute)}.up{color:var(--up)}.dn{color:var(--dn)}
+.tile{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;font:8px 'Press Start 2P';color:#fff;margin-right:8px;box-shadow:inset -4px -4px 0 rgba(0,0,0,.35),inset 4px 4px 0 rgba(255,255,255,.25);flex:none}
+.hide{display:none!important}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.stat{background:#0d0b14;border:3px solid var(--line);padding:10px}.stat b{display:block;font:12px 'Press Start 2P';margin-top:8px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 14px}
+table{width:100%;border-collapse:collapse}th{font-size:7px;color:var(--mute);text-align:right;padding:6px 4px;border-bottom:3px solid var(--line)}th:first-child,td:first-child,th.l,td.l{text-align:left}
+td{text-align:right;padding:6px 4px;border-bottom:2px dotted var(--line);white-space:nowrap}tr[data-sel]{cursor:pointer}tr[data-sel]:hover{background:#201a38}tr.sel{background:#2a2250}
+.scroll{overflow-x:auto}.big{font:18px 'Press Start 2P'}
+canvas.pix{image-rendering:pixelated;max-width:100%}canvas#candle{width:100%;border:4px solid var(--line);display:block;background:#0d0b14}
+.hub{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.game{background:#0d0b14;border:4px solid var(--line);padding:12px;text-align:center;cursor:pointer;color:var(--ink)}.game:hover{border-color:var(--yel)}
+.game img{width:64px;height:64px;image-rendering:pixelated;display:block;margin:0 auto 8px}.game b{font:9px 'Press Start 2P'}
+.stage{text-align:center;padding:12px;background:#0d0b14;border:4px solid var(--line);margin-bottom:12px;min-height:150px}
+.stage img{width:128px;height:128px;image-rendering:pixelated}
+#stage.shake img{animation:sh .6s steps(6)}@keyframes sh{20%{transform:translateX(-10px) rotate(-6deg)}60%{transform:translateX(10px) rotate(6deg)}}
+.win{animation:fl .8s steps(4) 2}@keyframes fl{0%{border-color:var(--red)}25%{border-color:var(--yel)}50%{border-color:var(--grn)}75%{border-color:var(--blu)}}
+@media(prefers-reduced-motion:reduce){#stage.shake img,.win,#tape{animation:none}}
+.ucard{display:inline-flex;align-items:center;justify-content:center;width:90px;height:130px;font:36px 'Press Start 2P';color:#fff;border:6px solid #fff;margin:4px 10px;box-shadow:6px 6px 0 #000}
+.strip{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;max-width:420px;margin:0 auto}.strip i{width:30px;height:30px;font:8px/30px 'Press Start 2P';color:#fff;font-style:normal;opacity:.45}.strip i.on{opacity:1;outline:4px solid #fff;z-index:1}
+.reel{display:inline-flex;align-items:center;justify-content:center;width:80px;height:96px;font:26px 'Press Start 2P';color:#fff;border:5px solid #fff;margin:4px 6px;background:#000}
+.cp{width:44px;height:44px;margin:4px;padding:0}.cp.sel{outline:4px solid #fff}
+details.rules{margin-top:12px;border:3px dashed var(--line);padding:8px}details.rules summary{cursor:pointer;font-size:9px;color:var(--yel)}details.rules p{margin:8px 0 0}
+#ban{background:var(--red);color:#fff;font:9px 'Press Start 2P';padding:8px;margin-top:10px;overflow:hidden;white-space:nowrap}
+#ban span{display:inline-block;padding-left:100%;animation:mq 18s linear infinite}@keyframes mq{to{transform:translateX(-100%)}}
+#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#000;border:3px solid var(--yel);padding:10px 16px;display:none;max-width:92%;z-index:9;font-size:20px}
+details.card summary{cursor:pointer;font-size:10px}.grid{display:grid;gap:8px;margin-top:12px}
+label{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lb{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:3px dotted var(--line)}.lb .n{font:16px 'Press Start 2P';width:36px;color:var(--yel)}
+.tickbar{height:8px;background:#0d0b14;border:2px solid var(--line);margin:10px 0 4px}.tickbar i{display:block;height:100%;width:0;background:var(--yel)}
+.meter{height:16px;border:3px solid var(--line);background:linear-gradient(90deg,var(--red),var(--yel),var(--grn))}.meter i{display:block;height:100%;width:0;border-right:6px solid #fff}
+.heat{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px}.ht{padding:12px 6px;text-align:center;cursor:pointer;border:3px solid #000;color:#fff}.ht b{display:block;font:9px 'Press Start 2P'}.ht span{display:block;margin-top:4px}.ht:hover{border-color:#fff}
+@keyframes fu{from{background:rgba(95,224,138,.7)}to{background:transparent}}@keyframes fd{from{background:rgba(255,107,97,.7)}to{background:transparent}}
+.flashu{animation:fu .9s steps(5)}.flashd{animation:fd .9s steps(5)}
+.tf{display:inline-flex;gap:6px}.tf button{background:#241e3d}.tf button.on{background:var(--yel);color:#000}
+@media(prefers-reduced-motion:reduce){.flashu,.flashd{animation:none}}
+.packs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.pack{background:#0d0b14;border:4px solid var(--line);padding:12px;text-align:center}.pack img{width:84px;height:108px;image-rendering:pixelated}.odds{font-size:18px;line-height:1.1}
+.cgrid,.reveal{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:10px}.slot{min-height:176px;min-width:120px}
+.tc{position:relative;width:120px;height:168px;background:#0d0b14;border:4px solid var(--line);padding:4px;box-shadow:4px 4px 0 #000;display:flex;flex-direction:column;cursor:pointer;color:var(--ink)}
+.tn{font:7px/1.4 'Press Start 2P';text-align:center;height:24px;overflow:hidden;color:#fff}
+.tart{flex:1;display:flex;align-items:center;justify-content:center;margin:2px 0;border:3px solid #000}.tart img{width:84px;height:84px;image-rendering:pixelated}
+.tb{display:flex;justify-content:space-between;align-items:center;font:6px 'Press Start 2P'}.tb b{font-size:11px;color:var(--yel)}
+.tc.r1{border-color:#8c8a99}.tc.r2{border-color:#3aa655}.tc.r3{border-color:#1f6fd0}.tc.r4{border-color:#b14fe0;box-shadow:4px 4px 0 #000,0 0 12px #b14fe0}.tc.r5{animation:gold 1.2s steps(4) infinite}
+@keyframes gold{0%{border-color:#f7d117}25%{border-color:#e5352b}50%{border-color:#3aa655}75%{border-color:#1f6fd0}}
+.tc.locked .tart{background:#171326!important}.tc.locked img{filter:brightness(0);opacity:.35}.tc.sel{outline:4px solid var(--yel)}
+.tc .qty{position:absolute;right:-8px;top:-10px;background:var(--red);color:#fff;font:8px 'Press Start 2P';padding:4px;font-style:normal}
+.tc .sp{position:absolute;left:-8px;top:-10px;background:var(--yel);color:#000;font:6px 'Press Start 2P';padding:3px;font-style:normal}
+.tc .nw{position:absolute;left:50%;transform:translateX(-50%);bottom:-12px;background:var(--grn);color:#fff;font:7px 'Press Start 2P';padding:4px;font-style:normal;white-space:nowrap}
+.tc.back{align-items:center;justify-content:center;cursor:default;background:repeating-linear-gradient(45deg,#1f6fd0 0 8px,#171326 8px 16px)}.tc.back .bk{font:30px 'Press Start 2P';color:#fff}
+@media(prefers-reduced-motion:reduce){.tc.r5{animation:none}}
+#bgfx{position:fixed;inset:0;z-index:-1;pointer-events:none}
+#fxc{position:fixed;inset:0;z-index:80;pointer-events:none}
+section:not(.hide){animation:fin .3s steps(5)}@keyframes fin{from{opacity:0;transform:translateY(8px)}}
+.logo h1{text-shadow:2px 2px 0 var(--red),4px 4px 0 var(--blu)}
+.roundel{animation:rp 3s steps(6) infinite}@keyframes rp{50%{box-shadow:0 0 12px var(--red)}}
+button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(255,255,255,.25),0 0 14px rgba(247,209,23,.55)}
+.stat{transition:transform .15s}.stat:hover{transform:translateY(-3px)}.card{transition:border-color .2s}.card:hover{border-color:#40377a}
+@keyframes hue{to{filter:hue-rotate(360deg)}}@keyframes flt{50%{transform:translateY(-10px)}}
+.pack img{animation:flt 1.6s steps(4) infinite}
+.pack.d{border-color:#ff4fd8;animation:myth 1s steps(4) infinite}.pack.d img{animation:flt 1.6s steps(4) infinite,hue 3s linear infinite}
+.tc{transform:perspective(600px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .12s linear}.tc.back{transform:none}
+.tc::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;mix-blend-mode:screen;background-size:260% 260%}
+.tc.r3::after{opacity:.35;animation:sheen 3.2s linear infinite;background-image:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.7) 45%,transparent 60%)}
+.tc.r4::after{opacity:.6;animation:sheen 2.4s linear infinite;background-image:linear-gradient(115deg,transparent 25%,rgba(180,120,255,.9) 45%,rgba(120,220,255,.9) 55%,transparent 75%)}
+.tc.r5::after,.tc.r6::after{opacity:.8;animation:sheen 1.8s linear infinite;background-size:300% 300%;background-image:linear-gradient(115deg,rgba(255,0,0,.55),rgba(255,255,0,.55),rgba(0,255,0,.55),rgba(0,128,255,.55),rgba(255,0,255,.55),rgba(255,0,0,.55))}
+.tc.r6::after{animation-duration:1s;opacity:.95}
+@keyframes sheen{from{background-position:150% 0}to{background-position:-50% 0}}
+.tc .tart img{animation:bob 1.6s steps(2) infinite}@keyframes bob{50%{transform:translateY(-4px)}}
+.tc.locked::after{display:none}.tc.locked .tart img{animation:none}
+.tc.r6{border-color:#ff4fd8;animation:myth 1s steps(4) infinite}@keyframes myth{0%,100%{box-shadow:4px 4px 0 #000,0 0 8px #ff4fd8}50%{box-shadow:4px 4px 0 #000,0 0 22px #4ff8ff,0 0 40px #ff4fd8}}
+.tc.r6 .tart{animation:hue 5s linear infinite}.tc.r6 .tn{color:#ff9bf0}
+#packfx{position:fixed;inset:0;z-index:60;background:radial-gradient(ellipse at center,#1a1238 0,#05030c 75%);overflow:auto;display:flex;align-items:center;justify-content:center;padding:20px}
+#packfx.shk .pf-stage{animation:shk .12s steps(2) 5}@keyframes shk{25%{transform:translate(-8px,4px)}75%{transform:translate(8px,-4px)}}
+.pf-stage{position:relative;z-index:2;text-align:center;width:100%;max-width:800px;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;margin:auto}
+.pf-rays{position:fixed;left:50%;top:50%;width:150vmax;height:150vmax;margin:-75vmax 0 0 -75vmax;background:repeating-conic-gradient(from 0deg,transparent 0 8deg,var(--rc,#f7d117) 8deg 16deg);animation:spin 16s linear infinite;z-index:1;pointer-events:none;opacity:.22;-webkit-mask-image:radial-gradient(circle,#000 0,transparent 50%);mask-image:radial-gradient(circle,#000 0,transparent 50%)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pf-pack{width:168px;height:216px;image-rendering:pixelated;filter:drop-shadow(0 0 18px var(--glow,#fff));animation:flt 1.2s steps(4) infinite}
+.pf-pack.rb{animation:flt 1.2s steps(4) infinite,hue 3s linear infinite}
+.pf-pack.shake{animation:pshake .1s steps(2) infinite}@keyframes pshake{0%{transform:translate(-5px,2px) rotate(-3deg)}100%{transform:translate(5px,-2px) rotate(3deg)}}
+.pf-pack.charge{filter:drop-shadow(0 0 40px var(--glow,#fff)) brightness(2.2);transform:scale(1.25)}
+#pfmsg{font-size:12px;min-height:18px;transition:color .2s}#pfmsg.pop{animation:pop .5s steps(5)}@keyframes pop{0%{transform:scale(2.2)}100%{transform:scale(1)}}
+.pf-cards{display:flex;flex-wrap:wrap;gap:26px;justify-content:center;perspective:900px;padding:10px 0}
+.fc{width:150px;height:210px;animation:fly .6s steps(6) both;animation-delay:calc(var(--i)*.09s);cursor:pointer}
+@keyframes fly{from{transform:translateY(-140px) scale(.2) rotate(40deg);opacity:0}}
+.fci{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s}.fc.flipped .fci{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;align-items:center;justify-content:center}.face.ff{transform:rotateY(180deg)}
+.face .tc{transform:scale(1.25)!important;cursor:pointer}
+.face.fb{background:repeating-linear-gradient(45deg,#1f6fd0 0 8px,#171326 8px 16px);border:4px solid #fff;box-shadow:4px 4px 0 #000}
+.face.fb .bk{font:16px 'Press Start 2P';color:#fff;background:var(--red);padding:12px 8px;border:3px solid #fff;transform:rotate(-12deg)}
+.fc.pulse .fci{animation:pl .35s steps(2) infinite}@keyframes pl{50%{transform:scale(1.12) rotate(2deg);filter:drop-shadow(0 0 22px var(--rc,#fff))}}
+.ff .nw{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;font:8px 'Press Start 2P';padding:5px;font-style:normal;white-space:nowrap;animation:bl .6s steps(2) infinite}@keyframes bl{50%{background:var(--yel);color:#000}}
+.pf-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+#pfflash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:75}
+@media(prefers-reduced-motion:reduce){.tc::after,.tc .tart img,.tc.r6,.tc.r6 .tart,.pack img,.pack.d,.pf-rays,.pf-pack,.roundel,section:not(.hide){animation:none!important}}
+
+.fc.h2{animation:a2 .4s steps(4)}@keyframes a2{25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+.fc.h3{animation:a3 .6s steps(6)}@keyframes a3{30%{transform:translateY(-34px) scale(1.12)}60%{transform:translateY(6px)}}
+.fc.h4{animation:a4 .8s steps(8)}@keyframes a4{50%{transform:rotate(180deg) scale(1.35)}to{transform:rotate(360deg)}}
+.fc.h5{animation:a5 1.1s steps(10)}@keyframes a5{20%{transform:scale(1.5) rotate(-8deg)}40%{transform:scale(1.3) rotate(8deg)}60%{transform:scale(1.5) rotate(-5deg)}}
+.fc.h6{z-index:3;animation:a6 1.4s steps(12),hue 2s linear 1.4s infinite}@keyframes a6{0%{transform:scale(.3) rotate(720deg)}35%{transform:scale(1.8) rotate(-12deg)}70%{transform:scale(1.4) rotate(12deg)}}
+.fc.h5 .tc,.fc.h6 .tc{outline:4px dashed var(--rc,#f7d117);outline-offset:6px;animation:ol .5s steps(2) infinite}@keyframes ol{50%{outline-color:#fff}}
+.pack:hover img{animation:pk .4s steps(4) infinite}@keyframes pk{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.tc:not(.back):not(.locked):hover{z-index:3}
+.ucard.pulse,.trq button{margin:2px}
+@media(prefers-reduced-motion:reduce){.fc.h2,.fc.h3,.fc.h4,.fc.h5,.fc.h6,.pack:hover img,.fc.h5 .tc,.fc.h6 .tc{animation:none!important}}
+.adm{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.adm button{background:#241e3d}.adm button.on{background:var(--yel);color:#000}
+</style>
+</head>
+<body>
+<canvas id="bgfx"></canvas>
+<div class="stripe"></div>
+
+<div id="auth" class="card">
+  <div class="logo"><div class="roundel"><i>UNO</i></div><h1>UNO MONEY</h1></div>
+  <p class="mute">Enter the station. Sign in or make an account.</p>
+  <p><input id="u" type="text" placeholder="username" autocomplete="username"> <input id="p" type="password" placeholder="password" autocomplete="current-password"></p>
+  <p><button id="login">SIGN IN</button> <button class="y" id="signup">NEW ACCOUNT</button></p>
+</div>
+
+<div id="app" class="hide">
+  <div class="top">
+    <div class="logo"><div class="roundel"><i>UNO</i></div><h1>UNO MONEY</h1></div>
+    <div><span class="bal" id="bal"></span> <button id="sndbtn">SOUND ON</button> <button class="r" id="out">EXIT</button></div>
+  </div>
+  <div id="tapewrap"><span id="tape"></span></div>
+  <div id="ban" class="hide"><span id="bant"></span></div>
+  <nav id="tabs">
+    <button data-t="home">HOME</button><button data-t="games">GAMES</button><button data-t="market">MARKET</button><button data-t="cards">CARDS</button>
+    <button data-t="bank">BANK</button><button data-t="board">BOARD</button><button data-t="admin" class="hide">ADMIN</button>
+  </nav>
+
+  <!-- DASHBOARD -->
+  <section id="t-home">
+    <div class="card"><h2>DASHBOARD</h2><div class="stats" id="hstats"></div>
+      <p style="margin-bottom:0"><button class="y" data-go="games">PLAY</button> <button data-go="market">TRADE</button> <button class="g" data-go="cards">CARDS</button> <button data-go="bank">BANK</button></p></div>
+    <div class="two">
+      <div class="card"><h2>UNO INDEX</h2><div class="top"><span class="big" id="hidx"></span><span id="hidxc"></span></div><canvas id="idxc" class="pix" width="400" height="90" style="width:100%;margin-top:8px"></canvas>
+        <h3>BIGGEST MOVERS (1H)</h3><div id="hmov"></div></div>
+      <div class="card"><h2>MY PORTFOLIO</h2><div id="hport"></div></div>
+      <div class="card"><h2>OPEN DUELS</h2><div id="hduel" class="mute"></div></div>
+      <div class="card"><h2>COLLECTION</h2><div id="hcol"></div></div>
+      <div class="card"><h2>TOP PLAYERS</h2><div id="htop"></div></div>
+      <div class="card"><h2>LATEST ACTIVITY</h2><div id="hfeed" class="mute"></div></div>
+    </div>
+  </section>
+
+  <!-- GAMES -->
+  <section id="t-games" class="hide">
+    <div id="hub">
+      <div class="card"><h2>GAMES ROOM</h2><p class="mute">Pick a game. Every result is decided by the server, so nobody can cheat. Each game has a HOW TO PLAY box.</p>
+        <div class="hub" id="hubtiles"></div></div>
+      <div class="card"><h2>HOUSE RULES</h2><p class="mute">Max bet: <span id="maxbet"></span> cards. Your bet is taken when you press the button. Games can be closed by the admin. If a game is not fun anymore, stop. These are only play cards between brothers.</p></div>
+    </div>
+
+    <div id="g-eggs" class="hide gp"><div class="card"><h2>MYSTERY EGGS</h2><button data-back>BACK</button>
+      <div class="stage" id="stage"><img id="critter" alt="egg"></div>
+      <p id="eggmsg" class="mute" style="text-align:center">Put cards in the nest and hatch.</p>
+      <p style="text-align:center"><input id="stake" type="number" min="1" value="1"> CARDS <button class="y" id="hatch">HATCH</button></p>
+      <details class="rules"><summary>HOW TO PLAY</summary><p>Choose a bet and hatch an egg. What hatches decides your prize: Pebble 0x (lose), Chick 1x (cards back), Blue bird 2x, Unicorn 3x, Dragon 10x. Default odds: 55%, 22%, 13%, 7%, 3%. Average payback is about 99%, so it is close to fair but the house is slightly ahead over time.</p></details></div></div>
+
+    <div id="g-hl" class="hide gp"><div class="card"><h2>HIGHER OR LOWER</h2><button data-back>BACK</button>
+      <div class="stage"><span class="ucard" id="hlA">?</span><span class="ucard" id="hlB" style="background:#241e3d">?</span></div>
+      <p id="hlmsg" class="mute" style="text-align:center">Bet and deal a card.</p>
+      <p style="text-align:center" id="hlbet"><input id="hlstake" type="number" min="1" value="1"> CARDS <button class="y" id="hldeal">DEAL</button></p>
+      <p style="text-align:center" id="hlpick" class="hide"><button class="g" id="hlhi"></button> <button class="r" id="hllo"></button></p>
+      <details class="rules"><summary>HOW TO PLAY</summary><p>A card from 0 to 9 is dealt. Guess if the next card will be higher or lower. The payout depends on the risk: a safe guess pays little, a risky guess pays a lot (shown on the buttons). A tie gives your bet back. The house keeps 4% on average. Your card stays dealt if you leave, so you can finish it later.</p></details></div></div>
+
+    <div id="g-color" class="hide gp"><div class="card"><h2>COLOR SPIN</h2><button data-back>BACK</button>
+      <div class="stage"><div class="strip" id="strip"></div><p id="cmsg" class="mute">Pick a color, set a bet and spin.</p></div>
+      <p style="text-align:center"><span id="cpicks"></span></p>
+      <p style="text-align:center"><input id="cstake" type="number" min="1" value="1"> CARDS <button class="y" id="cspin">SPIN</button></p>
+      <details class="rules"><summary>HOW TO PLAY</summary><p>The wheel has 25 spots: 6 red, 6 yellow, 6 green, 6 blue and 1 WILD. Pick a color. If the wheel stops on your color, or on WILD, you win 3.4 times your bet (rounded down). Chance to win: 28%. Payback is about 95%.</p></details></div></div>
+
+    <div id="g-slots" class="hide gp"><div class="card"><h2>UNO SLOTS</h2><button data-back>BACK</button>
+      <div class="stage"><span class="reel" id="r0">?</span><span class="reel" id="r1">?</span><span class="reel" id="r2">?</span></div>
+      <p id="smsg" class="mute" style="text-align:center">Set a bet and pull the lever.</p>
+      <p style="text-align:center"><input id="sstake" type="number" min="1" value="1"> CARDS <button class="y" id="sspin">SPIN</button></p>
+      <details class="rules"><summary>HOW TO PLAY</summary><p>Three reels with R, Y, G, B, W (wild) and +4. Pays: three of the same color 12x, three W 30x, three +4 100x. Any two matching symbols give your bet back (1x). Symbols W and +4 are rarer. Chance to win something is about 50%. Payback is about 95%.</p></details></div></div>
+
+    <div id="g-duel" class="hide gp"><div class="card"><h2>DUELS</h2><button data-back>BACK</button>
+      <p class="mute">Challenge another player to a coin flip for the same stake.</p>
+      <p><input id="dstake" type="number" min="1" value="5"> CARDS <button class="y" id="dnew">OPEN DUEL</button></p>
+      <h3>OPEN DUELS</h3><div id="dopen"></div><h3>RECENT RESULTS</h3><div id="ddone" class="mute"></div>
+      <details class="rules"><summary>HOW TO PLAY</summary><p>Open a duel and your stake is held. The other player can accept it by matching the stake. The server flips a fair coin and the winner takes both stakes. There is no house cut. You can cancel your own duel any time before it is accepted and get your stake back.</p></details></div></div>
+  </section>
+
+  <!-- MARKET -->
+  <section id="t-market" class="hide">
+    <div class="card"><div class="top"><h2 style="margin:0">UNO EXCHANGE</h2><span class="px" style="font-size:9px" id="mstatus"></span></div>
+      <div class="top" style="margin-top:10px"><span>UNO-6 INDEX <b class="big" id="midx"></b> <span id="midxc"></span></span><span class="mute" id="mclock"></span></div>
+      <div class="tickbar"><i id="tickfill"></i></div><div class="top mute" style="font-size:18px"><span>LIVE: new prices every 5 seconds</span><span id="tickcd"></span></div>
+      <h3>MARKET MOOD: <span id="mood"></span></h3><div class="meter"><i id="meterfill"></i></div></div>
+    <div class="card"><h2>HEATMAP (24H)</h2><div class="heat" id="heat"></div></div>
+    <div class="card"><h2>MARKET WATCH</h2><div class="scroll"><table id="mtab"><thead><tr><th class="l">SYMBOL</th><th class="l">NAME</th><th>LAST</th><th>CHG</th><th>%</th><th>HIGH</th><th>LOW</th><th>VOLUME</th><th>LIVE</th><th>OWN</th></tr></thead><tbody id="mbody"></tbody></table></div>
+      <p class="mute" style="margin-bottom:0">Click a row or a heatmap tile to open its chart and order ticket. Change is measured against 24 hours ago.</p></div>
+    <div class="card"><div class="top"><h2 id="dtitle" style="margin:0"></h2><span><b class="big" id="dlast"></b> <span id="dchg"></span></span></div>
+      <p class="mute" id="dstats"></p>
+      <p><span class="tf" id="tfs"><button data-tf="1" class="on">1M</button><button data-tf="5">5M</button><button data-tf="15">15M</button></span> <span class="mute">candle size (the last candle is live)</span></p>
+      <canvas id="candle" class="pix" width="720" height="300"></canvas>
+      <h3>ORDER TICKET (MARKET ORDER)</h3>
+      <p><input id="oq" type="number" min="1" value="1"> SHARES <button data-q="1">1</button> <button data-q="10">10</button> <button data-q="maxb">MAX BUY</button> <button data-q="maxs">MAX SELL</button></p>
+      <p id="oest" class="mute"></p><p><button class="g" id="obuy">BUY</button> <button class="r" id="osell">SELL</button></p></div>
+    <div class="two">
+      <div class="card"><h2>TIME AND SALES</h2><div id="tns"></div></div>
+      <div class="card"><h2>MARKET NEWS</h2><div id="news" class="mute"></div></div>
+    </div>
+    <div class="card"><h2>PORTFOLIO</h2><div class="scroll"><table><thead><tr><th class="l">SYMBOL</th><th>QTY</th><th>AVG COST</th><th>LAST</th><th>VALUE</th><th>P/L</th><th>P/L %</th></tr></thead><tbody id="pbody"></tbody></table></div><p id="ptotal" class="mute" style="margin-bottom:0"></p></div>
+  </section>
+
+  <!-- CARDS -->
+  <section id="t-cards" class="hide">
+    <div class="card"><h2>CARD PACKS</h2><p class="mute">Collect every Uno creature. Pick a pack and open it any time. The Ultra Wild Pack is the hardest to crack.</p><div class="packs" id="packs"></div></div>
+    <div class="card"><h2>MY COLLECTION</h2><div class="stats" id="cstats"></div>
+      <p>SHOW <select id="cfilter"><option value="all">All cards</option><option value="owned">Owned</option><option value="missing">Missing</option><option value="r1">Common</option><option value="r2">Uncommon</option><option value="r3">Rare</option><option value="r4">Epic</option><option value="r5">Legendary</option><option value="r6">Mythic</option><option value="special">Special (one pack only)</option></select>
+      <button class="y" id="sellext">SELL ALL DUPLICATES</button></p>
+      <div id="cdetail"></div><div class="cgrid" id="cgrid"></div></div>
+    <div class="card"><h2>HOW IT WORKS</h2><p class="mute">There are loads of creatures in 6 rarities: common, uncommon, rare, epic, legendary and the super rare MYTHIC. Each card has its own value. Skip Pack is cheap and mostly commons. Reverse Pack guarantees an uncommon or better. Wild Draw Four Pack guarantees a rare or better and holds some cards you cannot find anywhere else. The Ultra Wild Pack costs a lot, guarantees an epic or better and is the only way to get a MYTHIC (about 1 in 80 cards). SPECIAL cards can only be found in one pack. Sell any card back for its value, or sell all extra copies at once and keep one of each. Your collection value counts toward your net worth. Click a card to see it up close, and move your mouse over a card to tilt it.</p></div>
+  </section>
+
+  <!-- BANK -->
+  <section id="t-bank" class="hide">
+    <div class="card"><h2>SEND CARDS</h2><p class="mute" id="trinfo"></p>
+      <p><select id="trto"></select> <input id="tramt" type="number" min="1" value="10"> <input id="trnote" type="text" placeholder="note (optional)" style="width:150px" maxlength="60"> <button class="y" id="trsend">SEND</button></p>
+      <p class="trq"><button data-tq="5">5</button> <button data-tq="10">10</button> <button data-tq="25">25</button> <button data-tq="100">100</button> <button data-tq="all">ALL</button></p>
+      <h3>HISTORY</h3><div id="trlog" class="mute"></div></div>
+    <div class="card"><h2>BANK</h2><p id="bankinfo"></p>
+      <p><input id="bor" type="number" min="1" value="10"> <button class="y" id="borrow">BORROW</button></p>
+      <p><input id="rep" type="number" min="1" value="10"> <button class="g" id="repay">REPAY</button></p></div>
+    <div class="card"><h2>REAL UNO CARDS</h2><p class="mute">Only the admin can add or remove cards when real Uno cards are swapped. Ask the admin to update your balance.</p></div>
+  </section>
+
+  <section id="t-board" class="hide">
+    <div class="card"><h2>LEADERBOARD</h2><p class="mute">Net worth = cards + shares + items - loans</p><div id="lb"></div></div>
+    <div class="card"><h2>ACTIVITY</h2><div id="feed" class="mute"></div></div>
+  </section>
+
+  <section id="t-admin" class="hide"><div id="adminbox"></div></section>
+</div>
+<div id="packfx" class="hide">
+  <div id="pfrays" class="pf-rays hide"></div>
+  <div class="pf-stage">
+    <img id="pfpack" class="pf-pack" alt="pack">
+    <div id="pfmsg" class="px"></div>
+    <div class="pf-cards" id="pfcards"></div>
+    <div id="pfsum"></div>
+    <div class="pf-btns"><button id="pfskip">SKIP</button> <button id="pfsnd">SOUND ON</button> <button class="y hide" id="pfagain">OPEN ANOTHER</button> <button class="r hide" id="pfclose">CLOSE</button></div>
+  </div>
+</div>
+<div id="pfflash"></div><canvas id="fxc"></canvas>
+<div id="toast" role="status"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const sb = supabase.createClient('https://nmspdwrpwuigiwjnrevt.supabase.co', 'sb_publishable_BJvUKiOY-a7tk8Uj8Ds_9g_DZn9bkjR');
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let me, prof, people = [], hold = {}, cost = {}, inv = [], shelves = [], lb = [], logs = [], duels = [], hlg = null, cinv = {}, S = {}, sel = 'CARR', built = false, pick = 'red', animating = false;
+const DEF = {pack_prices:[8,28,100,300],packs_on:true,egg_enabled:true,g_hl:true,g_color:true,g_slots:true,g_duel:true,max_bet:1000,egg_odds:[55,22,13,7,3],market_open:true,market_mult:1,stock_mult:{},freeze_at:0,demand:1,banner:'',loan_enabled:true,loan_rate:.1,loan_limit:50,tr_on:true,tr_fee:0,tr_min:1,tr_max:1000,tr_daily:500,tr_debt:true};
+
+/* ---------- pixel sprites (8x8) ---------- */
+const PAL = {x:'#efe6c8',a:'#e5352b',y:'#f7d117',o:'#e8892b',k:'#14111c',g:'#8c8a99',d:'#5d5b6b',w:'#f4f4f8',p:'#e86aa8',G:'#3aa655',r:'#e5352b',b:'#1f6fd0'};
+const SPR = {
+ egg:['..xxxx..','.xxxxxx.','xxaxxaxx','xxxxxxxx','xaxxxxax','xxxxaxxx','.xxxxxx.','..xxxx..'],
+ 0:['........','..gggg..','.gggggg.','gggggggg','gkgggkgg','gggggggg','.dddddd.','........'],
+ 1:['..yyyy..','.yyyyyy.','.ykyykyy','.yyooyy.','yyyyyyyy','yyyyyyyy','.yyyyyy.','..o..o..'],
+ 2:['..bbbb..','.bbbbbb.','.bkbbkbb','.bbyybb.','bbbbbbbb','bbwwwwbb','.bbbbbb.','..y..y..'],
+ 3:['.....y..','....yw..','...wwww.','..wwkww.','..wwwwww','..wwppw.','...wwww.','...ww...'],
+ 10:['r......r','rG....Gr','.GGGGGG.','.GkGGkG.','.GGGGGG.','..GyyG..','..GGGG..','...GG...'],
+ hl:['kkkkkkkk','krrrrrrk','krrwwrrk','krwyywrk','krwyywrk','krrwwrrk','krrrrrrk','kkkkkkkk'],
+ color:['..rrbb..','.rrrbbb.','rrrrbbbb','rrrrbbbb','yyyyGGGG','yyyyGGGG','.yyyGGG.','..yyGG..'],
+ slots:['kkkkkkkk','kwwkwwkk','kwrkwbkk','kwwkwwkk','kkkkkkkk','kyyyyyyk','kyyyyyyk','kkkkkkkk'],
+ duel:['w......w','.w....w.','..w..w..','...ww...','...ww...','..y..y..','.y....y.','y......y']
+};
+const sc = {};
+function sprite(k){ if (sc[k]) return sc[k]; const c = document.createElement('canvas'); c.width = c.height = 8; const x = c.getContext('2d');
+  SPR[k].forEach((row, j) => [...row].forEach((ch, i) => { if (PAL[ch]) { x.fillStyle = PAL[ch]; x.fillRect(i, j, 1, 1); } })); return sc[k] = c.toDataURL(); }
+const CRIT = {0:'A sleepy pebble. You lose.',1:'A chick. Cards back.',2:'A blue bird. Double!',3:'A unicorn! Triple!',10:'A DRAGON! TEN TIMES!'};
+const GAMES = [['eggs','egg','MYSTERY EGGS'],['hl','hl','HIGHER OR LOWER'],['color','color','COLOR SPIN'],['slots','slots','UNO SLOTS'],['duel','duel','DUELS']];
+const GKEY = {eggs:'egg_enabled', hl:'g_hl', color:'g_color', slots:'g_slots', duel:'g_duel'};
+
+/* ---------- economy ---------- */
+const COL = ['var(--red)','var(--yel)','var(--grn)','var(--blu)'], HEX = {red:'#e5352b',yellow:'#f7d117',green:'#3aa655',blue:'#1f6fd0'};
+const STOCKS = [
+ {sym:'CARR',name:'Carrot Co.',base:20,a:.22,b:.12,c:.04,ta:97,tb:41,tc:13,ph:1},
+ {sym:'BUBL',name:'Bubble Tea Ltd',base:35,a:.18,b:.15,c:.06,ta:131,tb:53,tc:17,ph:2.3},
+ {sym:'ROCK',name:'Rocket Toys',base:50,a:.30,b:.18,c:.08,ta:73,tb:29,tc:11,ph:4},
+ {sym:'SNZZ',name:'Sleepy Pillows',base:12,a:.10,b:.06,c:.02,ta:211,tb:67,tc:19,ph:5.1},
+ {sym:'PZZA',name:'Pizza Planet',base:28,a:.20,b:.10,c:.05,ta:109,tb:47,tc:15,ph:.7},
+ {sym:'GLDN',name:'Golden Acorn Bank',base:80,a:.08,b:.05,c:.02,ta:301,tb:89,tc:23,ph:3.3}];
+const CAT = [{item:'Sticker Pack',fair:5},{item:'Juice Box',fair:8},{item:'Pizza Slice',fair:12},{item:'Comic Book',fair:10},{item:'Plush Toy',fair:15},{item:'Gold Trophy',fair:40}];
+const mins = () => Date.now() / 60000, Tm = t => S.freeze_at ? S.freeze_at / 60000 : t;
+const econ = t => 1 + .08 * Math.sin(Tm(t) / 180) + .04 * Math.sin(Tm(t) / 37 + 2);
+const evH = (a, b) => { const x = Math.sin(a*12.9898 + b*78.233) * 43758.5453; return x - Math.floor(x); };
+const UPT = ['{n} surges on a rumor of a huge order.','{n} jumps after a strong demand report.','{n} rallies as traders pile in.'];
+const DNT = ['{n} drops on supply worries.','{n} slides after a weak report.','{n} dips as big sellers appear.'];
+function evOf(slot){ const up = evH(slot,2) > .5, i = Math.floor(evH(slot,1) * STOCKS.length), j = Math.floor(evH(slot,4) * 3);
+  return {s: STOCKS[i], dir: up ? 1 : -1, mag: .05 + evH(slot,3) * .07, text: (up ? UPT : DNT)[j]}; }
+function shock(s, u){ let a = 0; for (let k = 0; k < 2; k++) { const slot = Math.floor(u/3) - k, e = evOf(slot), age = (u - slot*3) / 6;
+  if (e.s === s && age >= 0 && age <= 1) a += e.dir * e.mag * Math.sin(Math.PI * age); } return a; }
+function pricef(s, t = mins()) { const u = Tm(t), w = 1 + s.a*Math.sin(u/s.ta + s.ph) + s.b*Math.sin(u/s.tb + s.ph*2) + s.c*Math.sin(u/s.tc + s.ph*3);
+  const k = Math.floor(u * 12); let walk = 0; for (let i = 0; i < 10; i++) walk += hv(s, k - i) - .5;
+  return Math.max(1, s.base * w * (1 + (econ(t)-1)*1.5) * (1 + .045*walk + shock(s, u)) * S.market_mult * ((S.stock_mult||{})[s.sym] ?? 1)); }
+const price = (s, t = mins()) => Math.max(1, Math.round(pricef(s, t)));
+const SY = k => STOCKS.find(s => s.sym === k);
+const ser = (s, n, step) => { const o = []; for (let i = n; i >= 0; i--) o.push(price(s, mins() - i*step)); return o; };
+const hv = (s, k) => { const x = Math.sin(k*12.9898 + s.ph*78.233) * 43758.5453; return x - Math.floor(x); };
+const vol = (s, k) => Math.round((200 + hv(s,k)*800) * (s.base/20 + .5));
+function stats(s){ const p = ser(s, 144, 10), last = p[p.length-1], k0 = Math.floor(mins()/10);
+  let v = 0; for (let i = 0; i < 144; i++) v += vol(s, k0 - i);
+  return {open:p[0], last, hi:Math.max(...p), lo:Math.min(...p), vol:v, chg:last-p[0], pct:(last-p[0])/p[0]*100, spark:ser(s, 60, 1/6)}; }
+const idxAt = t => 100 * STOCKS.reduce((a,s) => a + price(s,t)/s.base, 0) / STOCKS.length;
+const col = i => COL[i % 4], tile = (txt, i) => `<span class="tile" style="background:${col(i)}">${esc(txt.slice(0,2).toUpperCase())}</span>`;
+const sgn = n => (n >= 0 ? '+' : '') + n, cls = n => n >= 0 ? 'up' : 'dn';
+
+/* ---------- data ---------- */
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',3200)}
+async function call(fn, args){ const {data, error} = await sb.rpc(fn, args); if (error) { toast(error.message); return null; } await load(); return data ?? true; }
+async function gcall(fn, args){ const {data, error} = await sb.rpc(fn, args); if (error) { toast(error.message); return null; } return data ?? true; }
+async function load(){
+  const [p, h, i, s, all, st, l, g, d, hg, ci, cd, pk, tr, al] = await Promise.all([
+    sb.from('profiles').select('*').eq('id', me.id).single(), sb.from('holdings').select('*'), sb.from('inventory').select('*'),
+    sb.from('shop_items').select('*').order('id'), sb.from('profiles').select('*').order('username'), sb.from('settings').select('*'),
+    sb.rpc('leaderboard'), sb.from('game_log').select('*').order('id', {ascending:false}).limit(25),
+    sb.from('duels').select('*').order('id', {ascending:false}).limit(20), sb.from('hl_games').select('*').maybeSingle(), sb.from('card_inv').select('*'), sb.from('cards').select('*').order('id'), sb.from('packs').select('*').order('sort'), sb.from('transfers').select('*').order('id',{ascending:false}).limit(40), sb.from('admin_log').select('*').order('id',{ascending:false}).limit(60)]);
+  if (!p.data) return toast('Could not load your account. Did you run both SQL files?');
+  if (cd.data && cd.data.length) { CARDS = cd.data.map(a => ({id:a.id,n:a.name,r:a.rarity,c:a.color,v:a.val,p:a.packs})); Object.keys(CID).forEach(k => delete CID[k]); CARDS.forEach(c => CID[c.id] = c); }
+  if (pk.data && pk.data.length) PACKS = pk.data.map(a => ({k:a.k,name:a.name.toUpperCase(),n:a.n,w:a.w,g:a.g,col:a.col,price:a.price,on:a.active}));
+  TRX = tr.data || []; ALOG = al.data || [];
+  prof = p.data; hold = {}; cost = {}; (h.data||[]).forEach(r => { hold[r.symbol] = r.qty; cost[r.symbol] = r.cost; });
+  inv = i.data||[]; shelves = s.data||[]; people = all.data||[]; lb = l.data||[]; logs = g.data||[]; duels = d.data||[]; hlg = hg.data || null; cinv = {}; (ci.data||[]).forEach(r => cinv[r.card_id] = r.qty);
+  S = {...DEF}; (st.data||[]).forEach(r => S[r.key] = r.value);
+  render();
+}
+const who = id => esc((people.find(p => p.id === id)||{}).username || '?');
+const typing = () => document.activeElement && document.activeElement.tagName === 'INPUT' && $('#app').contains(document.activeElement);
+const val = p => p.balance - p.owed + Object.entries(p.hold||{}).reduce((a,[k,q]) => a + q*(SY(k) ? price(SY(k)) : 0), 0) + (p.inv||[]).reduce((a,r) => a + r.qty*((CAT.find(c=>c.item===r.item)||{fair:0}).fair), 0) + (p.cardval||0);
+const ranked = () => lb.map(p => ({...p, w: val(p)})).sort((a,b) => b.w - a.w);
+const shareVal = () => STOCKS.reduce((a,s) => a + (hold[s.sym]||0)*price(s), 0);
+
+function render(){
+  setBal();
+  $('#ban').classList.toggle('hide', !S.banner); $('#bant').textContent = S.banner;
+  document.querySelector('[data-t=admin]').classList.toggle('hide', !prof.is_admin);
+  if (prof.banned) toast('Your account is frozen by an admin.');
+  renderMarket(); if (typing()) return;
+  renderHome(); renderGames(); renderPortfolio(); renderCards();
+  $('#bankinfo').innerHTML = `You owe <b class="${prof.owed?'dn':''}">${prof.owed}</b> cards. Limit ${S.loan_limit}. Interest ${Math.round(S.loan_rate*100)}% up front.` + (S.loan_enabled ? '' : '<br><span class="dn">The bank is closed.</span>');
+  $('#lb').innerHTML = ranked().map((p,i) => `<div class="lb"><span class="n">${i+1}</span><span style="flex:1">${esc(p.username)}<br><span class="mute">${p.balance} cards, owes ${p.owed}</span></span><b class="px" style="font-size:12px;color:var(--yel)">${p.w}</b></div>`).join('');
+  $('#feed').innerHTML = feed(25); renderBank();
+  renderAdmin();
+}
+const feed = n => logs.slice(0, n).map(l => `${new Date(l.at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} <b style="color:var(--ink)">${esc(l.username||'?')}</b> ${esc(l.msg)}`).join('<br>') || 'Quiet so far.';
+
+/* ---------- dashboard ---------- */
+function spark(cv, arr, color){ const x = cv.getContext('2d'), W = cv.width, H = cv.height, lo = Math.min(...arr), hi = Math.max(...arr), r = Math.max(.0001, hi-lo), bw = W/arr.length;
+  x.clearRect(0,0,W,H); x.fillStyle = color; arr.forEach((v,i) => { const y = Math.floor((H-4-((v-lo)/r)*(H-8))/2)*2; x.fillRect(Math.floor(i*bw), y, Math.ceil(bw), 2); }); }
+function renderHome(){
+  const sv = shareVal(), rk = ranked(), rank = rk.findIndex(p => p.id === me.id) + 1, nw = prof.balance + sv - prof.owed + cardVal();
+  $('#hstats').innerHTML = [['NET WORTH', nw, ''],['CASH', prof.balance, ''],['SHARES', sv, ''],['CARDS', cardVal(), ''],['DEBT', prof.owed, prof.owed ? 'dn' : ''],['RANK', rank ? '#' + rank + ' of ' + rk.length : '-', 'up']]
+    .map(([l,v,c]) => `<div class="stat"><span class="mute">${l}</span><b class="${c}">${v}</b></div>`).join('');
+  const ix = idxAt(mins()), i0 = idxAt(mins() - 1440), ia = []; for (let i = 96; i >= 0; i--) ia.push(idxAt(mins() - i*5));
+  $('#hidx').textContent = ix.toFixed(1); $('#hidxc').innerHTML = `<span class="${cls(ix-i0)}">${sgn((ix-i0).toFixed(1))} (24h)</span>`; spark($('#idxc'), ia, ix >= i0 ? '#5fe08a' : '#ff6b61');
+  const mv = STOCKS.map(s => { const p = price(s), q = price(s, mins()-60); return {s, pct:(p-q)/q*100, p}; }).sort((a,b) => b.pct - a.pct);
+  $('#hmov').innerHTML = [mv[0], mv[mv.length-1]].map(m => `<div class="row"><span><b>${m.s.sym}</b> ${m.s.name}</span><span>${m.p} <span class="${cls(m.pct)}">${sgn(m.pct.toFixed(1))}%</span></span></div>`).join('');
+  const owned = STOCKS.filter(s => hold[s.sym] > 0);
+  $('#hport').innerHTML = owned.map(s => { const q = hold[s.sym], v = q*price(s), pl = cost[s.sym] ? v - cost[s.sym] : null;
+    return `<div class="row"><span><b>${s.sym}</b> x${q}</span><span>${v} ${pl === null ? '' : `<span class="${cls(pl)}">${sgn(pl)}</span>`}</span></div>`; }).join('');
+  const od = duels.filter(d => d.status === 'open');
+  $('#hduel').innerHTML = od.length ? od.map(d => `<div class="row"><span>${who(d.creator)} / ${d.stake} cards</span>${d.creator === me.id ? '<span>yours</span>' : '<button class="y" data-go="games" data-g="duel">ACCEPT</button>'}</div>`).join('') : 'No open duels.';
+  $('#htop').innerHTML = rk.slice(0,3).map((p,i) => `<div class="lb"><span class="n">${i+1}</span><span style="flex:1">${esc(p.username)}</span><b class="px" style="font-size:11px;color:var(--yel)">${p.w}</b></div>`).join('');
+  $('#hfeed').innerHTML = feed(6); renderHomeCards();
+}
+
+/* ---------- market ---------- */
+let tf = 1, lastTick = 0, lastEv = 0; const lastP = {};
+const flash = (el, up) => { el.classList.remove('flashu','flashd'); void el.offsetWidth; el.classList.add(up ? 'flashu' : 'flashd'); };
+function tickUI(){ const ms = Date.now() % 5000, f = $('#tickfill'); if (f) { f.style.width = (ms/50) + '%'; $('#tickcd').textContent = 'NEXT TICK ' + Math.ceil((5000-ms)/1000) + 's'; } }
+function heatCol(pct){ const k = Math.min(1, Math.abs(pct)/6), a = [23,19,38], b = pct >= 0 ? [58,166,85] : [229,53,43]; return `rgb(${a.map((v,i) => Math.round(v + (b[i]-v)*k)).join(',')})`; }
+function renderMarket(){
+  const e = econ(mins()), ix = idxAt(mins()), i0 = idxAt(mins() - 1440), ST = STOCKS.map(s => [s, stats(s)]);
+  const h1 = STOCKS.reduce((a,s) => { const q = price(s, mins()-60); return a + (price(s)-q)/q*100; }, 0) / STOCKS.length;
+  const score = Math.max(0, Math.min(100, Math.round(50 + h1*6 + (e-1)*150)));
+  $('#mood').textContent = (score < 20 ? 'EXTREME FEAR' : score < 40 ? 'FEAR' : score < 60 ? 'NEUTRAL' : score < 80 ? 'GREED' : 'EXTREME GREED') + ' ' + score; $('#meterfill').style.width = score + '%';
+  const status = !S.market_open ? 'CLOSED' : S.freeze_at ? 'PRICES FROZEN' : 'OPEN';
+  $('#mstatus').innerHTML = `<span class="${S.market_open && !S.freeze_at ? 'up' : 'dn'}">${status}</span> / ${e > 1.04 ? 'BOOM' : e < .96 ? 'SLOW' : 'STEADY'}`;
+  $('#midx').textContent = ix.toFixed(1); $('#midxc').innerHTML = `<span class="${cls(ix-i0)}">${sgn((ix-i0).toFixed(1))}</span>`; $('#mclock').textContent = new Date().toLocaleTimeString();
+  $('#heat').innerHTML = ST.map(([s,t]) => `<div class="ht" data-sel="${s.sym}" style="background:${heatCol(t.pct)}"><b>${s.sym}</b><span>${t.last}</span><span>${sgn(t.pct.toFixed(1))}%</span></div>`).join('');
+  if (!built) { built = true;
+    $('#mbody').innerHTML = STOCKS.map((s,i) => `<tr data-sel="${s.sym}" tabindex="0"><td>${tile(s.sym,i)}<b>${s.sym}</b></td><td class="l mute">${s.name}</td><td id="l-${s.sym}"></td><td id="c-${s.sym}"></td><td id="p-${s.sym}"></td><td id="h-${s.sym}"></td><td id="lo-${s.sym}"></td><td id="v-${s.sym}"></td><td><canvas class="pix" id="sp-${s.sym}" width="60" height="22"></canvas></td><td id="o-${s.sym}"></td></tr>`).join(''); }
+  let tape = '';
+  ST.forEach(([s, t]) => { tape += `<span style="margin-right:36px"><b>${s.sym}</b> ${t.last} <span class="${cls(t.chg)}">${sgn(t.chg)} (${sgn(t.pct.toFixed(1))}%)</span></span>`;
+    $('#l-'+s.sym).innerHTML = `<b>${t.last}</b>`; $('#c-'+s.sym).innerHTML = `<span class="${cls(t.chg)}">${sgn(t.chg)}</span>`; $('#p-'+s.sym).innerHTML = `<span class="${cls(t.chg)}">${sgn(t.pct.toFixed(1))}%</span>`;
+    $('#h-'+s.sym).textContent = t.hi; $('#lo-'+s.sym).textContent = t.lo; $('#v-'+s.sym).textContent = t.vol.toLocaleString(); $('#o-'+s.sym).textContent = hold[s.sym] || '-';
+    spark($('#sp-'+s.sym), t.spark, t.spark[t.spark.length-1] >= t.spark[0] ? '#5fe08a' : '#ff6b61'); $('[data-sel='+s.sym+']').classList.toggle('sel', s.sym === sel);
+    if (lastP[s.sym] !== undefined && lastP[s.sym] !== t.last) { flash($('#l-'+s.sym), t.last > lastP[s.sym]); if (s.sym === sel) flash($('#dlast'), t.last > lastP[s.sym]); }
+    lastP[s.sym] = t.last; });
+  $('#tape').innerHTML = tape + tape;
+  const s = SY(sel), t = stats(s);
+  $('#dtitle').textContent = s.sym + ' / ' + s.name.toUpperCase(); $('#dlast').textContent = t.last; $('#dchg').innerHTML = `<span class="${cls(t.chg)}">${sgn(t.chg)} (${sgn(t.pct.toFixed(1))}%)</span>`;
+  $('#dstats').textContent = `Open ${t.open}  High ${t.hi}  Low ${t.lo}  Volume ${t.vol.toLocaleString()}  Cap ${(t.last * s.base * 500).toLocaleString()}`;
+  document.querySelectorAll('#tfs button').forEach(b => b.classList.toggle('on', +b.dataset.tf === tf));
+  candles(s); ticket(); $('#news').innerHTML = news();
+  $('#tns').innerHTML = Array.from({length:12}, (_, i) => { const u = mins() - i/12, p = price(s, u), q = price(s, u - 1/12), tm = new Date(Date.now() - Date.now() % 5000 - i*5000).toLocaleTimeString([], {hour12:false});
+    return `<div class="row" style="padding:3px 0"><span class="mute">${tm}</span><span class="${cls(p-q)}">${p} ${p>q ? '^' : p<q ? 'v' : '-'}</span><span>${Math.round(5 + hv(s, Math.floor(u*12) + 999) * 95)}</span></div>`; }).join('');
+  const slot = Math.floor(mins() / 3); if (lastEv && slot !== lastEv && S.market_open) { const ev = evOf(slot); toast('NEWS: ' + ev.text.replace('{n}', ev.s.name)); } lastEv = slot;
+}
+function candles(s){
+  const cv = $('#candle'), x = cv.getContext('2d'), W = cv.width, H = cv.height, PH = 230, N = 36, cw = W / N, t = mins(), base = Math.floor(t / tf), cs = [];
+  for (let j = N-1; j >= 0; j--) { const st = (base - j) * tf, en = Math.min(st + tf, t), a = []; for (let q = st; q < en; q += 1/12) a.push(pricef(s, q)); a.push(pricef(s, en));
+    cs.push({o:a[0], c:a[a.length-1], h:Math.max(...a), l:Math.min(...a), v:Math.round(vol(s, Math.floor(st)) * tf / 10 * Math.max(.15, (en - st) / tf))}); }
+  const lo = Math.min(...cs.map(k => k.l)), hi = Math.max(...cs.map(k => k.h)), r = Math.max(1, hi - lo), vm = Math.max(...cs.map(k => k.v));
+  const Y = p => Math.round((PH - 12 - ((p - lo) / r) * (PH - 36)) / 2) * 2;
+  x.fillStyle = '#0d0b14'; x.fillRect(0,0,W,H); x.fillStyle = '#1d1830'; for (let i = 1; i < 5; i++) x.fillRect(0, i*PH/5, W, 2);
+  cs.forEach((k, i) => { const up = k.c >= k.o, cc = up ? '#5fe08a' : '#ff6b61', cx = Math.floor(i*cw + 4), bw = Math.floor(cw - 8), live = i === N-1;
+    x.fillStyle = cc; x.fillRect(cx + Math.floor(bw/2) - 1, Y(k.h), 2, Y(k.l) - Y(k.h) + 2);
+    x.fillRect(cx, Math.min(Y(k.o), Y(k.c)), bw, Math.max(4, Math.abs(Y(k.o) - Y(k.c))));
+    if (live) { x.strokeStyle = '#fff'; x.lineWidth = 2; x.strokeRect(cx - 1, Math.min(Y(k.o), Y(k.c)) - 1, bw + 2, Math.max(4, Math.abs(Y(k.o) - Y(k.c))) + 2); }
+    x.globalAlpha = .6; x.fillStyle = cc; x.fillRect(cx, H - Math.round(k.v / vm * 50), bw, Math.round(k.v / vm * 50)); x.globalAlpha = 1; });
+  const ly = Y(cs[N-1].c); x.fillStyle = '#f7d117'; for (let px = 0; px < W; px += 12) x.fillRect(px, ly, 6, 2);
+  x.fillStyle = '#e9e4f7'; x.font = '20px VT323'; x.fillText('H ' + Math.round(hi), 6, 18); x.fillText('L ' + Math.round(lo), 6, PH - 2);
+  x.fillStyle = '#f7d117'; x.fillText('NOW ' + Math.round(cs[N-1].c), W - 90, Math.max(16, ly - 6));
+}
+function ticket(){ const s = SY(sel), p = price(s), q = parseInt($('#oq').value) || 0;
+  $('#oest').textContent = `${q} x ${p} = ${q*p} cards. Cash ${prof.balance}. You own ${hold[sel]||0}${cost[sel] ? ' (avg cost ' + (cost[sel]/hold[sel]).toFixed(1) + ')' : ''}.`;
+  $('#obuy').disabled = $('#osell').disabled = !S.market_open; }
+function renderPortfolio(){
+  const own = STOCKS.filter(s => hold[s.sym] > 0); let tv = 0, tc = 0;
+  $('#pbody').innerHTML = own.map(s => { const q = hold[s.sym], p = price(s), v = q*p, c = cost[s.sym], pl = c ? v - c : null; tv += v; tc += c || 0;
+    return `<tr><td><b>${s.sym}</b></td><td>${q}</td><td>${c ? (c/q).toFixed(1) : '-'}</td><td>${p}</td><td>${v}</td><td class="${pl === null ? '' : cls(pl)}">${pl === null ? '-' : sgn(pl)}</td><td class="${pl === null ? '' : cls(pl)}">${pl === null ? '-' : sgn((pl/c*100).toFixed(1)) + '%'}</td></tr>`; }).join('') || '<tr><td class="l mute" colspan="7">No positions yet.</td></tr>';
+  $('#ptotal').innerHTML = own.length ? `Total value ${tv}. ${tc ? `Total P/L <span class="${cls(tv-tc)}">${sgn(tv-tc)}</span>` : ''}` : '';
+}
+function news(){ const out = [], slot = Math.floor(mins() / 3);
+  for (let k = 0; k < 5; k++) { const ev = evOf(slot - k), ago = Math.max(0, Math.round(mins() - (slot - k) * 3)); out.push(`<span class="${cls(ev.dir)}">${ago}m ago</span> ${esc(ev.text.replace('{n}', ev.s.name))}`); }
+  if (S.freeze_at) out.unshift('<span class="dn">HALT</span> Trading halted: prices are frozen by the exchange.'); if (!S.market_open) out.unshift('<span class="dn">CLOSED</span> The exchange is closed for trading.');
+  return out.join('<br>'); }
+$('#heat').onclick = e => { const t = e.target.closest('[data-sel]'); if (t) { sel = t.dataset.sel; renderMarket(); } };
+
+/* ---------- games ---------- */
+const pc = i => ({1:['R','var(--red)'],2:['Y','var(--yel)'],3:['G','var(--grn)'],4:['B','var(--blu)'],5:['W','#000'],6:['+4','#000']})[i];
+const setReel = (id, n) => { const [t, c] = pc(n); const e = $('#'+id); e.textContent = t; e.style.background = c; e.style.color = n === 2 ? '#000' : '#fff'; };
+function showGame(k){ $('#hub').classList.toggle('hide', !!k); document.querySelectorAll('.gp').forEach(g => g.classList.toggle('hide', g.id !== 'g-'+k)); if (k === 'eggs') $('#critter').src = sprite('egg'); if (k === 'hl') hlUI(); }
+function renderGames(){
+  $('#hubtiles').innerHTML = GAMES.map(([k, ic, nm]) => `<button class="game" data-game="${k}"><img src="${sprite(ic)}" alt=""><b>${nm}</b><br><span class="${S[GKEY[k]] ? 'up' : 'dn'}">${S[GKEY[k]] ? 'OPEN' : 'CLOSED'}</span></button>`).join('');
+  $('#maxbet').textContent = S.max_bet;
+  $('#cpicks').innerHTML = Object.keys(HEX).map(c => `<button class="cp ${pick === c ? 'sel' : ''}" data-pick="${c}" style="background:${HEX[c]}" aria-label="${c}"></button>`).join('');
+  if (!$('#strip').children.length) $('#strip').innerHTML = Array.from({length:25}, (_, p) => p === 24 ? '<i style="background:#000">W</i>' : `<i style="background:${Object.values(HEX)[p%4]}"></i>`).join('');
+  const open = duels.filter(d => d.status === 'open');
+  $('#dopen').innerHTML = open.map(d => `<div class="row"><span>${who(d.creator)} / ${d.stake} cards</span>${d.creator === me.id ? `<button class="r" data-dcancel="${d.id}">CANCEL</button>` : `<button class="y" data-dacc="${d.id}">ACCEPT</button>`}</div>`).join('') || '<span class="mute">None right now.</span>';
+  $('#ddone').innerHTML = duels.filter(d => d.status === 'done').slice(0,6).map(d => `${who(d.winner)} won ${d.stake*2} (${who(d.creator)} vs ${who(d.opponent)})`).join('<br>') || 'No duels played yet.';
+  hlUI();
+}
+function hlUI(){ const g = hlg;
+  $('#hlbet').classList.toggle('hide', !!g); $('#hlpick').classList.toggle('hide', !g);
+  if (g) { const a = g.card, ph = (9-a)/10, pl = a/10; setCard('hlA', a); if (!animating) { $('#hlB').textContent = '?'; $('#hlB').style.background = '#241e3d'; $('#hlmsg').textContent = `Card is ${a}. Bet ${g.stake}. Will the next card be higher or lower?`; }
+    $('#hlhi').textContent = ph ? `HIGHER x${(0.96/ph).toFixed(2)}` : 'HIGHER (IMPOSSIBLE)'; $('#hlhi').disabled = !ph; $('#hllo').textContent = pl ? `LOWER x${(0.96/pl).toFixed(2)}` : 'LOWER (IMPOSSIBLE)'; $('#hllo').disabled = !pl; } }
+const setCard = (id, n) => { const e = $('#'+id); e.textContent = n; e.style.background = COL[n % 4]; e.style.color = n % 4 === 1 ? '#000' : '#fff'; };
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+async function guard(fn){ if (animating) return; animating = true; try { await fn(); } finally { animating = false; await load(); } }
+
+$('#hubtiles').onclick = e => { const b = e.target.closest('[data-game]'); if (b) showGame(b.dataset.game); };
+$('#t-games').addEventListener('click', e => { if (e.target.closest('[data-back]')) showGame(null); const p = e.target.dataset.pick; if (p) { pick = p; renderGames(); } });
+
+$('#hatch').onclick = () => guard(async () => {
+  const stake = parseInt($('#stake').value); if (!(stake > 0)) return toast('Bet at least 1 card');
+  const st = $('#stage'); $('#critter').src = sprite('egg'); st.classList.remove('win','shake'); void st.offsetWidth; st.classList.add('shake');
+  const r = await gcall('play_egg', {stake}); if (!r) return st.classList.remove('shake'); await sleep(650); st.classList.remove('shake');
+  $('#critter').src = sprite(r.mult); $('#eggmsg').textContent = CRIT[r.mult] + (r.payout ? ` +${r.payout}` : ` -${stake}`); if (r.mult >= 2) st.classList.add('win'); });
+
+$('#hldeal').onclick = () => guard(async () => {
+  const stake = parseInt($('#hlstake').value); if (!(stake > 0)) return toast('Bet at least 1 card');
+  const c = await gcall('hl_deal', {p_stake: stake}); if (c === null) return; hlg = {card: c, stake}; $('#hlB').textContent = '?'; $('#hlB').style.background = '#241e3d'; hlUI(); });
+const hlGo = dir => guard(async () => { const r = await gcall('hl_guess', {p_dir: dir}); if (!r) return;
+  setCard('hlA', r.first); $('#hlB').textContent = '...'; await sleep(500); setCard('hlB', r.second);
+  $('#hlmsg').textContent = r.result === 'win' ? `You win! +${r.payout}` : r.result === 'push' ? 'Tie. Bet returned.' : 'Wrong guess. You lose.'; hlg = null; document.querySelector('#hlbet').classList.remove('hide'); $('#hlpick').classList.add('hide'); });
+$('#hlhi').onclick = () => hlGo('high'); $('#hllo').onclick = () => hlGo('low');
+
+$('#cspin').onclick = () => guard(async () => {
+  const stake = parseInt($('#cstake').value); if (!(stake > 0)) return toast('Bet at least 1 card');
+  const r = await gcall('color_spin', {p_stake: stake, p_pick: pick}); if (!r) return;
+  const cells = [...$('#strip').children]; let pos = Math.floor(Math.random()*25); const steps = 50 + ((r.slot - pos + 25) % 25);
+  $('#cmsg').textContent = 'Spinning...';
+  for (let i = 0; i < steps; i++) { cells.forEach(c => c.classList.remove('on')); pos = (pos + 1) % 25; cells[pos].classList.add('on'); await sleep(25 + Math.pow(i/steps, 3) * 220); }
+  $('#cmsg').textContent = (r.color === 'wild' ? 'WILD! ' : r.color.toUpperCase() + '. ') + (r.payout ? `You win +${r.payout}` : `You lose -${stake}`); if (r.payout) $('#strip').parentElement.classList.add('win'); setTimeout(() => $('#strip').parentElement.classList.remove('win'), 1700); });
+
+$('#sspin').onclick = () => guard(async () => {
+  const stake = parseInt($('#sstake').value); if (!(stake > 0)) return toast('Bet at least 1 card');
+  const r = await gcall('play_slots', {p_stake: stake}); if (!r) return; $('#smsg').textContent = 'Spinning...';
+  const t0 = Date.now(), end = [900, 1400, 1900]; const iv = setInterval(() => [0,1,2].forEach(i => { if (Date.now() - t0 < end[i]) setReel('r'+i, 1 + Math.floor(Math.random()*6)); else setReel('r'+i, r.reels[i]); }), 90);
+  await sleep(2000); clearInterval(iv); [0,1,2].forEach(i => setReel('r'+i, r.reels[i]));
+  $('#smsg').textContent = r.mult >= 12 ? `JACKPOT! ${r.mult}x  +${r.payout}` : r.mult === 1 ? 'A pair. Bet returned.' : 'No match. You lose.'; if (r.mult >= 12) $('#r0').parentElement.classList.add('win'); setTimeout(() => $('#r0').parentElement.classList.remove('win'), 1700); });
+
+$('#dnew').onclick = async () => { if (await call('create_duel', {p_stake: parseInt($('#dstake').value)})) toast('Duel opened. Waiting for a challenger.'); };
+$('#dopen').onclick = async e => { const d = e.target.dataset;
+  if (d.dcancel) await call('cancel_duel', {p_id: +d.dcancel});
+  if (d.dacc) { const r = await gcall('accept_duel', {p_id: +d.dacc}); if (r) { toast(r.won ? `You won the duel! +${r.stake * 2}` : `You lost the duel. -${r.stake}`); await load(); } } };
+$('#hduel').onclick = e => { if (e.target.dataset.go) { go('games'); showGame('duel'); } };
+
+/* ---------- market / shop / bank actions ---------- */
+$('#mbody').onclick = e => { const tr = e.target.closest('tr'); if (tr) { sel = tr.dataset.sel; renderMarket(); } };
+$('#mbody').onkeydown = e => { if (e.key === 'Enter') e.target.click(); };
+$('#oq').oninput = ticket;
+$('#t-market').addEventListener('click', e => { if (e.target.dataset.tf) { tf = +e.target.dataset.tf; renderMarket(); return; } const q = e.target.dataset.q; if (!q) return; const p = price(SY(sel));
+  $('#oq').value = q === 'maxb' ? Math.max(1, Math.floor(prof.balance / p)) : q === 'maxs' ? Math.max(1, hold[sel] || 1) : q; ticket(); });
+const order = sign => async () => { const q = parseInt($('#oq').value); if (!(q > 0)) return; if (await call('trade', {p_sym: sel, p_qty: sign*q, p_price: price(SY(sel))})) toast(sign > 0 ? 'Order filled: bought.' : 'Order filled: sold.'); };
+$('#obuy').onclick = order(1); $('#osell').onclick = order(-1);
+$('#borrow').onclick = async () => { if (await call('take_loan', {amt: parseInt($('#bor').value)})) toast('Loan taken.'); };
+$('#repay').onclick = async () => { if (await call('repay_loan', {amt: parseInt($('#rep').value)})) toast('Repaid.'); };
+
+/* ---------- navigation ---------- */
+function go(k){ document.querySelectorAll('section').forEach(s => s.classList.toggle('hide', s.id !== 't-'+k));
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === k)); if (k !== 'games') showGame(null); if (k === 'board' || k === 'admin') load(); }
+$('#tabs').onclick = e => e.target.dataset.t && go(e.target.dataset.t);
+$('#t-home').onclick = e => { const k = e.target.dataset.go; if (k) { go(k); if (e.target.dataset.g) showGame(e.target.dataset.g); } };
+
+/* ---------- admin ---------- */
+const A = (k, l) => `<label>${l} <input type="number" step="any" id="s-${k}" value="${S[k]}"> <button data-a="setnum" data-k="${k}">SET</button></label>`;
+const TG = (k, l) => `<button data-a="setbool" data-k="${k}" class="${S[k] ? 'g' : 'off'}">${l}: ${S[k] ? 'ON' : 'OFF'}</button>`;
+function renderAdmin(){
+  if (!prof.is_admin || typing()) return;
+  const sel2c = id => `<select id="${id}">${CARDS.map(c => `<option value="${c.id}">${c.id} ${esc(c.n)}</option>`).join('')}</select>`;
+  const sel2 = (id, arr) => `<select id="${id}">${arr.map(x => `<option>${x}</option>`).join('')}</select>`;
+  const pcard = p => { const u = p.id, l = lb.find(x => x.id === u) || {hold:{},inv:[]};
+    return `<details class="card"><summary>${esc(p.username)} / ${p.balance} cards${p.owed ? ' / owes ' + p.owed : ''}${p.is_admin ? ' [ADMIN]' : ''}${p.banned ? ' [FROZEN]' : ''}</summary><div class="grid">
+    <div class="mute">Shares: ${Object.entries(l.hold).map(([k,q]) => k+' x'+q).join(', ') || 'none'} / Cards: ${Object.keys(l.cards||{}).length}/${CARDS.length}, worth ${l.cardval||0}${p.forced_mult !== null ? ' / next egg forced: ' + p.forced_mult + 'x' : ''}</div>
+    <label>Give or take cards <input type="number" id="ad${u}" value="5"> <button class="g" data-a="give" data-u="${u}">GIVE</button> <button class="r" data-a="take" data-u="${u}">TAKE</button></label>
+    <label>Set balance <input type="number" id="ab${u}" value="${p.balance}"> <button data-a="bal" data-u="${u}">SET</button></label>
+    <label>Loan owed <input type="number" id="ao${u}" value="${p.owed}"> <button data-a="owed" data-u="${u}">SET</button></label>
+    <label>Shares ${sel2('hs'+u, STOCKS.map(s => s.sym))} <input type="number" id="hq${u}" value="1"> <button data-a="hold" data-u="${u}">SET QTY</button></label>
+    <label>Card ${sel2c('ci'+u)} <input type="number" id="cq${u}" value="1"> <button data-a="card" data-u="${u}">SET QTY</button></label>
+    <label>Force next egg ${sel2('fe'+u, ['clear',0,1,2,3,10])} x <button data-a="force" data-u="${u}">APPLY</button></label>
+    <label>Rename <input type="text" id="rn${u}" value="${esc(p.username)}"> <button data-a="ren" data-u="${u}">SET</button></label>
+    <div><button class="y" data-a="adm" data-u="${u}">${p.is_admin ? 'REMOVE ADMIN' : 'MAKE ADMIN'}</button> <button class="y" data-a="ban" data-u="${u}">${p.banned ? 'UNFREEZE' : 'FREEZE ACCOUNT'}</button>
+    <button class="r" data-a="wipe" data-u="${u}">WIPE</button> <button class="r" data-a="del" data-u="${u}">DELETE ACCOUNT</button></div></div></details>`; };
+  const odds = S.egg_odds, tot = odds.reduce((a,b) => a + +b, 0) || 1, ev = ((odds[1]*1 + odds[2]*2 + odds[3]*3 + odds[4]*10) / tot * 100).toFixed(0);
+  const T = [['ov','OVERVIEW'],['pl','PLAYERS'],['cp','CARDS+PACKS'],['gm','GAMES'],['mk','MARKET'],['bk','BANK'],['lg','LOGS']];
+  const stat = rows => `<div class="stats">${rows.map(([l,v]) => `<div class="stat"><span class="mute">${l}</span><b>${v}</b></div>`).join('')}</div>`;
+  const packRow = p => { const k = p.k || 'NEW', id = x => `pe-${k}-${x}`;
+    return `<div class="card" style="margin:10px 0"><h3 style="margin-top:0">${p.k ? 'PACK ' + p.k : 'NEW PACK'}</h3><div class="grid">
+    ${p.k ? '' : `<label>Letter <input type="text" id="pe-NEW-k" maxlength="1" style="width:50px"></label>`}
+    <label>Name <input type="text" id="${id('n')}" value="${esc(p.name || '')}"> Cards <input type="number" id="${id('c')}" value="${p.n || 5}" style="width:60px"> Price <input type="number" id="${id('p')}" value="${p.price || 50}" style="width:80px"></label>
+    <label>Guaranteed rarity (1-6) <input type="number" id="${id('g')}" value="${p.g || 1}" style="width:60px"> Color <input type="text" id="${id('col')}" value="${p.col || '#3aa655'}" style="width:100px"> <label><input type="checkbox" id="${id('a')}" ${p.on === false ? '' : 'checked'}> Open</label></label>
+    <div class="mute">Odds weights: ${RN.join(' / ')}</div><div>${[0,1,2,3,4,5].map(i => `<input type="number" step="any" id="${id('w' + i)}" value="${(p.w || [60,30,8,2,0,0])[i]}" style="width:62px">`).join(' ')}</div>
+    <div><button class="y" data-a="savepack" data-k="${k}">SAVE PACK</button></div></div></div>`; };
+  const secs = {
+    ov: `<div class="card"><h2>OVERVIEW</h2>${stat([['PLAYERS',people.length],['CARDS IN PLAY',people.reduce((a,p) => a + p.balance, 0)],['TOTAL DEBT',people.reduce((a,p) => a + p.owed, 0)],['FROZEN',people.filter(p => p.banned).length],['CARD TYPES',CARDS.length],['PACKS OPEN',PACKS.filter(p => p.on).length]])}</div>
+      <div class="card"><h2>ANNOUNCEMENT</h2><input type="text" id="s-banner" style="width:70%" value="${esc(S.banner)}"> <button data-a="banner">POST</button> <button class="r" data-a="clrban">CLEAR</button></div>
+      <div class="card"><h2>LATEST ACTIVITY</h2><div class="mute">${feed(10)}</div></div>`,
+    pl: `<div class="card"><h2>PLAYERS</h2><input type="text" id="psearch" placeholder="search a player"></div>
+      <div class="card"><h2>GIVE PACKS</h2><label>To <select id="gp-u">${people.map(p => `<option value="${p.id}">${esc(p.username)}</option>`).join('')}</select> Pack <select id="gp-k">${PACKS.map(p => `<option value="${p.k}">${p.k} ${p.name}</option>`).join('')}</select> x <input type="number" id="gp-n" value="1" style="width:60px"> <button class="g" data-a="givepack">GIVE</button></label></div>
+      ${people.map(p => `<div class="pc" data-n="${esc(p.username.toLowerCase())}">${pcard(p)}</div>`).join('')}`,
+    cp: `<div class="card"><h2>CARD EDITOR</h2><div class="grid">${TG('packs_on','All card packs')}
+      <label>Card <select id="ce-id"><option value="">NEW CARD</option>${CARDS.map(c => `<option value="${c.id}">${c.id} ${esc(c.n)}</option>`).join('')}</select></label>
+      <label>Name <input type="text" id="ce-n"> Rarity 1-6 <input type="number" id="ce-r" value="1" style="width:60px"> Color 0-4 <input type="number" id="ce-c" value="0" style="width:60px"></label>
+      <label>Value <input type="number" id="ce-v" value="1" style="width:80px"> Packs (letters) <input type="text" id="ce-p" value="A" style="width:90px"></label>
+      <div><button class="y" data-a="savecard">SAVE CARD</button> <button class="r" data-a="delcard">DELETE CARD</button></div></div></div>
+      <div class="card"><h2>PACKS</h2>${PACKS.map(packRow).join('')}${packRow({})}</div>`,
+    gm: `<div class="card"><h2>GAMES</h2><div class="grid"><div>${TG('egg_enabled','Eggs')} ${TG('g_hl','Higher/Lower')} ${TG('g_color','Color Spin')} ${TG('g_slots','Slots')} ${TG('g_duel','Duels')}</div>${A('max_bet','Max bet')}
+      <div class="mute">Egg odds weights (pebble, chick, bird, unicorn, dragon). Payback now ${ev}%.</div>
+      <div>${odds.map((o,i) => `<input type="number" id="eo${i}" value="${o}" style="width:60px">`).join(' ')} <button data-a="saveodds">SAVE ODDS</button></div>
+      <h3>OPEN DUELS</h3>${duels.filter(d => d.status === 'open').map(d => `<div class="row"><span>${who(d.creator)} / ${d.stake}</span><button class="r" data-a="dcancel" data-u="${d.id}">CANCEL AND REFUND</button></div>`).join('') || '<span class="mute">None.</span>'}</div></div>`,
+    mk: `<div class="card"><h2>MARKET</h2><div class="grid">
+      <div>${TG('market_open','Trading open')} <button data-a="freeze" class="${S.freeze_at ? 'r' : 'y'}">${S.freeze_at ? 'UNFREEZE PRICES' : 'FREEZE PRICES'}</button></div>
+      <div><button class="g" data-a="setv" data-k="market_mult" data-v="1.5">BOOM x1.5</button> <button class="r" data-a="setv" data-k="market_mult" data-v="0.5">CRASH x0.5</button> <button data-a="setv" data-k="market_mult" data-v="1">NORMAL</button></div>
+      ${A('market_mult','Global price x')}
+      <div class="mute">Price x per stock:</div><div>${STOCKS.map(s => `${s.sym} <input type="number" step="any" id="sm-${s.sym}" value="${(S.stock_mult||{})[s.sym] ?? 1}" style="width:64px">`).join(' ')} <button data-a="savesm">SAVE</button></div></div></div>`,
+    bk: `<div class="card"><h2>LOANS</h2><div class="grid">${TG('loan_enabled','Bank')}${A('loan_rate','Interest (0.1 = 10%)')}${A('loan_limit','Max owed')}</div></div>
+      <div class="card"><h2>TRANSFERS</h2><div class="grid">${TG('tr_on','Sending')}${TG('tr_debt','Block while in debt')}${A('tr_fee','Fee (0.05 = 5%)')}${A('tr_min','Min per send')}${A('tr_max','Max per send')}${A('tr_daily','Daily cap per player')}</div>
+      <h3>RECENT TRANSFERS</h3>${TRX.slice(0,15).map(t => `<div class="row"><span>${who(t.from_id)} to ${who(t.to_id)}${t.note ? ' / ' + esc(t.note) : ''}</span><span>${t.amt} ${t.reversed ? '(reversed)' : `<button class="r" data-a="revtr" data-u="${t.id}">REVERSE</button>`}</span></div>`).join('') || '<span class="mute">None yet.</span>'}</div>`,
+    lg: `<div class="card"><h2>ADMIN LOG</h2><div class="mute">${ALOG.map(l => `${new Date(l.at).toLocaleString([], {hour12:false})} ${esc(l.msg)}`).join('<br>') || 'Nothing yet.'}</div></div>
+      <div class="card"><h2>DANGER ZONE</h2><button class="r" data-a="resetall">RESET EVERYONE TO ZERO</button> <button class="r" data-a="clrlog">CLEAR ACTIVITY LOG</button></div>`
+  };
+  $('#adminbox').innerHTML = `<div class="adm">${T.map(([k,l]) => `<button data-at="${k}" class="${atab === k ? 'on' : ''}">${l}</button>`).join('')}</div>${secs[atab]}`;
+}
+const setS = (k, v) => call('admin_set2', {p_key: k, p_val: v});
+$('#t-admin').onclick = async e => { if (e.target.dataset.at) { atab = e.target.dataset.at; renderAdmin(); return; } const d = e.target.dataset, a = d.a; if (!a) return; const u = d.u, g = k => document.getElementById(k + u), n = id => parseFloat(document.getElementById(id).value), P = people.find(p => p.id === u) || {};
+  const ok = m => confirm(m + ' Sure?');
+  switch (a) {
+    case 'give': return call('admin_add_balance', {p_uid: u, p_delta: Math.abs(Math.round(+g('ad').value))});
+    case 'take': return call('admin_add_balance', {p_uid: u, p_delta: -Math.abs(Math.round(+g('ad').value))});
+    case 'bal': return call('admin_set_balance', {p_uid: u, p_amt: Math.round(+g('ab').value)});
+    case 'owed': return call('admin_set_owed', {p_uid: u, p_amt: Math.round(+g('ao').value)});
+    case 'hold': return call('admin_set_holding', {p_uid: u, p_sym: g('hs').value, p_qty: Math.round(+g('hq').value)});
+    case 'card': return call('admin_set_card', {p_uid: u, p_card: +g('ci').value, p_qty: Math.round(+g('cq').value)});
+    case 'force': return call('admin_force_egg', {p_uid: u, p_mult: g('fe').value === 'clear' ? null : +g('fe').value});
+    case 'ren': return call('admin_rename', {p_uid: u, p_name: g('rn').value.trim()});
+    case 'adm': return call('admin_set_flags', {p_uid: u, p_admin: !P.is_admin, p_banned: P.banned});
+    case 'ban': return call('admin_set_flags', {p_uid: u, p_admin: P.is_admin, p_banned: !P.banned});
+    case 'wipe': return ok('Wipe ' + P.username + '?') && call('admin_wipe_user', {p_uid: u});
+    case 'del': return ok('Delete the account of ' + P.username + '?') && call('admin_delete_user', {p_uid: u});
+    case 'dcancel': return call('admin_cancel_duel', {p_id: +u});
+    case 'resetall': return prompt('Type RESET to wipe everyone') === 'RESET' && call('admin_reset_all');
+    case 'clrlog': return call('admin_clear_log');
+    case 'setnum': return setS(d.k, n('s-' + d.k));
+    case 'setbool': return setS(d.k, !S[d.k]);
+    case 'setv': return setS(d.k, JSON.parse(d.v));
+    case 'banner': return setS('banner', document.getElementById('s-banner').value);
+    case 'clrban': return setS('banner', '');
+    case 'freeze': return setS('freeze_at', S.freeze_at ? 0 : Date.now());
+    case 'savesm': return setS('stock_mult', Object.fromEntries(STOCKS.map(s => [s.sym, n('sm-' + s.sym) || 1])));
+    case 'saveprices': return setS('pack_prices', [0,1,2,3].map(i => Math.max(1, Math.round(n('pp' + i)) || 1)));
+    case 'savecard': return call('admin_save_card', {p_id: +gv('ce-id') || CARDS.reduce((m, c) => Math.max(m, c.id), 0) + 1, p_name: gv('ce-n'), p_rar: +gv('ce-r'), p_col: +gv('ce-c'), p_val: +gv('ce-v'), p_packs: gv('ce-p')});
+    case 'delcard': return +gv('ce-id') && ok('Delete this card from the game and everyone\'s collection?') && call('admin_delete_card', {p_id: +gv('ce-id')});
+    case 'savepack': { const k = d.k === 'NEW' ? gv('pe-NEW-k').trim().toUpperCase() : d.k; if (k.length !== 1) return toast('Pack key must be one letter');
+      return call('admin_save_pack', {p_k: k, p_name: gv(`pe-${d.k}-n`), p_n: +gv(`pe-${d.k}-c`), p_w: [0,1,2,3,4,5].map(i => +gv(`pe-${d.k}-w${i}`) || 0), p_g: +gv(`pe-${d.k}-g`), p_col: gv(`pe-${d.k}-col`), p_price: +gv(`pe-${d.k}-p`), p_active: document.getElementById(`pe-${d.k}-a`).checked}); }
+    case 'revtr': return ok('Reverse this transfer?') && call('admin_reverse_transfer', {p_id: +d.u});
+    case 'givepack': return call('admin_give_pack', {p_uid: gv('gp-u'), p_pack: gv('gp-k'), p_count: +gv('gp-n') || 1});
+    case 'saveodds': return setS('egg_odds', [0,1,2,3,4].map(i => Math.max(0, n('eo' + i) || 0)));
+  } };
+
+/* ---------- cards ---------- */
+let CARDS = [[1,"Blipper",1,1,1,"ABC"],[2,"Moss Mole",1,2,1,"ABC"],[3,"Puddle Pup",1,3,1,"ABC"],[4,"Fuzzwick",1,0,1,"ABC"],[5,"Snaggle",1,1,1,"ABC"],[6,"Noodlebug",1,2,1,"ABC"],[7,"Pebblet",1,3,1,"ABC"],[8,"Wobblin",1,0,1,"ABC"],[9,"Drizzlet",1,1,1,"ABC"],[10,"Crumbat",1,2,1,"ABC"],[11,"Tuffet",1,3,1,"AB"],[12,"Gloopy",1,0,1,"AB"],[13,"Squeakle",1,1,1,"AB"],[14,"Dustbun",1,2,1,"AB"],[15,"Mumbo",1,3,1,"AB"],[16,"Pipsqueak",1,0,1,"AB"],[17,"Ticklet",1,1,1,"AB"],[18,"Burrowl",1,2,1,"AB"],[19,"Sprocket Rat",1,3,1,"AB"],[20,"Lintling",1,0,1,"AB"],[21,"Bramblet",1,1,1,"AB"],[22,"Muddle",1,2,1,"AB"],[23,"Quibble",1,3,1,"AB"],[24,"Snorfle",1,0,1,"AB"],[25,"Thimble Newt",1,1,1,"AB"],[26,"Boggin",1,2,1,"AB"],[27,"Fluffle",1,3,1,"AB"],[28,"Pixel Moth",1,0,1,"AB"],[29,"Cobbler Crab",1,1,1,"AB"],[30,"Hiccup",1,2,1,"AB"],[31,"Zonk",1,3,1,"A"],[32,"Mudlark",1,0,1,"A"],[33,"Twiglet",1,1,1,"A"],[34,"Gobbo",1,2,1,"A"],[35,"Plinko",1,3,1,"A"],[36,"Nubbin",1,0,1,"A"],[37,"Rumble Snail",1,1,1,"A"],[38,"Soot Sprite",1,2,1,"A"],[39,"Yarnling",1,3,1,"A"],[40,"Dribble",1,0,1,"A"],[41,"Cinder Cub",1,1,2,"A"],[42,"Fidget",1,2,2,"A"],[43,"Mossy Grub",1,3,2,"A"],[44,"Pudding Slug",1,0,2,"A"],[45,"Tatterwing",1,1,2,"A"],[46,"Clunk",1,2,2,"A"],[47,"Waddle",1,3,2,"A"],[48,"Bibbit",1,0,2,"A"],[49,"Scrumble",1,1,2,"A"],[50,"Crinkle",1,2,2,"A"],[51,"Thunder Pup",2,3,2,"AB"],[52,"Frost Fox",2,0,2,"AB"],[53,"Ember Newt",2,1,2,"AB"],[54,"Tide Otter",2,2,2,"AB"],[55,"Gale Finch",2,3,2,"AB"],[56,"Spark Lynx",2,0,2,"AB"],[57,"Bramble Bear",2,1,2,"AB"],[58,"Moon Moth",2,2,2,"AB"],[59,"Rust Golem",2,3,3,"ABC"],[60,"Echo Bat",2,0,3,"ABC"],[61,"Shell Knight",2,1,3,"ABC"],[62,"Sand Viper",2,2,3,"ABC"],[63,"Glimmer Stag",2,3,3,"ABC"],[64,"Ink Octo",2,0,3,"ABC"],[65,"Quill Boar",2,1,3,"ABC"],[66,"Dusk Hound",2,2,3,"ABC"],[67,"Coral Imp",2,3,4,"BC"],[68,"Lantern Toad",2,0,4,"BC"],[69,"Siren Eel",2,1,4,"BC"],[70,"Maple Wolf",2,2,4,"BC"],[71,"Cloud Ram",2,3,4,"BC"],[72,"Jelly King",2,0,4,"BC"],[73,"Pepper Drake",2,1,5,"BC"],[74,"Opal Owl",2,2,5,"BC"],[75,"Storm Griffin",3,3,5,"AD"],[76,"Ruby Wyrmling",3,0,5,"AD"],[77,"Crystal Stag",3,1,6,"ABD"],[78,"Shadow Panther",3,2,7,"ABD"],[79,"Aurora Fox",3,3,8,"ABD"],[80,"Clockwork Dragonet",3,0,9,"ABD"],[81,"Sunscale Basilisk",3,1,10,"BCD"],[82,"Tidal Leviathan Jr",3,2,11,"BCD"],[83,"Phantom Heron",3,3,12,"BCD"],[84,"Magma Boar",3,0,13,"BCD"],[85,"Frostfang Wolf",3,1,14,"BD"],[86,"Thornback Hydra",3,2,15,"BD"],[87,"Starlit Unicorn",3,3,16,"C"],[88,"Ironclad Rhino",3,0,18,"C"],[89,"Inferno Phoenix",4,1,20,"AD"],[90,"Glacier Titan",4,2,22,"ABD"],[91,"Void Kraken",4,3,25,"BD"],[92,"Thunderlord Roc",4,0,28,"BCD"],[93,"Emerald Dragon",4,1,32,"BCD"],[94,"Mirage Sphinx",4,2,36,"C"],[95,"Eclipse Wolf",4,3,42,"C"],[96,"Tempest Manticore",4,0,50,"C"],[97,"Wildfire Dragon",5,4,60,"BCD"],[98,"Skipstep Phantom",5,4,80,"C"],[99,"Reverse Chimera",5,4,100,"C"],[100,"Draw Four Leviathan",5,4,130,"C"],[101,"Gumdrop Gremlin",1,1,1,"ABC"],[102,"Marsh Wisp",1,2,1,"ABC"],[103,"Biscuit Beetle",1,3,1,"ABC"],[104,"Thistle Tot",1,0,1,"ABC"],[105,"Pocket Panda",1,1,1,"AB"],[106,"Sniffle",1,2,1,"AB"],[107,"Dewdrop Drake",1,3,1,"AB"],[108,"Mitten Mouse",1,0,1,"AB"],[109,"Cobweb Cub",1,1,1,"A"],[110,"Twinkle Toad",1,2,2,"A"],[111,"Lollop",1,3,2,"A"],[112,"Fizzbit",1,0,2,"A"],[113,"Lava Lizard",2,1,2,"AB"],[114,"Breeze Bunny",2,2,2,"AB"],[115,"Slate Gargoyle",2,3,3,"AB"],[116,"Vine Viper",2,0,3,"ABC"],[117,"Aqua Axolotl",2,1,3,"ABC"],[118,"Prism Pika",2,2,4,"ABC"],[119,"Ash Armadillo",2,3,4,"BC"],[120,"Neon Newt",2,0,4,"BC"],[121,"Thorn Tiger",2,1,5,"BC"],[122,"Dune Dingo",2,2,5,"BC"],[123,"Glacial Gryphon",3,3,6,"A"],[124,"Solar Stag",3,0,7,"AB"],[125,"Nebula Narwhal",3,1,9,"AB"],[126,"Cobalt Cobra",3,2,11,"BC"],[127,"Bloodmoon Bat",3,3,13,"BCD"],[128,"Thunder Tortoise",3,0,15,"CD"],[129,"Mirror Mantis",3,1,17,"B"],[130,"Lotus Lynx",3,2,20,"CD"],[131,"Chrono Chimera",4,3,24,"CD"],[132,"Abyss Angler",4,0,28,"CD"],[133,"Sunfire Simurgh",4,1,32,"D"],[134,"Obsidian Oni",4,2,40,"D"],[135,"Rime Roc",4,3,46,"D"],[136,"Plasma Panther",4,0,55,"D"],[137,"Wild Eight Wyvern",5,4,70,"CD"],[138,"Skip Sphinx",5,4,90,"D"],[139,"Reverse Rex",5,4,115,"D"],[140,"Draw Two Dragon",5,4,150,"D"],[141,"Zero Sovereign",6,4,250,"D"],[142,"Omega Wildheart",6,4,300,"D"],[143,"Skip-Time Serpent",6,4,350,"D"],[144,"Reverse Eclipse",6,4,400,"D"],[145,"Draw Eight Colossus",6,4,500,"D"],[146,"Plus Ten Seraph",6,4,600,"D"],[147,"Chromatic Abyss",6,4,700,"D"],[148,"Wild Card Emperor",6,4,850,"D"],[149,"The Last Uno",6,4,1100,"D"],[150,"Infinite Reverse",6,4,1500,"D"]].map(a => ({id:a[0], n:a[1], r:a[2], c:a[3], v:a[4], p:a[5]}));
+const CID = {}; CARDS.forEach(c => CID[c.id] = c);
+const RN = ['COMMON','UNCOMMON','RARE','EPIC','LEGENDARY','MYTHIC'], RC = ['#8c8a99','#3aa655','#1f6fd0','#b14fe0','#f7d117','#ff4fd8'];
+const CP = [['#e5352b','#a82219'],['#f7d117','#c9a40c'],['#3aa655','#27733b'],['#1f6fd0','#154c91'],['#b14fe0','#7a2ba3']];
+let PACKS = [
+ {k:'A',name:'SKIP PACK',n:4,w:[78,19,2.7,.3,0,0],g:1,col:'#3aa655'},
+ {k:'B',name:'REVERSE PACK',n:5,w:[40,40,16,3.8,.2,0],g:2,col:'#1f6fd0'},
+ {k:'C',name:'WILD DRAW FOUR PACK',n:5,w:[8,32,40,16,4,0],g:3,col:'#b14fe0'},
+ {k:'D',name:'ULTRA WILD PACK',n:5,w:[0,0,32,47,19.8,1.2],g:4,col:'#ff4fd8'}];
+let csel = 0, skipFx = false, shownBal = null, balT; const crea = {}, pcache = {};
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cardVal = () => CARDS.reduce((a,c) => a + (cinv[c.id]||0) * c.v, 0);
+const priceOf = i => (PACKS[i] || {}).price;
+
+/* sound */
+let AC = null, snd = true; try { snd = localStorage.getItem('snd') !== '0'; } catch (e) {}
+function tone(f, d = .12, type = 'square', vol = .045, when = 0){ if (!snd) return; try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); const o = AC.createOscillator(), g = AC.createGain(), t = AC.currentTime + when;
+  o.type = type; o.frequency.value = f; o.connect(g); g.connect(AC.destination); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.start(t); o.stop(t + d); } catch (e) {} }
+function chime(r){ const n = [440,523,659,784,1047,1319], k = Math.max(1, r - 1); for (let i = 0; i < k; i++) tone(n[Math.min(5, i + (r >= 5 ? 1 : 0))] * (r >= 6 ? 1 + i*.12 : 1), .16 + r*.03, r >= 5 ? 'sawtooth' : 'square', .04, i * .09); }
+function updSnd(){ ['sndbtn','pfsnd'].forEach(i => $('#'+i).textContent = 'SOUND ' + (snd ? 'ON' : 'OFF')); }
+const toggleSnd = () => { snd = !snd; try { localStorage.setItem('snd', snd ? '1' : '0'); } catch (e) {} updSnd(); tone(660, .1); };
+$('#sndbtn').onclick = toggleSnd; $('#pfsnd').onclick = toggleSnd; updSnd();
+
+/* particles */
+const fxc = $('#fxc'), fxx = fxc.getContext('2d'); let pts = [], fxOn = false;
+const fxSize = () => { fxc.width = innerWidth; fxc.height = innerHeight; }; addEventListener('resize', fxSize); fxSize();
+function burst(x, y, colors, n = 40, sp = 7){ if (RM || !n) return; for (let i = 0; i < n; i++) { const a = Math.random() * Math.PI * 2, v = (.3 + Math.random()) * sp;
+  pts.push({x, y, vx: Math.cos(a)*v, vy: Math.sin(a)*v - 2, life: 40 + Math.random()*35, c: colors[Math.floor(Math.random()*colors.length)], s: 4 + Math.floor(Math.random()*3)*2}); }
+  if (!fxOn) { fxOn = true; requestAnimationFrame(fxLoop); } }
+function fxLoop(){ fxx.clearRect(0, 0, fxc.width, fxc.height); pts = pts.filter(p => p.life > 0);
+  pts.forEach(p => { p.x += p.vx; p.y += p.vy; p.vy += .28; p.life--; fxx.globalAlpha = Math.min(1, p.life / 20); fxx.fillStyle = p.c; fxx.fillRect(Math.round(p.x/4)*4, Math.round(p.y/4)*4, p.s, p.s); });
+  fxx.globalAlpha = 1; if (pts.length) requestAnimationFrame(fxLoop); else { fxOn = false; fxx.clearRect(0, 0, fxc.width, fxc.height); } }
+const rcols = r => r >= 6 ? ['#e5352b','#f7d117','#3aa655','#1f6fd0','#ff4fd8','#ffffff'] : r === 5 ? ['#f7d117','#fff4b0','#e8892b'] : [RC[r-1], '#ffffff'];
+const screenFlash = col => { const f = $('#pfflash'); f.style.transition = 'none'; f.style.background = col; f.style.opacity = .85; requestAnimationFrame(() => requestAnimationFrame(() => { f.style.transition = 'opacity .6s'; f.style.opacity = 0; })); };
+new MutationObserver(ms => ms.forEach(m => { const el = m.target; if (el.classList && el.classList.contains('win') && !(m.oldValue || '').split(' ').includes('win') && !el.closest('#packfx')) {
+  const b = el.getBoundingClientRect(); burst(b.left + b.width/2, b.top + b.height/2, Object.values(HEX), 70, 8); chime(4); } })).observe(document.body, {subtree: true, attributes: true, attributeFilter: ['class'], attributeOldValue: true});
+
+/* animated background + balance counter */
+(function(){ const c = $('#bgfx'), x = c.getContext('2d'); let W, H, ps = [];
+  const size = () => { W = c.width = innerWidth; H = c.height = innerHeight; ps = Array.from({length: Math.round(W*H/22000)}, () => ({x: Math.random()*W, y: Math.random()*H, s: [2,2,4][Math.floor(Math.random()*3)], v: .15 + Math.random()*.4, c: Object.values(HEX)[Math.floor(Math.random()*4)], t: Math.random()*6})); };
+  const draw = () => { x.clearRect(0, 0, W, H); ps.forEach(p => { p.y -= p.v; p.t += .08; if (p.y < -4) { p.y = H + 4; p.x = Math.random()*W; } x.globalAlpha = .12 + .13*Math.abs(Math.sin(p.t)); x.fillStyle = p.c; x.fillRect(Math.round(p.x/2)*2, Math.round(p.y/2)*2, p.s, p.s); }); };
+  size(); addEventListener('resize', size); draw(); if (!RM) setInterval(draw, 70); })();
+function setBal(){ const to = prof.balance, tail = ' CARDS' + (prof.owed ? ' / OWE ' + prof.owed : ''), el = $('#bal');
+  if (shownBal === null || RM || to === shownBal) { shownBal = to; el.textContent = to + tail; return; }
+  const from = shownBal, up = to > from; clearInterval(balT); let i = 0; el.style.color = up ? '#5fe08a' : '#ff6b61'; if (up) tone(880, .08, 'square', .03);
+  balT = setInterval(() => { i++; shownBal = Math.round(from + (to - from) * i / 12); el.textContent = shownBal + tail; if (i >= 12) { clearInterval(balT); shownBal = to; el.style.color = ''; } }, 45); }
+
+/* card tilt */
+document.addEventListener('pointermove', e => { const t = e.target.closest && e.target.closest('.tc:not(.back):not(.locked)'); if (!t || t.closest('.face')) return;
+  const b = t.getBoundingClientRect(), x = (e.clientX - b.left) / b.width - .5, y = (e.clientY - b.top) / b.height - .5; t.style.setProperty('--ry', (x*20) + 'deg'); t.style.setProperty('--rx', (-y*20) + 'deg'); });
+document.addEventListener('pointerout', e => { const t = e.target.closest && e.target.closest('.tc'); if (t && !t.contains(e.relatedTarget)) { t.style.setProperty('--rx', '0deg'); t.style.setProperty('--ry', '0deg'); } });
+
+/* pixel creatures */
+const mk = seed => { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
+function creature(c){ if (crea[c.id]) return crea[c.id];
+  const r = mk(c.id * 7919 + 13), N = 12, g = Array.from({length: N}, () => Array(N).fill(0)), [c1, c2] = CP[c.c], half = (x, y, v) => { g[y][x] = v; g[y][N-1-x] = v; };
+  for (let y = 2; y <= 10; y++) for (let x = 0; x <= 5; x++) { const d = Math.hypot((x-5)/4.6, (y-6.5)/4.3); if (1.15 - d*.95 + (r()-.5)*.55 > .35) half(x, y, 1); }
+  for (let y = 4; y <= 9; y++) half(5, y, 1);
+  if (r() < .65) { half(2, 1, 1); half(2, 2, 1); half(3, 1, 1); }
+  if (c.r >= 3) { half(4, 0, 3); half(4, 1, 3); }
+  if (c.r >= 4) { for (let y = 3; y <= 7; y++) half(0, y, 3); half(1, 4, 3); half(1, 5, 3); }
+  const ey = 3 + Math.floor(r() * 2); half(3, ey, 1); half(4, ey, 1); half(4, ey+1, 1); half(5, ey+2, 1); half(4, ey+3, 1); half(5, ey+3, 1);
+  half(3, ey, 4); half(4, ey, 5); if (r() < .5) half(5, ey+3, 5); else half(4, ey+3, 4);
+  for (let y = 7; y <= 9; y++) for (let x = 4; x <= 5; x++) if (g[y][x] === 1) half(x, y, 6);
+  if (c.r >= 5) { for (let x = 3; x <= 8; x++) if (!g[0][x]) g[0][x] = 3; }
+  if (c.r === 6) [[1,1],[10,1],[0,9],[11,9],[2,11],[9,11]].forEach(([a,b]) => { if (!g[b][a]) g[b][a] = 3; });
+  const cv = document.createElement('canvas'); cv.width = cv.height = N; const x = cv.getContext('2d'), acc = c.r >= 4 ? '#f7d117' : '#f4f4f8';
+  const col = (v, y) => v === 1 ? (y >= 8 ? c2 : c1) : v === 3 ? acc : v === 4 ? '#ffffff' : v === 5 ? '#14111c' : '#f4e4c8';
+  for (let y = 0; y < N; y++) for (let xx = 0; xx < N; xx++) if (g[y][xx]) { x.fillStyle = col(g[y][xx], y); x.fillRect(xx, y, 1, 1); }
+  x.fillStyle = '#14111c'; for (let y = 0; y < N; y++) for (let xx = 0; xx < N; xx++) if (!g[y][xx] && [[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy]) => (g[y+dy]||[])[xx+dx])) x.fillRect(xx, y, 1, 1);
+  return crea[c.id] = cv.toDataURL(); }
+function packArt(col){ if (pcache[col]) return pcache[col]; const cv = document.createElement('canvas'); cv.width = 14; cv.height = 18; const x = cv.getContext('2d');
+  x.fillStyle = '#14111c'; x.fillRect(0, 1, 14, 16); x.fillStyle = col; x.fillRect(1, 2, 12, 14); x.fillStyle = '#14111c'; for (let i = 0; i < 14; i += 2) { x.fillRect(i, 0, 1, 1); x.fillRect(i, 17, 1, 1); }
+  x.fillStyle = '#fff'; [[7,5],[6,6],[7,6],[8,6],[5,7],[6,7],[7,7],[8,7],[9,7],[6,8],[7,8],[8,8],[7,9]].forEach(([a,b]) => x.fillRect(a, b, 1, 1));
+  x.fillStyle = '#f7d117'; x.fillRect(2, 12, 10, 1); x.fillStyle = '#e5352b'; x.fillRect(2, 13, 10, 1); return pcache[col] = cv.toDataURL(); }
+const cardEl = (c, qty = 0, cls = '', clickable = true) => `<div class="tc r${c.r} ${cls}" ${clickable ? `data-card="${c.id}"` : ''}><div class="tn">${esc(c.n)}</div><div class="tart" style="background:${CP[c.c][0]}"><img src="${creature(c)}" alt=""></div><div class="tb"><span style="color:${RC[c.r-1]}">${RN[c.r-1]}</span><b>${c.v}</b></div>${qty > 1 ? `<i class="qty">x${qty}</i>` : ''}${c.p.length === 1 ? '<i class="sp">SPECIAL</i>' : ''}</div>`;
+const lockedEl = c => `<div class="tc locked ${csel === c.id ? 'sel' : ''}" data-card="${c.id}"><div class="tn">???</div><div class="tart"><img src="${creature(c)}" alt=""></div><div class="tb"><span>#${c.id}</span><span>${RN[c.r-1]}</span></div></div>`;
+
+/* collection UI */
+function renderCards(){
+  const own = CARDS.filter(c => cinv[c.id] > 0), dup = CARDS.reduce((a,c) => a + Math.max(0, (cinv[c.id]||0) - 1), 0);
+  $('#packs').innerHTML = PACKS.map((p, i) => { const pool = CARDS.filter(c => c.p.includes(p.k)), sp = pool.filter(c => c.p.length === 1).length, tot = p.w.reduce((a,b) => a + b, 0);
+    return `<div class="pack ${['D','H'].includes(p.k) ? 'd' : ''}"><img src="${packArt(p.col)}" alt=""><br><b class="px" style="font-size:9px">${p.name}</b><p class="mute" style="margin:8px 0">${p.n} cards / ${pool.length} possible / ${sp} special${p.g > 1 ? ' / 1 ' + RN[p.g-1] + ' or better guaranteed' : ''}</p><div class="odds">${p.w.map((w,j) => w ? `<span style="color:${RC[j]}">${RN[j]} ${(w/tot*100).toFixed(1)}%</span>` : '').filter(Boolean).join('<br>')}</div><p><button class="y" data-pack="${p.k}" ${S.packs_on && p.on ? '' : 'disabled'}>OPEN FOR ${priceOf(i)}</button></p></div>`; }).join('');
+  const best = own.slice().sort((a,b) => b.v - a.v)[0];
+  $('#cstats').innerHTML = [['COLLECTED', own.length + '/' + CARDS.length],['VALUE', cardVal()],['DUPLICATES', dup],['BEST CARD', best ? best.n : '-']].map(([l,v]) => `<div class="stat"><span class="mute">${l}</span><b style="font-size:${l === 'BEST CARD' ? 8 : 12}px">${esc(v)}</b></div>`).join('');
+  const f = $('#cfilter').value, list = CARDS.filter(c => f === 'all' || (f === 'owned' && cinv[c.id] > 0) || (f === 'missing' && !cinv[c.id]) || (f[0] === 'r' && c.r === +f[1]) || (f === 'special' && c.p.length === 1));
+  $('#cgrid').innerHTML = list.map(c => cinv[c.id] > 0 ? cardEl(c, cinv[c.id], csel === c.id ? 'sel' : '') : lockedEl(c)).join('') || '<span class="mute">Nothing here yet.</span>';
+  const c = CID[csel], q = c ? (cinv[c.id] || 0) : 0;
+  $('#cdetail').innerHTML = c ? `<div class="card" style="margin:10px 0"><div style="display:flex;gap:18px;flex-wrap:wrap;align-items:center">${q ? cardEl(c, q, '', false) : lockedEl(c)}<div><h2 style="color:var(--ink)">${q ? esc(c.n) : '???'}</h2><p>${RN[c.r-1]} / value ${c.v}<br>Found in pack${c.p.length > 1 ? 's' : ''} ${c.p.split('').join(', ')}${c.p.length === 1 ? ' (SPECIAL: only there)' : ''}</p>${q ? `<p>You own ${q}.</p><button class="y" data-sell="1">SELL 1 FOR ${c.v}</button> ${q > 1 ? `<button data-sell="x">SELL ${q-1} EXTRA</button>` : ''}` : '<p class="mute">You do not own this one yet.</p>'}</div></div></div>` : '';
+}
+function renderHomeCards(){ const own = CARDS.filter(c => cinv[c.id] > 0), best = own.slice().sort((a,b) => b.v - a.v)[0];
+  $('#hcol').innerHTML = `<div class="row"><span>Collected</span><b>${own.length}/${CARDS.length}</b></div><div class="row"><span>Collection value</span><b>${cardVal()}</b></div><div class="row"><span>Best card</span><span>${best ? esc(best.n) : '-'}</span></div><p style="margin-bottom:0"><button class="y" data-go="cards">OPEN PACKS</button></p>`; }
+$('#cfilter').onchange = renderCards;
+$('#cgrid').onclick = e => { const t = e.target.closest('[data-card]'); if (t) { csel = +t.dataset.card; renderCards(); $('#cdetail').scrollIntoView({behavior: 'smooth', block: 'nearest'}); } };
+$('#cdetail').onclick = async e => { const d = e.target.dataset.sell; if (!d || !csel) return; const q = cinv[csel] || 0;
+  if (await call('sell_card', {p_card: csel, p_qty: d === 'x' ? q - 1 : 1})) toast('Sold.'); };
+$('#sellext').onclick = async () => { if (!confirm('Sell every extra copy and keep one of each card?')) return; const r = await call('sell_dupes'); if (r !== null) toast(r > 0 ? `Sold duplicates for ${r} cards.` : 'You have no duplicates.'); };
+
+/* animated pack opening */
+async function openPackFx(k){
+  if (animating) return; animating = true; skipFx = false; const W = ms => sleep(skipFx ? 1 : ms);
+  try {
+    const pk = PACKS.find(p => p.k === k), r = await gcall('open_pack', {p_pack: k}); if (!r) return;
+    const cs = r.map(x => ({c: CID[x.id], nw: x.new})), best = Math.max(...cs.map(x => x.c.r));
+    const ov = $('#packfx'), pack = $('#pfpack'), msg = $('#pfmsg'), box = $('#pfcards');
+    ov.classList.remove('hide', 'shk'); box.innerHTML = ''; box.onclick = null; $('#pfsum').innerHTML = ''; ['pfagain','pfclose'].forEach(i => $('#'+i).classList.add('hide')); $('#pfskip').classList.remove('hide');
+    $('#pfrays').classList.toggle('hide', best < 4); $('#pfrays').style.setProperty('--rc', RC[best-1]);
+    pack.src = packArt(pk.col); pack.className = 'pf-pack' + (['D','H'].includes(k) ? ' rb' : ''); pack.style.setProperty('--glow', RC[best-1]); msg.style.color = '#fff'; msg.textContent = pk.name;
+    await W(600); pack.classList.add('shake'); msg.textContent = 'OPENING...';
+    for (let i = 0; i < 8; i++) { tone(180 + i*70, .1, 'square', .04); await W(170); }
+    pack.classList.add('charge'); tone(900, .3, 'sawtooth', .05); await W(450);
+    const pb = pack.getBoundingClientRect(); screenFlash('#fff'); burst(pb.left + pb.width/2, pb.top + pb.height/2, rcols(best), 60 + best*25, 9);
+    pack.className = 'pf-pack hide'; tone(120, .4, 'sawtooth', .08); if (best >= 5) { ov.classList.add('shk'); setTimeout(() => ov.classList.remove('shk'), 700); }
+    msg.textContent = 'TAP A CARD TO FLIP IT';
+    box.innerHTML = cs.map((x, i) => `<div class="fc" style="--i:${i}"><div class="fci"><div class="face fb"><div class="bk">UNO</div></div><div class="face ff">${cardEl(x.c, 0, '', false)}${x.nw ? '<i class="nw">NEW</i>' : ''}</div></div></div>`).join('');
+    const els = [...box.children];
+    const flip = async i => { if (els[i].dataset.f) return; els[i].dataset.f = 1; const c = cs[i].c, rr = c.r;
+      if (rr >= 4 && !skipFx) { els[i].classList.add('pulse'); els[i].style.setProperty('--rc', RC[rr-1]); tone(300, .6, 'triangle', .05); msg.style.color = RC[rr-1]; msg.textContent = rr >= 6 ? '. . . ?' : '. . .'; await sleep(rr >= 5 ? 1300 : 700); els[i].classList.remove('pulse'); }
+      els[i].classList.add('flipped', 'h' + rr); chime(rr); await sleep(skipFx ? 1 : 380);
+      const b = els[i].getBoundingClientRect(); burst(b.left + b.width/2, b.top + b.height/2, rcols(rr), [0,0,10,25,50,110,260][rr], 8);
+      if (rr >= 5) { screenFlash(rr >= 6 ? '#ff4fd8' : '#f7d117'); ov.classList.add('shk'); setTimeout(() => ov.classList.remove('shk'), 600); }
+      if (rr >= 4) { msg.style.color = RC[rr-1]; msg.textContent = (rr === 6 ? 'MYTHIC!!! ' : rr === 5 ? 'LEGENDARY! ' : 'EPIC! ') + c.n.toUpperCase(); msg.classList.remove('pop'); void msg.offsetWidth; msg.classList.add('pop'); } };
+    box.onclick = e => { const f = e.target.closest('.fc'); if (f) flip(els.indexOf(f)); };
+    await W(900);
+    for (let i = 0; i < els.length; i++) { await flip(i); await W(450); }
+    await sleep(skipFx ? 1 : 600); for (const el of els) while (!el.classList.contains('flipped')) await sleep(50);
+    const total = cs.reduce((a,x) => a + x.c.v, 0), top = cs.reduce((a,x) => x.c.v > a.v ? x.c : a, cs[0].c), nn = cs.filter(x => x.nw).length;
+    msg.style.color = '#fff'; msg.textContent = 'PACK COMPLETE';
+    $('#pfsum').innerHTML = `<p>Pack value <b class="up">${total}</b> / New cards <b>${nn}</b> / Best <b style="color:${RC[top.r-1]}">${esc(top.n)}</b></p>`;
+    $('#pfagain').dataset.k = k; $('#pfagain').textContent = 'OPEN ANOTHER (' + priceOf(PACKS.indexOf(pk)) + ')';
+    ['pfagain','pfclose'].forEach(i => $('#'+i).classList.remove('hide')); $('#pfskip').classList.add('hide');
+  } finally { animating = false; await load(); }
+}
+$('#packs').onclick = e => { const k = e.target.dataset.pack; if (k) { tone(440, .08); openPackFx(k); } };
+$('#pfskip').onclick = () => { skipFx = true; };
+$('#pfagain').onclick = e => openPackFx(e.target.dataset.k);
+$('#pfclose').onclick = () => $('#packfx').classList.add('hide');
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !animating) $('#packfx').classList.add('hide'); });
+
+
+/* ---------- bank transfers + new admin ---------- */
+let TRX = [], ALOG = [], atab = 'ov';
+const gv = id => document.getElementById(id).value;
+function renderBank(){
+  const others = people.filter(p => p.id !== me.id && !p.banned), h = others.map(p => `<option value="${p.id}">${esc(p.username)}</option>`).join(''), el = $('#trto');
+  if (el.dataset.h !== h) { const old = el.value; el.innerHTML = h; el.dataset.h = h; if (old) el.value = old; }
+  $('#trinfo').textContent = S.tr_on ? `Send cards to another player. Limit ${S.tr_max} per send, ${S.tr_daily} per day${+S.tr_fee ? ', fee ' + Math.round(S.tr_fee*100) + '%' : ''}.` + (S.tr_debt ? ' Repay your loan first.' : '') : 'Sending is closed by the admin.';
+  $('#trsend').disabled = !S.tr_on || !others.length;
+  $('#trlog').innerHTML = TRX.filter(t => t.from_id === me.id || t.to_id === me.id).slice(0, 10).map(t => { const out = t.from_id === me.id;
+    return `<div class="row"><span>${out ? 'SENT to ' + who(t.to_id) : 'GOT from ' + who(t.from_id)}${t.note ? ' / ' + esc(t.note) : ''}${t.reversed ? ' (reversed)' : ''}</span><b class="${out ? 'dn' : 'up'}">${out ? '-' : '+'}${out ? t.amt : t.amt - t.fee}</b></div>`; }).join('') || 'No transfers yet.';
+}
+document.addEventListener('click', async e => { const q = e.target.dataset && e.target.dataset.tq;
+  if (q) { $('#tramt').value = q === 'all' ? prof.balance : q; return; }
+  if (e.target.id !== 'trsend') return; const to = $('#trto').value, a = parseInt($('#tramt').value);
+  if (!to || !(a > 0)) return toast('Pick a player and an amount');
+  if (!confirm(`Send ${a} cards to ${(people.find(p => p.id === to) || {}).username}?`)) return;
+  const r = await call('send_money', {p_to: to, p_amt: a, p_note: $('#trnote').value}); if (r) { $('#trnote').value = ''; tone(880, .1); toast('Sent!'); } });
+$('#t-admin').addEventListener('input', e => { if (e.target.id !== 'psearch') return; const v = e.target.value.toLowerCase(); document.querySelectorAll('#t-admin .pc').forEach(d => d.classList.toggle('hide', !d.dataset.n.includes(v))); });
+$('#t-admin').addEventListener('change', e => { if (e.target.id !== 'ce-id') return; const c = CID[e.target.value] || {n:'',r:1,c:0,v:1,p:'A'};
+  ['n','r','c','v','p'].forEach(k => document.getElementById('ce-' + k).value = c[k]); });
+
+/* ---------- login ---------- */
+const email = u => u.trim().toLowerCase().replace(/[^a-z0-9]/g, '') + '@pond.local';
+async function enter(user){ me = user; $('#auth').classList.add('hide'); $('#app').classList.remove('hide'); $('#critter').src = sprite('egg'); go('home'); await load();
+  setInterval(() => { tickUI(); const k = Math.floor(Date.now() / 5000); if (k !== lastTick) { lastTick = k; if (prof && !animating) { renderMarket(); if (!typing()) { renderHome(); renderPortfolio(); } } } }, 250); setInterval(() => prof && !animating && load(), 30000);  }
+$('#login').onclick = async () => { const {data, error} = await sb.auth.signInWithPassword({email: email($('#u').value), password: $('#p').value}); error ? toast('Wrong username or password') : enter(data.user); };
+$('#signup').onclick = async () => { const u = $('#u').value.trim(); if (u.length < 2) return toast('Username too short');
+  const {data, error} = await sb.auth.signUp({email: email(u), password: $('#p').value, options: {data: {username: u}}}); error ? toast(error.message) : enter(data.user); };
+$('#out').onclick = async () => { await sb.auth.signOut(); location.reload(); };
+sb.auth.getSession().then(({data}) => data.session && enter(data.session.user));
+</script>
+</body>
+</html>
