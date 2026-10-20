@@ -147,6 +147,18 @@ button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(2
 .packwrap{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start}.packwrap .packs{flex:2 1 300px;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
 .pack{cursor:pointer}.pack.sel{border-color:var(--yel);box-shadow:0 0 0 3px #000,0 0 12px var(--yel)}
 .pdet{flex:1 1 230px;background:#0d0b14;border:4px solid var(--line);padding:12px}
+
+.fan{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:9999;background:#000;border:4px solid var(--yel);color:var(--yel);padding:14px 18px;font-family:'Press Start 2P',monospace;font-size:11px;text-align:center;max-width:92vw;animation:fanin .5s steps(6),fanout .4s steps(4) 2.1s forwards}
+.fan.level{border-color:#4ff8ff;color:#4ff8ff}.fan.jackpot{font-size:15px;border-color:#ff4fd8;color:#fff;animation:fanin .5s steps(6),hue 1.2s linear infinite,fanout .4s steps(4) 2.1s forwards}
+@keyframes fanin{from{transform:translateX(-50%) translateY(-90px) scale(.5)}60%{transform:translateX(-50%) translateY(10px) scale(1.15)}to{transform:translateX(-50%)}}
+@keyframes fanout{to{opacity:0;transform:translateX(-50%) translateY(-40px)}}
+.ovl{position:fixed;inset:0;background:#000d;z-index:9000;display:flex;align-items:center;justify-content:center;padding:14px}.ovbox{background:var(--panel,#17132b);border:4px solid var(--yel);padding:16px;max-width:760px;max-height:90vh;overflow:auto;text-align:center}
+.rv{animation:rvin .45s steps(5)}@keyframes rvin{from{transform:scale(.2) rotate(-25deg);opacity:0}to{transform:none;opacity:1}}.newb{color:#fff;background:#e5352b;font-size:9px;padding:2px 4px;display:inline-block}
+.it{position:relative;background:#0d0b14;border:4px solid #8c8a99;padding:8px;text-align:center;min-width:104px}.it .qb{position:absolute;top:2px;right:4px;font-size:15px}.it .in{font-size:17px;line-height:1.05;margin-top:4px}.it .iv{font-size:15px}.it .ttl{font-family:'Press Start 2P',monospace;font-size:9px;line-height:1.5;padding:16px 0}
+.it.lock{opacity:.35}.it.r5,.it.r6{animation:glow 1.6s steps(2) infinite}@keyframes glow{50%{box-shadow:0 0 12px currentColor}}
+.it.r6{animation:glow 1.6s steps(2) infinite,hue 3s linear infinite}
+#jpbar .big{font-size:26px}
+@media(prefers-reduced-motion:reduce){.fan,.rv,.it.r5,.it.r6{animation:none!important}}
 </style>
 </head>
 <body>
@@ -168,7 +180,7 @@ button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(2
   <div id="tapewrap"><span id="tape"></span></div>
   <div id="ban" class="hide"><span id="bant"></span></div>
   <nav id="tabs">
-    <button data-t="home">HOME</button><button data-t="games">GAMES</button><button data-t="market">MARKET</button><button data-t="cards">CARDS</button><button data-t="trade">TRADE</button>
+    <button data-t="home">HOME</button><button data-t="games">GAMES</button><button data-t="market">MARKET</button><button data-t="cards">CARDS</button><button data-t="trade">TRADE</button><button data-t="shop">SHOP</button><button data-t="ach">ACHIEVE</button>
     <button data-t="bank">BANK</button><button data-t="board">BOARD</button><button data-t="admin" class="hide">ADMIN</button>
   </nav>
 
@@ -189,6 +201,7 @@ button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(2
 
   <!-- GAMES -->
   <section id="t-games" class="hide">
+    <div class="card" id="jpbar"></div>
     <div id="hub">
       <div class="card"><h2>GAMES ROOM</h2><p class="mute">Pick a game. Every result is decided by the server, so nobody can cheat. Each game has a HOW TO PLAY box.</p>
         <div class="hub" id="hubtiles"></div></div>
@@ -224,7 +237,7 @@ button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(2
       <div class="stage"><span class="reel" id="droll">?</span></div>
       <p id="dmsg" class="mute" style="text-align:center">Pick your chance, then roll 1 to 100.</p>
       <p style="text-align:center">CHANCE <input id="dchance" type="range" min="5" max="90" value="50"> <b id="dpct">50%</b><br><span id="dinfo" class="mute"></span></p>
-      <p style="text-align:center"><input id="dstake" type="number" min="1" value="1"> CARDS <button class="y" id="droll-go">ROLL</button></p>
+      <p style="text-align:center"><input id="dicestake" type="number" min="1" value="1"> CARDS <button class="y" id="droll-go">ROLL</button></p>
       <details class="rules"><summary>HOW TO PLAY</summary><p>You choose how likely you want to win, from 5% to 90%. The game rolls 1 to 100. Roll at or under your chance and you win. Small chance pays big, big chance pays small. Payback is about 95%.</p></details></div></div>
 
     <div id="g-boxes" class="hide gp"><div class="card"><h2>MYSTERY BOXES</h2><button data-back>BACK</button>
@@ -238,6 +251,12 @@ button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(2
       <p id="wmsg" class="mute" style="text-align:center">Spin for 0x up to a huge 10x.</p>
       <p style="text-align:center"><input id="wstake" type="number" min="1" value="1"> CARDS <button class="y" id="wspin">SPIN</button></p>
       <details class="rules"><summary>HOW TO PLAY</summary><p>The wheel has 19 slots: 11 pay nothing, then 0.5x (2), 1x (2), 1.5x, 2x (2) and one 10x jackpot. Payback is about 97%.</p></details></div></div>
+
+    <div id="g-jack" class="hide gp"><div class="card"><h2>JACKPOT</h2><button data-back>BACK</button>
+      <div class="stage"><span class="reel" id="jpot" style="width:auto;padding:0 18px">0</span></div>
+      <p id="jmsg" class="mute" style="text-align:center">Every ticket adds to the pot. One lucky spin wins it all!</p>
+      <p style="text-align:center"><button class="y" id="jspin">BUY TICKET AND SPIN</button></p>
+      <details class="rules"><summary>HOW TO PLAY</summary><p>A ticket costs a few cards and goes straight into the pot. A small part of every game loss feeds the pot too. Every ticket has a small chance to win the WHOLE pot, then the pot starts again. The ticket price and your chance are shown in the bar at the top.</p></details></div></div>
 
     <div id="g-slots" class="hide gp"><div class="card"><h2>UNO SLOTS</h2><button data-back>BACK</button>
       <div class="stage"><span class="reel" id="r0">?</span><span class="reel" id="r1">?</span><span class="reel" id="r2">?</span></div>
@@ -300,6 +319,41 @@ button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(2
       <h3>OFFERS</h3><div id="tlist"></div></div>
   </section>
 
+  <section id="t-shop" class="hide">
+    <div class="card"><div class="adm" id="shoptabs" style="margin:0"><button data-ss="store" class="on">STORE</button><button data-ss="market">MARKET</button><button data-ss="auc">AUCTIONS</button><button data-ss="irl">REAL STUFF</button><button data-ss="mine">MY STUFF</button></div></div>
+    <div id="ss-store">
+      <div class="card"><h2>TITLE PACKS</h2><p class="mute">Open a pack to win cool player titles. Wear one on the ACHIEVE tab, or sell it for cards. <span id="stax"></span></p><div id="tpacks"></div></div>
+      <div class="card"><h2>COLLECTIBLE CRATES</h2><p class="mute">Crates hold collectibles with real value. Keep them to fill your collection or sell them.</p><div id="crates"></div></div>
+      <div class="card"><h2>TITLES FOR SALE</h2><div class="cgrid" id="tsale"></div></div>
+    </div>
+    <div id="ss-market" class="hide">
+      <div class="card"><h2>SELL SOMETHING</h2><p class="mute">List a card, collectible or title at any price. Other players can buy it right away. Seller tax: <span id="mtax"></span></p>
+        <p><select id="lsel"></select> x<input id="lqty" type="number" min="1" value="1" style="width:60px"> PRICE <input id="lprice" type="number" min="1" value="10" style="width:90px"> <button class="y" id="lgo">LIST IT</button></p></div>
+      <div class="card"><h2>FOR SALE</h2><div id="mlist"></div></div>
+    </div>
+    <div id="ss-auc" class="hide">
+      <div class="card"><h2>START AN AUCTION</h2><p class="mute">Pick a card, a starting price and how long it runs. A bid in the last 2 minutes adds 2 more minutes. Seller tax: <span id="atax"></span></p>
+        <p><select id="asel"></select> START <input id="aprice" type="number" min="1" value="10" style="width:90px"> <select id="ahrs"><option value="1">1 hour</option><option value="6">6 hours</option><option value="24" selected>24 hours</option></select> <button class="y" id="ago">START</button></p></div>
+      <div class="card"><h2>LIVE AUCTIONS</h2><div id="alist"></div></div>
+    </div>
+    <div id="ss-irl" class="hide">
+      <div class="card"><h2>SELL REAL STUFF</h2><p class="mute">Sell something real you own to another player for cards. When someone buys it, their cards are held safely. Hand over the item, then they tap I GOT IT and you get paid.</p>
+        <p><input id="inm" type="text" placeholder="what is it?" maxlength="60" style="width:220px"> <input id="ipr" type="number" min="1" value="20" style="width:90px"> CARDS</p>
+        <p><input id="ids" type="text" placeholder="describe it (optional)" maxlength="200" style="width:340px"> <button class="y" id="igo">LIST IT</button></p></div>
+      <div class="card"><h2>REAL STUFF FOR SALE</h2><div id="ilist"></div></div>
+    </div>
+    <div id="ss-mine" class="hide">
+      <div class="card"><h2>MY COLLECTIBLES</h2><p class="mute" id="mynote"></p><div class="cgrid" id="mycoll"></div></div>
+      <div class="card"><h2>MY TITLES</h2><div class="cgrid" id="mytit"></div></div>
+    </div>
+  </section>
+
+  <section id="t-ach" class="hide">
+    <div class="card"><h2>MY LEVEL</h2><div id="aprof"></div><p>TITLE <select id="tqsel"></select> <button id="tequip" class="y">WEAR IT</button></p></div>
+    <div class="card"><h2>ACHIEVEMENTS</h2><div id="alist2"></div></div>
+    <div class="card"><h2>PLAYERS</h2><div id="plist"></div></div>
+  </section>
+
   <section id="t-bank" class="hide">
     <div class="card"><h2>SEND CARDS</h2><p class="mute" id="trinfo"></p>
       <p><select id="trto"></select> <input id="tramt" type="number" min="1" value="10"> <input id="trnote" type="text" placeholder="note (optional)" style="width:150px" maxlength="60"> <button class="y" id="trsend">SEND</button></p>
@@ -339,7 +393,7 @@ const sb = supabase.createClient('https://nmspdwrpwuigiwjnrevt.supabase.co', 'sb
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let me, prof, people = [], hold = {}, cost = {}, inv = [], shelves = [], lb = [], logs = [], duels = [], hlg = null, cinv = {}, S = {}, sel = 'CARR', built = false, pick = 'red', animating = false;
-const DEF = {pack_prices:[8,28,100,300],packs_on:true,egg_enabled:true,g_hl:true,g_color:true,g_slots:true,g_duel:true,max_bet:1000,egg_odds:[55,22,13,7,3],market_open:true,market_mult:1,stock_mult:{},freeze_at:0,demand:1,banner:'',loan_enabled:true,loan_rate:.1,loan_limit:50,tr_on:true,tr_fee:0,tr_min:1,tr_max:1000,tr_daily:500,tr_debt:true,g_flip:true,g_dice:true,g_boxes:true,g_wheel:true,trades_on:true,trade_max:10000,shiny_odds:0.02,tax_on:true,tax_send:0.02,tax_recv:0.01,tax_trade:0.03,tax_gamble:0.10,tax_sell:0.05,tax_market:0.03,tax_bank:0.05,tax_pack:0.05,tax_income:0.05};
+const DEF = {pack_prices:[8,28,100,300],packs_on:true,egg_enabled:true,g_hl:true,g_color:true,g_slots:true,g_duel:true,max_bet:1000,egg_odds:[55,22,13,7,3],market_open:true,market_mult:1,stock_mult:{},freeze_at:0,demand:1,banner:'',loan_enabled:true,loan_rate:.1,loan_limit:50,tr_on:true,tr_fee:0,tr_min:1,tr_max:1000,tr_daily:500,tr_debt:true,g_flip:true,g_dice:true,g_boxes:true,g_wheel:true,trades_on:true,trade_max:10000,shiny_odds:0.02,tax_on:true,tax_send:0.02,tax_recv:0.01,tax_trade:0.03,tax_gamble:0.10,tax_sell:0.05,tax_market:0.03,tax_bank:0.05,tax_pack:0.05,tax_income:0.05,shop_on:true,irl_on:true,auction_on:true,g_jack:true,shop_sellrate:0.6,tp1:40,tp2:150,tp3:600,cr1:25,cr2:100,cr3:400,jackpot_ticket:10,jackpot_odds:0.02,jackpot_seed:50,jackpot_cut:0.03,tax_shop:0.05,tax_auction:0.05,tax_buy:0.05,jackpot:{pot:50,last:null}};
 
 /* ---------- pixel sprites (8x8) ---------- */
 const PAL = {x:'#efe6c8',a:'#e5352b',y:'#f7d117',o:'#e8892b',k:'#14111c',g:'#8c8a99',d:'#5d5b6b',w:'#f4f4f8',p:'#e86aa8',G:'#3aa655',r:'#e5352b',b:'#1f6fd0'};
@@ -353,6 +407,7 @@ const SPR = {
  hl:['kkkkkkkk','krrrrrrk','krrwwrrk','krwyywrk','krwyywrk','krrwwrrk','krrrrrrk','kkkkkkkk'],
  color:['..rrbb..','.rrrbbb.','rrrrbbbb','rrrrbbbb','yyyyGGGG','yyyyGGGG','.yyyGGG.','..yyGG..'],
  slots:['kkkkkkkk','kwwkwwkk','kwrkwbkk','kwwkwwkk','kkkkkkkk','kyyyyyyk','kyyyyyyk','kkkkkkkk'],
+ jack:['..yyyy..','.yyyyyy.','yyyoyyyy','yyoyoyyy','.yyyyyy.','..rrrr..','.rrrrrr.','..kkkk..'],
  flip:['..yyyy..','.yooooy.','yoyyyyoy','yoyooyoy','yoyooyoy','yoyyyyoy','.yooooy.','..yyyy..'],
  dice:['kkkkkkkk','kwwwwwwk','kwkwwkwk','kwwwwwwk','kwwwwwwk','kwkwwkwk','kwwwwwwk','kkkkkkkk'],
  box:['..oooo..','.ooyyoo.','oooyyooo','kkkkkkkk','oooyyooo','oooyyooo','oooyyooo','kkkkkkkk'],
@@ -363,8 +418,8 @@ const sc = {};
 function sprite(k){ if (sc[k]) return sc[k]; const c = document.createElement('canvas'); c.width = c.height = 8; const x = c.getContext('2d');
   SPR[k].forEach((row, j) => [...row].forEach((ch, i) => { if (PAL[ch]) { x.fillStyle = PAL[ch]; x.fillRect(i, j, 1, 1); } })); return sc[k] = c.toDataURL(); }
 const CRIT = {0:'A sleepy pebble. You lose.',1:'A chick. Cards back.',2:'A blue bird. Double!',3:'A unicorn! Triple!',10:'A DRAGON! TEN TIMES!'};
-const GAMES = [['eggs','egg','MYSTERY EGGS'],['hl','hl','HIGHER OR LOWER'],['color','color','COLOR SPIN'],['slots','slots','UNO SLOTS'],['duel','duel','DUELS'],['flip','flip','PENNY FLIP'],['dice','dice','LUCKY DICE'],['boxes','box','MYSTERY BOXES'],['wheel','wheel','PRIZE WHEEL']];
-const GKEY = {eggs:'egg_enabled', hl:'g_hl', color:'g_color', slots:'g_slots', duel:'g_duel', flip:'g_flip', dice:'g_dice', boxes:'g_boxes', wheel:'g_wheel'};
+const GAMES = [['eggs','egg','MYSTERY EGGS'],['hl','hl','HIGHER OR LOWER'],['color','color','COLOR SPIN'],['slots','slots','UNO SLOTS'],['duel','duel','DUELS'],['flip','flip','PENNY FLIP'],['dice','dice','LUCKY DICE'],['boxes','box','MYSTERY BOXES'],['wheel','wheel','PRIZE WHEEL'],['jack','jack','JACKPOT']];
+const GKEY = {eggs:'egg_enabled', hl:'g_hl', color:'g_color', slots:'g_slots', duel:'g_duel', flip:'g_flip', dice:'g_dice', boxes:'g_boxes', wheel:'g_wheel', jack:'g_jack'};
 
 /* ---------- economy ---------- */
 const COL = ['var(--red)','var(--yel)','var(--grn)','var(--blu)'], HEX = {red:'#e5352b',yellow:'#f7d117',green:'#3aa655',blue:'#1f6fd0'};
@@ -416,12 +471,16 @@ async function load(){
   TRX = tr.data || []; ALOG = al.data || [];
   const [sh, tz, sw, ts] = await Promise.all([sb.from('shiny_inv').select('*'), sb.from('trades').select('*').order('id', {ascending: false}).limit(60), sb.from('showcase').select('*'), sb.rpc('tax_summary')]);
   shin = {}; (sh.data || []).forEach(r => { if (r.user_id === me.id) shin[r.card_id] = r.qty; }); TRD = tz.data || []; SHW = sw.data || []; TAXS = ts.data || null;
+  const [it, iv, ls, au, ac, ad] = await Promise.all([sb.from('items').select('*').order('id'), sb.from('item_inv').select('*'), sb.from('listings').select('*').in('status', ['open', 'reserved']).order('id', {ascending: false}).limit(150), sb.from('auctions').select('*').eq('status', 'open').order('ends_at'), sb.from('achievements').select('*').order('sort'), sb.from('ach_done').select('*')]);
+  ITEMS = it.data || []; IMAP = {}; ITEMS.forEach(x => IMAP[x.id] = x); IINV = {}; (iv.data || []).forEach(r => { if (r.user_id === me.id) IINV[r.item_id] = r.qty; });
+  LST = ls.data || []; AUC = au.data || []; ACHL = ac.data || []; ADONE = new Set((ad.data || []).filter(r => r.user_id === me.id).map(r => r.ach_id));
+  if (AUC.some(a => new Date(a.ends_at) <= Date.now())) { await sb.rpc('settle_auctions'); AUC = (await sb.from('auctions').select('*').eq('status', 'open').order('ends_at')).data || []; }
   prof = p.data; hold = {}; cost = {}; (h.data||[]).forEach(r => { hold[r.symbol] = r.qty; cost[r.symbol] = r.cost; });
   inv = i.data||[]; shelves = s.data||[]; people = all.data||[]; lb = l.data||[]; logs = g.data||[]; duels = d.data||[]; hlg = hg.data || null; cinv = {}; (ci.data||[]).forEach(r => cinv[r.card_id] = r.qty); Object.keys(shin).forEach(k => cinv[k] = (cinv[k] || 0) + shin[k]);
   S = {...DEF}; (st.data||[]).forEach(r => S[r.key] = r.value);
   render();
 }
-const who = id => esc((people.find(p => p.id === id)||{}).username || '?');
+const who = id => { const p = people.find(p => p.id === id) || {}; return (titleTag(p.title) ? titleTag(p.title) + ' ' : '') + esc(p.username || '?'); };
 const typing = () => document.activeElement && document.activeElement.tagName === 'INPUT' && $('#app').contains(document.activeElement);
 const val = p => p.balance - p.owed + Object.entries(p.hold||{}).reduce((a,[k,q]) => a + q*(SY(k) ? price(SY(k)) : 0), 0) + (p.inv||[]).reduce((a,r) => a + r.qty*((CAT.find(c=>c.item===r.item)||{fair:0}).fair), 0) + (p.cardval||0);
 const ranked = () => lb.map(p => ({...p, w: val(p)})).sort((a,b) => b.w - a.w);
@@ -436,7 +495,7 @@ function render(){
   renderHome(); renderGames(); renderPortfolio(); renderCards();
   $('#bankinfo').innerHTML = `You owe <b class="${prof.owed?'dn':''}">${prof.owed}</b> cards. Limit ${S.loan_limit}. Interest ${Math.round(S.loan_rate*100)}% up front.` + (S.loan_enabled ? '' : '<br><span class="dn">The bank is closed.</span>');
   $('#lb').innerHTML = ranked().map((p,i) => `<div class="lb"><span class="n">${i+1}</span><span style="flex:1">${esc(p.username)}<br><span class="mute">${p.balance} cards, owes ${p.owed}</span></span><b class="px" style="font-size:12px;color:var(--yel)">${p.w}</b></div>`).join('');
-  $('#feed').innerHTML = feed(25); renderBank(); renderTrade(); renderShow(); renderTax();
+  $('#feed').innerHTML = feed(25); renderBank(); renderTrade(); renderShow(); renderTax(); renderShop(); renderAch(); renderJack(); renderLevel(); checkAch();
   renderAdmin();
 }
 const feed = n => logs.slice(0, n).map(l => `${new Date(l.at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} <b style="color:var(--ink)">${esc(l.username||'?')}</b> ${esc(l.msg)}`).join('<br>') || 'Quiet so far.';
@@ -598,7 +657,7 @@ $('#repay').onclick = async () => { if (await call('repay_loan', {amt: parseInt(
 
 /* ---------- navigation ---------- */
 function go(k){ document.querySelectorAll('section').forEach(s => s.classList.toggle('hide', s.id !== 't-'+k));
-  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === k)); if (k !== 'games') showGame(null); if (k === 'board' || k === 'admin' || k === 'trade') load(); }
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === k)); if (k !== 'games') showGame(null); if (k === 'board' || k === 'admin' || k === 'trade' || k === 'shop' || k === 'ach') load(); }
 $('#tabs').onclick = e => e.target.dataset.t && go(e.target.dataset.t);
 $('#t-home').onclick = e => { const k = e.target.dataset.go; if (k) { go(k); if (e.target.dataset.g) showGame(e.target.dataset.g); } };
 
@@ -622,7 +681,7 @@ function renderAdmin(){
     <div><button class="y" data-a="adm" data-u="${u}">${p.is_admin ? 'REMOVE ADMIN' : 'MAKE ADMIN'}</button> <button class="y" data-a="ban" data-u="${u}">${p.banned ? 'UNFREEZE' : 'FREEZE ACCOUNT'}</button>
     <button class="r" data-a="wipe" data-u="${u}">WIPE</button> <button class="r" data-a="del" data-u="${u}">DELETE ACCOUNT</button></div></div></details>`; };
   const odds = S.egg_odds, tot = odds.reduce((a,b) => a + +b, 0) || 1, ev = ((odds[1]*1 + odds[2]*2 + odds[3]*3 + odds[4]*10) / tot * 100).toFixed(0);
-  const T = [['ov','OVERVIEW'],['pl','PLAYERS'],['cp','CARDS+PACKS'],['gm','GAMES'],['mk','MARKET'],['bk','BANK'],['tr','TRADES+SHINY'],['tx','TAXES'],['lg','LOGS']];
+  const T = [['ov','OVERVIEW'],['pl','PLAYERS'],['cp','CARDS+PACKS'],['gm','GAMES'],['mk','MARKET'],['bk','BANK'],['tr','TRADES+SHINY'],['sh','SHOP+JACKPOT'],['ac','ACHIEVEMENTS'],['tx','TAXES'],['lg','LOGS']];
   const stat = rows => `<div class="stats">${rows.map(([l,v]) => `<div class="stat"><span class="mute">${l}</span><b>${v}</b></div>`).join('')}</div>`;
   const packRow = p => { const k = p.k || 'NEW', id = x => `pe-${k}-${x}`;
     return `<div class="card" style="margin:10px 0"><h3 style="margin-top:0">${p.k ? 'PACK ' + p.k : 'NEW PACK'}</h3><div class="grid">
@@ -657,6 +716,21 @@ function renderAdmin(){
     bk: `<div class="card"><h2>LOANS</h2><div class="grid">${TG('loan_enabled','Bank')}${A('loan_rate','Interest (0.1 = 10%)')}${A('loan_limit','Max owed')}</div></div>
       <div class="card"><h2>TRANSFERS</h2><div class="grid">${TG('tr_on','Sending')}${TG('tr_debt','Block while in debt')}${A('tr_min','Min per send')}${A('tr_max','Max per send')}${A('tr_daily','Daily cap per player')}</div>
       <h3>RECENT TRANSFERS</h3>${TRX.slice(0,15).map(t => `<div class="row"><span>${who(t.from_id)} to ${who(t.to_id)}${t.note ? ' / ' + esc(t.note) : ''}</span><span>${t.amt} ${t.reversed ? '(reversed)' : `<button class="r" data-a="revtr" data-u="${t.id}">REVERSE</button>`}</span></div>`).join('') || '<span class="mute">None yet.</span>'}</div>`,
+    sh: `<div class="card"><h2>SHOP + JACKPOT SETTINGS</h2><div class="grid">${TG('shop_on','Shop open')}${TG('irl_on','Real-life selling')}${TG('auction_on','Auctions')}${TG('g_jack','Jackpot game')}${A('shop_sellrate','Shop pays this share of value (0.6 = 60%)')}${A('tp1','Title pack 1 price')}${A('tp2','Title pack 2 price')}${A('tp3','Title pack 3 price')}${A('cr1','Crate 1 price')}${A('cr2','Crate 2 price')}${A('cr3','Crate 3 price')}${A('jackpot_ticket','Jackpot ticket price')}${A('jackpot_odds','Jackpot win chance (0.02 = 2%)')}${A('jackpot_seed','Pot after a win')}${A('jackpot_cut','Share of game losses added to pot (0.03 = 3%)')}</div>
+      <p>Pot now <b>${(S.jackpot || {}).pot || 0}</b>. Set it to <input type="number" id="jp-pot" value="${(S.jackpot || {}).pot || 0}" style="width:100px"> <button data-a="setpot">SET POT</button></p></div>
+      <div class="card"><h2>ITEM EDITOR (TITLES + COLLECTIBLES)</h2><div class="grid"><label>Item <select id="it-id"><option value="">NEW ITEM</option>${ITEMS.map(i => `<option value="${i.id}">${i.id} ${esc(i.name)} (${i.kind})</option>`).join('')}</select></label>
+        <label>Name <input type="text" id="it-n"> Kind <select id="it-k"><option value="item">collectible</option><option value="title">title</option></select> Rarity 1-6 <input type="number" id="it-r" value="1" style="width:60px"></label>
+        <label>Value <input type="number" id="it-v" value="10" style="width:80px"> Price (blank = 2x value) <input type="number" id="it-p" style="width:80px"> Art 0-5 <input type="number" id="it-a" value="0" style="width:50px"> <label><input type="checkbox" id="it-b"> Sold in the shop</label></label>
+        <div><button class="y" data-a="saveitem">SAVE ITEM</button> <button class="r" data-a="delitem">DELETE ITEM</button></div></div></div>
+      <div class="card"><h2>GIVE</h2><label>To <select id="gi-u">${people.map(p => `<option value="${p.id}">${esc(p.username)}</option>`).join('')}</select> Item <select id="gi-i">${ITEMS.map(i => `<option value="${i.id}">${esc(i.name)}</option>`).join('')}</select> x <input id="gi-q" type="number" value="1" style="width:60px"> <button class="g" data-a="giveitem">GIVE ITEM</button></label>
+        <p><label>XP <input id="gx-n" type="number" value="100" style="width:80px"> to the player above <button class="g" data-a="givexp">GIVE XP</button></label></p></div>
+      <div class="card"><h2>MODERATION</h2><h3>LISTINGS</h3>${LST.slice(0, 30).map(l => `<div class="row"><span>#${l.id} ${l.kind} ${esc(lname(l) || '?')} by ${who(l.seller_id)} for ${l.price} (${l.status})</span><button class="r" data-a="admcl" data-u="${l.id}">CANCEL</button></div>`).join('') || '<span class="mute">None.</span>'}
+        <h3>AUCTIONS</h3>${AUC.map(a => `<div class="row"><span>#${a.id} ${esc((CID[a.card_id] || {}).n || '?')} by ${who(a.seller_id)}, bid ${a.high_bid}</span><button class="r" data-a="admca" data-u="${a.id}">CANCEL</button></div>`).join('') || '<span class="mute">None.</span>'}</div>`,
+    ac: `<div class="card"><h2>ACHIEVEMENT EDITOR</h2><div class="grid"><label>Achievement <select id="ac-id"><option value="">NEW ACHIEVEMENT</option>${ACHL.map(a => `<option value="${a.id}">${a.id} ${esc(a.name)}</option>`).join('')}</select></label>
+        <label>Name <input id="ac-n" type="text"> Description <input id="ac-d" type="text" style="width:260px"></label>
+        <label>Measures <select id="ac-k">${ACHK.map(k => `<option>${k}</option>`).join('')}</select> Goal <input type="number" id="ac-g" value="1" style="width:80px"> Reward cards <input type="number" id="ac-r" value="0" style="width:80px"> XP <input type="number" id="ac-x" value="0" style="width:70px"> Title item id <input type="number" id="ac-t" style="width:70px"></label>
+        <div><button class="y" data-a="saveach">SAVE</button> <button class="r" data-a="delach">DELETE</button></div></div></div>
+      <div class="card"><h2>ALL ACHIEVEMENTS</h2>${ACHL.map(a => `<div class="row"><span><b>${esc(a.name)}</b> <span class="mute">${esc(a.descr)}</span></span><span>${a.kind} ${a.goal}</span></div>`).join('')}</div>`,
     tx: `<div class="card"><h2>TAX RATES</h2><p class="mute">Rates are fractions: 0.05 = 5%. Set a rate to 0 to turn that tax off.</p><div class="grid">${TG('tax_on','All taxes enabled')}${TAXES.map(([k, n]) => A(k, n + ' rate')).join('')}</div></div>
       <div class="card"><h2>TAX COLLECTED</h2>${stat(Object.entries((TAXS || {}).all || {}).map(([k, v]) => [k.toUpperCase(), v]).concat([['TOTAL', Object.values((TAXS || {}).all || {}).reduce((a, b) => a + b, 0)]]))}
       <p><button class="y" data-a="runtax" data-v="0">COLLECT DAILY TAX NOW</button> <button class="r" data-a="runtax" data-v="1">COLLECT INCLUDING TODAY</button></p><p class="mute">Daily income and gamble tax is collected automatically from each player when they log in on a new day. These buttons collect it from everyone right now.</p></div>`,
@@ -699,6 +773,15 @@ $('#t-admin').onclick = async e => { if (e.target.dataset.at) { atab = e.target.
     case 'savepack': { const k = d.k === 'NEW' ? gv('pe-NEW-k').trim().toUpperCase() : d.k; if (k.length !== 1) return toast('Pack key must be one letter');
       return call('admin_save_pack', {p_k: k, p_name: gv(`pe-${d.k}-n`), p_n: +gv(`pe-${d.k}-c`), p_w: [0,1,2,3,4,5].map(i => +gv(`pe-${d.k}-w${i}`) || 0), p_g: +gv(`pe-${d.k}-g`), p_col: gv(`pe-${d.k}-col`), p_price: +gv(`pe-${d.k}-p`), p_active: document.getElementById(`pe-${d.k}-a`).checked, p_starts: gv(`pe-${d.k}-s`) ? new Date(gv(`pe-${d.k}-s`)).toISOString() : null, p_ends: gv(`pe-${d.k}-e`) ? new Date(gv(`pe-${d.k}-e`)).toISOString() : null}); }
     case 'runtax': { const r = await call('admin_run_tax', {p_today: d.v === '1'}); if (r !== null) toast('Collected ' + r + ' cards in tax.'); return; }
+    case 'saveitem': return call('admin_save_item', {p_id: +gv('it-id') || ITEMS.reduce((m, i) => Math.max(m, i.id), 100) + 1, p_kind: gv('it-k'), p_name: gv('it-n'), p_rar: +gv('it-r'), p_val: +gv('it-v'), p_buy: document.getElementById('it-b').checked, p_price: gv('it-p') === '' ? null : +gv('it-p'), p_art: +gv('it-a') || 0});
+    case 'delitem': return +gv('it-id') && ok('Delete this item from the game and everyone\'s stuff?') && call('admin_delete_item', {p_id: +gv('it-id')});
+    case 'giveitem': return call('admin_give_item', {p_uid: gv('gi-u'), p_item: +gv('gi-i'), p_qty: +gv('gi-q') || 1});
+    case 'givexp': return call('admin_give_xp', {p_uid: gv('gi-u'), p_xp: +gv('gx-n') || 0});
+    case 'setpot': return call('admin_set_pot', {p_pot: +gv('jp-pot') || 0});
+    case 'admcl': return call('cancel_listing', {p_id: +d.u});
+    case 'admca': return call('cancel_auction', {p_id: +d.u});
+    case 'saveach': return call('admin_save_ach', {p_id: +gv('ac-id') || ACHL.reduce((m, a) => Math.max(m, a.id), 0) + 1, p_name: gv('ac-n'), p_descr: gv('ac-d'), p_kind: gv('ac-k'), p_goal: +gv('ac-g') || 1, p_reward: +gv('ac-r') || 0, p_xp: +gv('ac-x') || 0, p_title: gv('ac-t') === '' ? null : +gv('ac-t')});
+    case 'delach': return +gv('ac-id') && ok('Delete this achievement?') && call('admin_delete_ach', {p_id: +gv('ac-id')});
     case 'gshiny': return call('admin_give_shiny', {p_uid: gv('gs-u'), p_card: +gv('gs-c')});
     case 'tcancel': return call('admin_cancel_trade', {p_id: +d.u});
     case 'revtr': return ok('Reverse this transfer?') && call('admin_reverse_transfer', {p_id: +d.u});
@@ -916,7 +999,7 @@ $('#dchance').oninput = () => { const c = +$('#dchance').value; $('#dpct').textC
 $('#t-games').addEventListener('click', e => { const t = e.target, d = t.dataset || {};
   if (d.flip) guard(async () => { const st = stakeOf('#fstake'); if (st < 1) return toast('Bet at least 1 card'); const r = await gcall('play_flip', {p_stake: st, p_pick: d.flip}); if (!r) return;
     await spin($('#coin'), ['H', 'T']); $('#coin').textContent = r.face === 'heads' ? 'H' : 'T'; done('#fmsg', r, st); });
-  if (t.id === 'droll-go') guard(async () => { const st = stakeOf('#dstake'), c = +$('#dchance').value; if (st < 1) return toast('Bet at least 1 card'); const r = await gcall('play_dice', {p_stake: st, p_chance: c}); if (!r) return;
+  if (t.id === 'droll-go') guard(async () => { const st = stakeOf('#dicestake'), c = +$('#dchance').value; if (st < 1) return toast('Bet at least 1 card'); const r = await gcall('play_dice', {p_stake: st, p_chance: c}); if (!r) return;
     await spin($('#droll'), ['12', '57', '88', '34', '70', '9'], 12); $('#droll').textContent = r.roll; done('#dmsg', r, st); });
   if (d.box) guard(async () => { const st = stakeOf('#bstake'); if (st < 1) return toast('Bet at least 1 card'); const r = await gcall('play_boxes', {p_stake: st, p_pick: +d.box}); if (!r) return;
     [1, 2, 3].forEach(i => $('#b' + i).textContent = '?'); await sleep(500); [1, 2, 3].forEach(i => { $('#b' + i).textContent = i === r.prize ? '$' : 'x'; }); done('#bmsg', r, st); });
@@ -928,8 +1011,8 @@ $('#t-games').addEventListener('click', e => { const t = e.target, d = t.dataset
 /* ---------- taxes ---------- */
 let TAXS = null;
 const pct = x => (Math.round((+x || 0) * 1000) / 10) + '%';
-const TAXES = [['tax_income','Income tax'],['tax_gamble','Gamble tax'],['tax_sell','Sell tax'],['tax_market','Market tax'],['tax_bank','Bank tax'],['tax_send','Send tax'],['tax_recv','Receive tax'],['tax_trade','Trade tax'],['tax_pack','Pack tax']];
-const TAXINFO = {tax_income:['income','Paid once a day on the cards you earned (net gain) that day.'], tax_gamble:['gamble','Paid once a day on your net winnings from all games. Losing days pay nothing.'], tax_sell:['sell','Taken from the cards you get when you sell cards.'], tax_market:['market','Taken from the cards you get when you sell shares on the market.'], tax_bank:['bank','Taken from every loan you borrow.'], tax_send:['send','Paid by you, on top, when you send cards to a player.'], tax_recv:['recv','Taken from the cards you receive from a player.'], tax_trade:['trade','Each side pays it on the value of what they give in a trade.'], tax_pack:['pack','Added to the price of every pack you open.']};
+const TAXES = [['tax_income','Income tax'],['tax_gamble','Gamble tax'],['tax_sell','Sell tax'],['tax_market','Market tax'],['tax_bank','Bank tax'],['tax_send','Send tax'],['tax_recv','Receive tax'],['tax_trade','Trade tax'],['tax_pack','Pack tax'],['tax_shop','Shop sale tax'],['tax_auction','Auction tax'],['tax_buy','Shop purchase tax']];
+const TAXINFO = {tax_income:['income','Paid once a day on the cards you earned (net gain) that day.'], tax_gamble:['gamble','Paid once a day on your net winnings from all games. Losing days pay nothing.'], tax_sell:['sell','Taken from the cards you get when you sell cards.'], tax_market:['market','Taken from the cards you get when you sell shares on the market.'], tax_bank:['bank','Taken from every loan you borrow.'], tax_send:['send','Paid by you, on top, when you send cards to a player.'], tax_recv:['recv','Taken from the cards you receive from a player.'], tax_trade:['trade','Each side pays it on the value of what they give in a trade.'], tax_pack:['pack','Added to the price of every pack you open.'], tax_shop:['shop','Taken from the cards you earn when you sell in the player market or sell real stuff.'], tax_auction:['auction','Taken from the winning bid when your card sells at auction.'], tax_buy:['buy','Added to everything you buy from the shop (title packs, crates, titles).']};
 function renderTax() {
   const T = TAXS || {}, mine = T.mine || {}, td = T.today || {net: 0, gamble: 0}, on = S.tax_on !== false;
   const inc = Math.floor(Math.max(td.net || 0, 0) * (+S.tax_income || 0)), gam = Math.floor(Math.max(td.gamble || 0, 0) * (+S.tax_gamble || 0)), paid = Object.values(mine).reduce((a, b) => a + b, 0);
@@ -970,6 +1053,108 @@ document.addEventListener('click', e => { const t = e.target.closest('[data-tw]'
 document.addEventListener('change', e => { if (e.target.id === 'trwho') { theirs = null; theirFor = null; twant = []; renderTheirs(); renderTrade(); fetchTheirs(true); } if (e.target.id === 'tfilter') renderTheirs(); });
 
 let psel = null;
+
+/* ---------- shop, market, auctions, achievements, levels, jackpot ---------- */
+let ITEMS = [], IMAP = {}, IINV = {}, LST = [], AUC = [], ACHL = [], ADONE = new Set(), ACHP = {}, stab = 'store', lastLvl = null, achAt = 0;
+const ACHK = ['packs','games','wins','jackpots','unique_cards','shinies','mythics','balance','trades','level','tax_paid','collectibles','transfers','auc_won','auc_sold','shop_sold'];
+const lvlOf = x => 1 + Math.floor(Math.sqrt((x || 0) / 40)), xpFor = L => 40 * (L - 1) * (L - 1);
+const titleTag = id => IMAP[id] ? `<span style="color:${RC[IMAP[id].rarity - 1]}">[${esc(IMAP[id].name)}]</span>` : '';
+const lname = l => l.kind === 'irl' ? l.name : l.kind === 'item' ? (IMAP[l.item_id] || {}).name : (CID[l.item_id] || {}).n;
+const cdText = end => { const s = Math.max(0, Math.floor((new Date(end) - Date.now()) / 1000)); return s <= 0 ? 'ENDED' : s >= 3600 ? Math.floor(s / 3600) + 'h ' + Math.floor(s % 3600 / 60) + 'm' : Math.floor(s / 60) + 'm ' + String(s % 60).padStart(2, '0') + 's'; };
+setInterval(() => document.querySelectorAll('[data-end]').forEach(el => el.textContent = cdText(el.dataset.end)), 1000);
+
+const SHP = [['..oooo..','.olmmdo.','olmmmmdo','ommmmmmo','.ommmmo.','..ommo..','...oo...','........'],['..oooo..','.ommmmo.','omlmmmdo','omlmmmdo','ommmmmdo','omddddmo','.ommmmo.','..oooo..'],['...oo...','...om...','oooomooo','ommmmmmo','.ommmmo.','.ommmmo.','.omo.mo.','.oo..oo.'],['..oooo..','.ommmmo.','.om..mo.','.ommmmo.','..omdo..','..omdo..','..omdmo.','..oooo..'],['o..o..o.','omomomo.','ommmmmmo','ommlmlmo','ommmmmmo','oddddddo','oooooooo','........'],['..oooo..','...om...','...om...','..ommo..','.olmmdo.','.ommmdo.','.oddddo.','..oooo..']];
+const iaCache = {};
+function itemArt(it) { const key = it.art + ':' + it.rarity; if (iaCache[key]) return iaCache[key];
+  const cv = document.createElement('canvas'); cv.width = cv.height = 8; const g = cv.getContext('2d'), main = RC[it.rarity - 1];
+  SHP[it.art % 6].forEach((row, y) => [...row].forEach((ch, x) => { if (ch === '.') return; g.fillStyle = ch === 'o' ? '#111' : main; g.fillRect(x, y, 1, 1); if (ch === 'l') { g.fillStyle = '#ffffffc0'; g.fillRect(x, y, 1, 1); } if (ch === 'd') { g.fillStyle = '#00000070'; g.fillRect(x, y, 1, 1); } }));
+  return iaCache[key] = cv.toDataURL(); }
+function itemEl(it, qty, extra) { const c = RC[it.rarity - 1];
+  const art = it.kind === 'title' ? `<div class="ttl" style="color:${c}">[${esc(it.name.toUpperCase())}]</div>` : `<img class="pix" src="${itemArt(it)}" alt="" style="width:46px;height:46px;image-rendering:pixelated">`;
+  return `<div class="it r${it.rarity}" style="border-color:${c};color:${c}">${qty > 1 ? `<span class="qb">x${qty}</span>` : ''}${art}<div class="in" style="color:#fff">${it.kind === 'title' ? '' : esc(it.name)}</div><div class="iv" style="color:#fff">${it.val} <span class="mute">${RN[it.rarity - 1]}</span></div>${extra || ''}</div>`; }
+
+function fan(text, kind) { const el = document.createElement('div'); el.className = 'fan ' + kind; el.textContent = text; document.body.appendChild(el); setTimeout(() => el.remove(), 2600);
+  burst(innerWidth / 2, innerHeight / 3, kind === 'jackpot' ? rcols(6) : kind === 'level' ? ['#4ff8ff', '#fff', '#f7d117'] : ['#f7d117', '#fff4b0'], kind === 'jackpot' ? 90 : 40, kind === 'jackpot' ? 11 : 8);
+  [523, 659, 784, 1047].forEach((f, i) => tone(f, .16, 'square', .05, i * .1));
+  if (kind === 'jackpot') { screenFlash('#f7d117'); [1047, 1319, 1568, 2093].forEach((f, i) => tone(f, .2, 'triangle', .05, .5 + i * .12)); } }
+function showItems(r) { const ov = document.createElement('div'); ov.className = 'ovl'; ov.innerHTML = '<div class="ovbox"><h2>YOU GOT</h2><div class="cgrid" id="ovg"></div><p><button class="y" id="ovx">NICE!</button></p></div>'; document.body.appendChild(ov);
+  r.forEach((x, i) => setTimeout(() => { const it = IMAP[x.id]; if (!it || !ov.isConnected) return; ov.querySelector('#ovg').insertAdjacentHTML('beforeend', `<div class="rv">${itemEl(it, 0, x.new ? '<div class="newb">NEW!</div>' : '')}</div>`); chime(it.rarity); if (it.rarity >= 4) burst(innerWidth / 2, innerHeight / 2, rcols(it.rarity), 30, 7); }, 380 * (i + 1)));
+  ov.querySelector('#ovx').onclick = () => ov.remove(); }
+
+const myAll = () => CARDS.flatMap(c => { const sq = shin[c.id] || 0, pq = (cinv[c.id] || 0) - sq, o = [];
+  if (pq > 0) o.push(`<option value="card:${c.id}:0">${esc(c.n)} (x${pq})</option>`); if (sq > 0) o.push(`<option value="card:${c.id}:1">\u2605 ${esc(c.n)} SHINY (x${sq})</option>`); return o; })
+  .concat(ITEMS.filter(i => IINV[i.id] > 0).map(i => `<option value="item:${i.id}">${i.kind === 'title' ? '[TITLE] ' : ''}${esc(i.name)} (x${IINV[i.id]})</option>`));
+const myCards = () => CARDS.flatMap(c => { const sq = shin[c.id] || 0, pq = (cinv[c.id] || 0) - sq, o = [];
+  if (pq > 0) o.push(`<option value="${c.id}:0">${esc(c.n)} (x${pq})</option>`); if (sq > 0) o.push(`<option value="${c.id}:1">\u2605 ${esc(c.n)} SHINY (x${sq})</option>`); return o; });
+
+function renderShop() {
+  if (!$('#ss-store')) return;
+  document.querySelectorAll('#t-shop [id^=ss-]').forEach(d => d.classList.toggle('hide', d.id !== 'ss-' + stab));
+  document.querySelectorAll('#shoptabs button').forEach(b => b.classList.toggle('on', b.dataset.ss === stab));
+  const on = S.shop_on !== false, tier = ['BRONZE', 'SILVER', 'GOLD'], hint = ['mostly common', 'good chance of rare', 'rare and better, tiny mythic chance'];
+  $('#stax').textContent = S.tax_on === false ? '' : `Shop purchase tax: ${pct(S.tax_buy)} added at checkout.`;
+  $('#tpacks').innerHTML = on ? [1, 2, 3].map(t => `<p><button class="y" data-shp="title:${t}">${tier[t - 1]} TITLE PACK / ${S['tp' + t]}</button> <span class="mute">${2 + t} titles, ${hint[t - 1]}</span></p>`).join('') : '<span class="mute">The shop is closed.</span>';
+  $('#crates').innerHTML = on ? [1, 2, 3].map(t => `<p><button class="y" data-shp="crate:${t}">${tier[t - 1]} CRATE / ${S['cr' + t]}</button> <span class="mute">${2 + t} collectibles, ${hint[t - 1]}</span></p>`).join('') : '';
+  $('#tsale').innerHTML = on ? ITEMS.filter(i => i.buyable).map(i => itemEl(i, 0, `<button class="y" data-buy="${i.id}">BUY ${i.price || i.val * 2}</button>`)).join('') || '<span class="mute">Nothing for sale.</span>' : '';
+  $('#mtax').textContent = S.tax_on === false ? 'none' : pct(S.tax_shop); $('#atax').textContent = S.tax_on === false ? 'none' : pct(S.tax_auction);
+  fillSel($('#lsel'), myAll()); fillSel($('#asel'), myCards());
+  const row = (l, btn) => `<div class="row"><span><b style="color:${l.kind === 'irl' ? '#fff' : RC[(l.kind === 'item' ? (IMAP[l.item_id] || {rarity: 1}).rarity : (CID[l.item_id] || {r: 1}).r) - 1]}">${esc(lname(l) || '?')}</b>${l.qty > 1 ? ' x' + l.qty : ''}${l.shiny ? ' (shiny)' : ''} <span class="mute">from ${who(l.seller_id)}</span></span><span><b class="up">${l.price}</b> ${btn}</span></div>`;
+  $('#mlist').innerHTML = LST.filter(l => l.kind !== 'irl' && l.status === 'open').map(l => row(l, l.seller_id === me.id ? `<button class="r" data-lcan="${l.id}">TAKE BACK</button>` : `<button class="y" data-lbuy="${l.id}">BUY</button>`)).join('') || '<span class="mute">Nothing listed yet.</span>';
+  $('#alist').innerHTML = AUC.map(a => { const c = CID[a.card_id] || {n: '?', r: 1}, mine = a.seller_id === me.id, nb = a.high_bidder ? a.high_bid : a.start_price;
+    return `<div class="row"><span><b style="color:${RC[c.r - 1]}">${esc(c.n)}</b>${a.shiny ? ' (shiny)' : ''} <span class="mute">from ${who(a.seller_id)}</span><br><span class="mute">${a.high_bidder ? 'top bid ' + a.high_bid + ' by ' + who(a.high_bidder) : 'no bids, starts at ' + a.start_price}</span></span><span><b data-end="${a.ends_at}">${cdText(a.ends_at)}</b> ${mine ? (a.high_bidder ? '' : `<button class="r" data-acan="${a.id}">CANCEL</button>`) : `<button class="y" data-bid="${a.id}:${a.high_bidder ? a.high_bid + Math.max(1, Math.ceil(a.high_bid * .05)) : a.start_price}">BID</button>`}</span></div>`; }).join('') || '<span class="mute">No auctions right now. Start one!</span>';
+  $('#ilist').innerHTML = LST.filter(l => l.kind === 'irl').map(l => { const mine = l.seller_id === me.id; let btn = '';
+    if (l.status === 'open') btn = mine ? `<button class="r" data-lcan="${l.id}">TAKE BACK</button>` : `<button class="y" data-lbuy="${l.id}">BUY</button>`;
+    else if (l.buyer_id === me.id) btn = `<button class="g" data-lconf="${l.id}">I GOT IT</button>`;
+    else if (mine) btn = `<span class="mute">paid, hand it over!</span> <button class="r" data-lcan="${l.id}">REFUND</button>`; else btn = '<span class="mute">sold</span>';
+    return row(l, btn) + (l.descr ? `<div class="mute" style="margin:-4px 0 8px">${esc(l.descr)}</div>` : ''); }).join('') || '<span class="mute">Nothing real for sale yet.</span>';
+  const coll = ITEMS.filter(i => i.kind === 'item'), have = coll.filter(i => IINV[i.id] > 0).length;
+  $('#mynote').textContent = `You own ${have} of ${coll.length} different collectibles. The shop buys items for ${pct(S.shop_sellrate)} of their value (minus sell tax). Players pay more, so try the MARKET tab!`;
+  $('#mycoll').innerHTML = coll.map(i => IINV[i.id] > 0 ? itemEl(i, IINV[i.id], `<button data-sell="${i.id}">SELL ${Math.floor(i.val * S.shop_sellrate)}</button>`) : `<div class="it lock"><div class="ttl">?</div><div class="in">???</div><div class="iv">${RN[i.rarity - 1]}</div></div>`).join('');
+  $('#mytit').innerHTML = ITEMS.filter(i => i.kind === 'title' && IINV[i.id] > 0).map(i => itemEl(i, IINV[i.id], `<button class="y" data-eq="${i.id}">${prof.title === i.id ? 'WORN' : 'WEAR'}</button> <button data-sell="${i.id}">SELL ${Math.floor(i.val * S.shop_sellrate)}</button>`)).join('') || '<span class="mute">No titles yet. Open a title pack in the store!</span>';
+}
+function renderAch() {
+  if (!$('#aprof')) return;
+  const L = lvlOf(prof.xp), a = xpFor(L), b = xpFor(L + 1), pv = Math.min(100, Math.round((prof.xp - a) / (b - a) * 100));
+  $('#aprof').innerHTML = `<p><b class="big">LEVEL ${L}</b> ${titleTag(prof.title)} <span class="mute">${prof.xp} XP, next level at ${b}</span></p><div class="meter"><i style="width:${pv}%"></i></div><p class="mute">Earn XP by opening packs, playing games, trading and selling. Every new level pays you ${(L + 1) * 10} cards.</p>`;
+  fillSel($('#tqsel'), ['<option value="">- no title -</option>'].concat(ITEMS.filter(i => i.kind === 'title' && IINV[i.id] > 0).map(i => `<option value="${i.id}">${esc(i.name)}</option>`)));
+  if (!$('#tqsel').dataset.set) { $('#tqsel').value = prof.title || ''; $('#tqsel').dataset.set = 1; }
+  $('#alist2').innerHTML = ACHL.slice().sort((x, y) => ADONE.has(x.id) - ADONE.has(y.id)).map(x => { const done = ADONE.has(x.id), v = Math.min(ACHP[x.kind] || 0, x.goal);
+    return `<div class="row"><span><b style="color:${done ? '#3aa655' : '#fff'}">${done ? '\u2714 ' : ''}${esc(x.name)}</b><br><span class="mute">${esc(x.descr)} / +${x.reward} cards, +${x.xp} XP${x.title && IMAP[x.title] ? ', title ' + esc(IMAP[x.title].name) : ''}</span>${done ? '' : `<div class="meter" style="height:8px"><i style="width:${Math.round(v / x.goal * 100)}%"></i></div>`}</span><b>${done ? 'DONE' : v + '/' + x.goal}</b></div>`; }).join('');
+  $('#plist').innerHTML = people.slice().sort((x, y) => y.xp - x.xp).map(p => `<div class="row"><span>${who(p.id)}</span><span>LEVEL ${lvlOf(p.xp)} <span class="mute">${p.xp} XP</span></span></div>`).join('');
+}
+function renderLevel() { const L = lvlOf(prof.xp); if (lastLvl === null) lastLvl = L; else if (L > lastLvl) { lastLvl = L; fan('LEVEL UP! LEVEL ' + L + ' (+' + L * 10 + ' CARDS)', 'level'); } }
+async function checkAch() { if (Date.now() - achAt < 12000) return; achAt = Date.now(); const {data} = await sb.rpc('check_achievements'); if (!data) return;
+  ACHP = data.progress || {}; const nw = data.new || []; nw.forEach((a, i) => setTimeout(() => fan('ACHIEVEMENT: ' + a.name + (a.reward ? ' +' + a.reward + ' CARDS' : ''), 'ach'), i * 2700)); if (nw.length) { achAt = 0; load(); } else renderAch(); }
+function renderJack() { if (!$('#jpbar')) return; const j = S.jackpot || {pot: 0}, last = j.last;
+  $('#jpbar').innerHTML = S.g_jack === false ? '' : `<div class="top"><span class="px" style="font-size:10px">JACKPOT</span><b class="big" style="color:#f7d117">${j.pot || 0} CARDS</b></div><div class="mute">Ticket ${S.jackpot_ticket} cards / win chance ${pct(S.jackpot_odds)} per ticket / ${last ? 'last winner ' + esc(last.name) + ' won ' + last.amt : 'nobody has won yet'}</div>`;
+  if (!animating) $('#jpot').textContent = j.pot || 0; }
+
+document.addEventListener('click', e => { const b = e.target; if (b.tagName === 'BUTTON' && !b.disabled) tone(520, .04, 'square', .02); }, true);
+document.addEventListener('click', async e => { const b = e.target, d = b.dataset || {};
+  if (d.ss) { stab = d.ss; renderShop(); return; }
+  if (d.shp) { const [ty, t] = d.shp.split(':'), r = await gcall('open_shop_pack', {p_type: ty, p_tier: +t}); if (r) { await load(); showItems(r); } return; }
+  if (d.buy) { if (await call('shop_buy', {p_item: +d.buy})) { tone(880, .1); toast('Bought!'); } return; }
+  if (d.sell) { const q = parseInt(prompt('How many do you want to sell to the shop?', '1')); if (q > 0) { const r = await call('shop_sell', {p_item: +d.sell, p_qty: q}); if (r !== null) toast('Sold!'); } return; }
+  if (d.eq) { if (await call('equip_title', {p_item: +d.eq})) toast('Title worn!'); return; }
+  if (b.id === 'tequip') { if (await call('equip_title', {p_item: +$('#tqsel').value || null})) toast('Title updated!'); return; }
+  if (b.id === 'lgo') { const v = $('#lsel').value.split(':'); if (!v[0]) return toast('Pick something to sell');
+    if (await call('list_item', {p_kind: v[0], p_ref: +v[1], p_shiny: v[2] === '1', p_qty: parseInt($('#lqty').value) || 1, p_price: parseInt($('#lprice').value) || 0})) toast('Listed!'); return; }
+  if (d.lbuy) { if (await call('buy_listing', {p_id: +d.lbuy})) { tone(880, .1); toast('Bought! Check MY STUFF or the real-stuff tab.'); } return; }
+  if (d.lcan) { if (await call('cancel_listing', {p_id: +d.lcan})) toast('Done.'); return; }
+  if (d.lconf) { if (await call('confirm_irl', {p_id: +d.lconf})) { tone(880, .1); toast('Seller paid. Enjoy your stuff!'); } return; }
+  if (b.id === 'igo') { if (await call('list_irl', {p_name: $('#inm').value, p_descr: $('#ids').value, p_price: parseInt($('#ipr').value) || 0})) { $('#inm').value = ''; $('#ids').value = ''; toast('Listed!'); } return; }
+  if (b.id === 'ago') { const v = $('#asel').value.split(':'); if (!v[0]) return toast('Pick a card');
+    if (await call('create_auction', {p_card: +v[0], p_shiny: v[1] === '1', p_start: parseInt($('#aprice').value) || 0, p_hours: +$('#ahrs').value})) toast('Auction started!'); return; }
+  if (d.bid) { const [id, mn] = d.bid.split(':'), a = parseInt(prompt('Your bid (at least ' + mn + ' cards). Your cards are held until you are outbid or the auction ends.', mn)); if (a > 0) { if (await call('place_bid', {p_id: +id, p_amt: a})) { tone(660, .1); toast('You are the top bidder!'); } } return; }
+  if (d.acan) { if (await call('cancel_auction', {p_id: +d.acan})) toast('Auction cancelled.'); return; }
+  if (b.id === 'jspin') guard(async () => { const r = await gcall('play_jackpot', {}); if (!r) return;
+    for (let i = 0; i < 14; i++) { $('#jpot').textContent = Math.floor(Math.random() * r.pot * 1.5); tone(300 + i * 50, .05, 'square', .03); await sleep(60 + i * 12); }
+    $('#jpot').textContent = r.pot; if (r.win) { fan('JACKPOT! YOU WON ' + r.pot, 'jackpot'); $('#jmsg').textContent = 'YOU WON THE JACKPOT!'; } else $('#jmsg').textContent = 'No luck this time. The pot grows!'; });
+});
+document.addEventListener('change', e => { const t = e.target;
+  if (t.id === 'it-id') { const i = IMAP[t.value] || {name: '', kind: 'item', rarity: 1, val: 10, price: '', art: 0, buyable: false}; $('#it-n').value = i.name; $('#it-k').value = i.kind; $('#it-r').value = i.rarity; $('#it-v').value = i.val; $('#it-p').value = i.price == null ? '' : i.price; $('#it-a').value = i.art; $('#it-b').checked = !!i.buyable; }
+  if (t.id === 'ac-id') { const a = ACHL.find(x => x.id === +t.value) || {name: '', descr: '', kind: 'packs', goal: 1, reward: 0, xp: 0, title: ''}; $('#ac-n').value = a.name; $('#ac-d').value = a.descr; $('#ac-k').value = a.kind; $('#ac-g').value = a.goal; $('#ac-r').value = a.reward; $('#ac-x').value = a.xp; $('#ac-t').value = a.title == null ? '' : a.title; } });
+
 /* ---------- login ---------- */
 const email = u => u.trim().toLowerCase().replace(/[^a-z0-9]/g, '') + '@pond.local';
 async function enter(user){ me = user; $('#auth').classList.add('hide'); $('#app').classList.remove('hide'); $('#critter').src = sprite('egg'); go('home'); await sb.rpc('settle_my_tax'); await load();
