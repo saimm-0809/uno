@@ -137,6 +137,12 @@ button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(2
 .ucard.pulse,.trq button{margin:2px}
 @media(prefers-reduced-motion:reduce){.fc.h2,.fc.h3,.fc.h4,.fc.h5,.fc.h6,.pack:hover img,.fc.h5 .tc,.fc.h6 .tc{animation:none!important}}
 .adm{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.adm button{background:#241e3d}.adm button.on{background:var(--yel);color:#000}
+
+.tc.shiny{position:relative;outline:3px solid #fff;outline-offset:-3px}.tc.shiny::after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.8) 45%,rgba(255,79,216,.35) 52%,transparent 62%);background-size:260% 100%;animation:shn 1.4s linear infinite;pointer-events:none;mix-blend-mode:screen}
+.tc.shiny .tart img{animation:hue 3s linear infinite}.tc.shiny .tn::before{content:'\2605 '}
+@keyframes shn{from{background-position:130% 0}to{background-position:-130% 0}}
+.fc.hs .tc{animation:shn2 .6s steps(6) 2}@keyframes shn2{50%{filter:brightness(2)}}
+@media(prefers-reduced-motion:reduce){.tc.shiny::after,.tc.shiny .tart img{animation:none!important}}
 </style>
 </head>
 <body>
@@ -204,6 +210,31 @@ button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(2
       <p style="text-align:center"><input id="cstake" type="number" min="1" value="1"> CARDS <button class="y" id="cspin">SPIN</button></p>
       <details class="rules"><summary>HOW TO PLAY</summary><p>The wheel has 25 spots: 6 red, 6 yellow, 6 green, 6 blue and 1 WILD. Pick a color. If the wheel stops on your color, or on WILD, you win 3.4 times your bet (rounded down). Chance to win: 28%. Payback is about 95%.</p></details></div></div>
 
+    <div id="g-flip" class="hide gp"><div class="card"><h2>PENNY FLIP</h2><button data-back>BACK</button>
+      <div class="stage"><span class="reel" id="coin">?</span></div>
+      <p id="fmsg" class="mute" style="text-align:center">Pick a side. Win and your bet pays 1.9x.</p>
+      <p style="text-align:center"><input id="fstake" type="number" min="1" value="1"> CARDS <button class="y" data-flip="heads">HEADS</button> <button class="y" data-flip="tails">TAILS</button></p>
+      <details class="rules"><summary>HOW TO PLAY</summary><p>Pick heads or tails. It is a fair 50/50 coin. If you guess right you win 1.9x your bet, if not you lose it. Payback is about 95%.</p></details></div></div>
+
+    <div id="g-dice" class="hide gp"><div class="card"><h2>LUCKY DICE</h2><button data-back>BACK</button>
+      <div class="stage"><span class="reel" id="droll">?</span></div>
+      <p id="dmsg" class="mute" style="text-align:center">Pick your chance, then roll 1 to 100.</p>
+      <p style="text-align:center">CHANCE <input id="dchance" type="range" min="5" max="90" value="50"> <b id="dpct">50%</b><br><span id="dinfo" class="mute"></span></p>
+      <p style="text-align:center"><input id="dstake" type="number" min="1" value="1"> CARDS <button class="y" id="droll-go">ROLL</button></p>
+      <details class="rules"><summary>HOW TO PLAY</summary><p>You choose how likely you want to win, from 5% to 90%. The game rolls 1 to 100. Roll at or under your chance and you win. Small chance pays big, big chance pays small. Payback is about 95%.</p></details></div></div>
+
+    <div id="g-boxes" class="hide gp"><div class="card"><h2>MYSTERY BOXES</h2><button data-back>BACK</button>
+      <div class="stage"><span class="reel" id="b1">?</span><span class="reel" id="b2">?</span><span class="reel" id="b3">?</span></div>
+      <p id="bmsg" class="mute" style="text-align:center">One box hides a prize worth 2.85x. Pick one!</p>
+      <p style="text-align:center"><input id="bstake" type="number" min="1" value="1"> CARDS <button class="y" data-box="1">BOX 1</button> <button class="y" data-box="2">BOX 2</button> <button class="y" data-box="3">BOX 3</button></p>
+      <details class="rules"><summary>HOW TO PLAY</summary><p>Three boxes, one has the prize. Open the right one to win 2.85x your bet. Payback is about 95%.</p></details></div></div>
+
+    <div id="g-wheel" class="hide gp"><div class="card"><h2>PRIZE WHEEL</h2><button data-back>BACK</button>
+      <div class="stage"><span class="reel" id="wres" style="width:auto;padding:0 18px">?</span></div>
+      <p id="wmsg" class="mute" style="text-align:center">Spin for 0x up to a huge 10x.</p>
+      <p style="text-align:center"><input id="wstake" type="number" min="1" value="1"> CARDS <button class="y" id="wspin">SPIN</button></p>
+      <details class="rules"><summary>HOW TO PLAY</summary><p>The wheel has 19 slots: 11 pay nothing, then 0.5x (2), 1x (2), 1.5x, 2x (2) and one 10x jackpot. Payback is about 97%.</p></details></div></div>
+
     <div id="g-slots" class="hide gp"><div class="card"><h2>UNO SLOTS</h2><button data-back>BACK</button>
       <div class="stage"><span class="reel" id="r0">?</span><span class="reel" id="r1">?</span><span class="reel" id="r2">?</span></div>
       <p id="smsg" class="mute" style="text-align:center">Set a bet and pull the lever.</p>
@@ -247,6 +278,16 @@ button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(2
       <p>SHOW <select id="cfilter"><option value="all">All cards</option><option value="owned">Owned</option><option value="missing">Missing</option><option value="r1">Common</option><option value="r2">Uncommon</option><option value="r3">Rare</option><option value="r4">Epic</option><option value="r5">Legendary</option><option value="r6">Mythic</option><option value="special">Special (one pack only)</option></select>
       <button class="y" id="sellext">SELL ALL DUPLICATES</button></p>
       <div id="cdetail"></div><div class="cgrid" id="cgrid"></div></div>
+    <div class="card"><h2>MY SHOWCASE</h2><p class="mute">Pin up to 3 favorite cards. Everyone sees them on the BOARD tab. Shiny cards sparkle!</p>
+      <p><select id="sc0"></select> <select id="sc1"></select> <select id="sc2"></select> <button class="y" id="scsave">SAVE</button></p><div class="cgrid" id="scmine"></div></div>
+    <div class="card"><h2>TRADING POST</h2><p class="mute">Swap cards with another player, or trade cards for money. Nothing moves until they accept.</p>
+      <p>TRADE WITH <select id="trwho"></select></p>
+      <h3>I GIVE</h3><div id="tgl" class="mute"></div>
+      <p><select id="tgc"></select> x<input id="tgq" type="number" min="1" value="1" style="width:60px"> <button id="tgadd">ADD</button> + <input id="tgm" type="number" min="0" value="0" style="width:80px"> MONEY</p>
+      <h3>I WANT</h3><div id="twl" class="mute"></div>
+      <p><select id="twc"></select> x<input id="twq" type="number" min="1" value="1" style="width:60px"> <button id="twadd">ADD</button> + <input id="twm" type="number" min="0" value="0" style="width:80px"> MONEY</p>
+      <p><button class="y" id="tsend">SEND OFFER</button> <button id="tclear">CLEAR</button></p>
+      <h3>OFFERS</h3><div id="tlist"></div></div>
     <div class="card"><h2>HOW IT WORKS</h2><p class="mute">There are loads of creatures in 6 rarities: common, uncommon, rare, epic, legendary and the super rare MYTHIC. Each card has its own value. Skip Pack is cheap and mostly commons. Reverse Pack guarantees an uncommon or better. Wild Draw Four Pack guarantees a rare or better and holds some cards you cannot find anywhere else. The Ultra Wild Pack costs a lot, guarantees an epic or better and is the only way to get a MYTHIC (about 1 in 80 cards). SPECIAL cards can only be found in one pack. Sell any card back for its value, or sell all extra copies at once and keep one of each. Your collection value counts toward your net worth. Click a card to see it up close, and move your mouse over a card to tilt it.</p></div>
   </section>
 
@@ -263,6 +304,7 @@ button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(2
   </section>
 
   <section id="t-board" class="hide">
+    <div class="card"><h2>SHOWCASES</h2><div id="shwall"></div></div>
     <div class="card"><h2>LEADERBOARD</h2><p class="mute">Net worth = cards + shares + items - loans</p><div id="lb"></div></div>
     <div class="card"><h2>ACTIVITY</h2><div id="feed" class="mute"></div></div>
   </section>
@@ -288,7 +330,7 @@ const sb = supabase.createClient('https://nmspdwrpwuigiwjnrevt.supabase.co', 'sb
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let me, prof, people = [], hold = {}, cost = {}, inv = [], shelves = [], lb = [], logs = [], duels = [], hlg = null, cinv = {}, S = {}, sel = 'CARR', built = false, pick = 'red', animating = false;
-const DEF = {pack_prices:[8,28,100,300],packs_on:true,egg_enabled:true,g_hl:true,g_color:true,g_slots:true,g_duel:true,max_bet:1000,egg_odds:[55,22,13,7,3],market_open:true,market_mult:1,stock_mult:{},freeze_at:0,demand:1,banner:'',loan_enabled:true,loan_rate:.1,loan_limit:50,tr_on:true,tr_fee:0,tr_min:1,tr_max:1000,tr_daily:500,tr_debt:true};
+const DEF = {pack_prices:[8,28,100,300],packs_on:true,egg_enabled:true,g_hl:true,g_color:true,g_slots:true,g_duel:true,max_bet:1000,egg_odds:[55,22,13,7,3],market_open:true,market_mult:1,stock_mult:{},freeze_at:0,demand:1,banner:'',loan_enabled:true,loan_rate:.1,loan_limit:50,tr_on:true,tr_fee:0,tr_min:1,tr_max:1000,tr_daily:500,tr_debt:true,g_flip:true,g_dice:true,g_boxes:true,g_wheel:true,trades_on:true,trade_max:10000,shiny_odds:0.02};
 
 /* ---------- pixel sprites (8x8) ---------- */
 const PAL = {x:'#efe6c8',a:'#e5352b',y:'#f7d117',o:'#e8892b',k:'#14111c',g:'#8c8a99',d:'#5d5b6b',w:'#f4f4f8',p:'#e86aa8',G:'#3aa655',r:'#e5352b',b:'#1f6fd0'};
@@ -302,14 +344,18 @@ const SPR = {
  hl:['kkkkkkkk','krrrrrrk','krrwwrrk','krwyywrk','krwyywrk','krrwwrrk','krrrrrrk','kkkkkkkk'],
  color:['..rrbb..','.rrrbbb.','rrrrbbbb','rrrrbbbb','yyyyGGGG','yyyyGGGG','.yyyGGG.','..yyGG..'],
  slots:['kkkkkkkk','kwwkwwkk','kwrkwbkk','kwwkwwkk','kkkkkkkk','kyyyyyyk','kyyyyyyk','kkkkkkkk'],
+ flip:['..yyyy..','.yooooy.','yoyyyyoy','yoyooyoy','yoyooyoy','yoyyyyoy','.yooooy.','..yyyy..'],
+ dice:['kkkkkkkk','kwwwwwwk','kwkwwkwk','kwwwwwwk','kwwwwwwk','kwkwwkwk','kwwwwwwk','kkkkkkkk'],
+ box:['..oooo..','.ooyyoo.','oooyyooo','kkkkkkkk','oooyyooo','oooyyooo','oooyyooo','kkkkkkkk'],
+ wheel:['..yyrr..','.yyyrrr.','yyyykrrr','bbbkkGGG','bbbbGGGG','.bbbGGG.','..bbGG..','........'],
  duel:['w......w','.w....w.','..w..w..','...ww...','...ww...','..y..y..','.y....y.','y......y']
 };
 const sc = {};
 function sprite(k){ if (sc[k]) return sc[k]; const c = document.createElement('canvas'); c.width = c.height = 8; const x = c.getContext('2d');
   SPR[k].forEach((row, j) => [...row].forEach((ch, i) => { if (PAL[ch]) { x.fillStyle = PAL[ch]; x.fillRect(i, j, 1, 1); } })); return sc[k] = c.toDataURL(); }
 const CRIT = {0:'A sleepy pebble. You lose.',1:'A chick. Cards back.',2:'A blue bird. Double!',3:'A unicorn! Triple!',10:'A DRAGON! TEN TIMES!'};
-const GAMES = [['eggs','egg','MYSTERY EGGS'],['hl','hl','HIGHER OR LOWER'],['color','color','COLOR SPIN'],['slots','slots','UNO SLOTS'],['duel','duel','DUELS']];
-const GKEY = {eggs:'egg_enabled', hl:'g_hl', color:'g_color', slots:'g_slots', duel:'g_duel'};
+const GAMES = [['eggs','egg','MYSTERY EGGS'],['hl','hl','HIGHER OR LOWER'],['color','color','COLOR SPIN'],['slots','slots','UNO SLOTS'],['duel','duel','DUELS'],['flip','flip','PENNY FLIP'],['dice','dice','LUCKY DICE'],['boxes','box','MYSTERY BOXES'],['wheel','wheel','PRIZE WHEEL']];
+const GKEY = {eggs:'egg_enabled', hl:'g_hl', color:'g_color', slots:'g_slots', duel:'g_duel', flip:'g_flip', dice:'g_dice', boxes:'g_boxes', wheel:'g_wheel'};
 
 /* ---------- economy ---------- */
 const COL = ['var(--red)','var(--yel)','var(--grn)','var(--blu)'], HEX = {red:'#e5352b',yellow:'#f7d117',green:'#3aa655',blue:'#1f6fd0'};
@@ -357,10 +403,12 @@ async function load(){
     sb.from('duels').select('*').order('id', {ascending:false}).limit(20), sb.from('hl_games').select('*').maybeSingle(), sb.from('card_inv').select('*'), sb.from('cards').select('*').order('id'), sb.from('packs').select('*').order('sort'), sb.from('transfers').select('*').order('id',{ascending:false}).limit(40), sb.from('admin_log').select('*').order('id',{ascending:false}).limit(60)]);
   if (!p.data) return toast('Could not load your account. Did you run both SQL files?');
   if (cd.data && cd.data.length) { CARDS = cd.data.map(a => ({id:a.id,n:a.name,r:a.rarity,c:a.color,v:a.val,p:a.packs})); Object.keys(CID).forEach(k => delete CID[k]); CARDS.forEach(c => CID[c.id] = c); }
-  if (pk.data && pk.data.length) PACKS = pk.data.map(a => ({k:a.k,name:a.name.toUpperCase(),n:a.n,w:a.w,g:a.g,col:a.col,price:a.price,on:a.active}));
+  if (pk.data && pk.data.length) PACKS = pk.data.map(a => ({k:a.k,name:a.name.toUpperCase() + (a.ends_at ? ' (LIMITED)' : ''),n:a.n,w:a.w,g:a.g,col:a.col,price:a.price,on:a.active,s:a.starts_at,e:a.ends_at}));
   TRX = tr.data || []; ALOG = al.data || [];
+  const [sh, tz, sw] = await Promise.all([sb.from('shiny_inv').select('*'), sb.from('trades').select('*').order('id', {ascending: false}).limit(60), sb.from('showcase').select('*')]);
+  shin = {}; (sh.data || []).forEach(r => { if (r.user_id === me.id) shin[r.card_id] = r.qty; }); TRD = tz.data || []; SHW = sw.data || [];
   prof = p.data; hold = {}; cost = {}; (h.data||[]).forEach(r => { hold[r.symbol] = r.qty; cost[r.symbol] = r.cost; });
-  inv = i.data||[]; shelves = s.data||[]; people = all.data||[]; lb = l.data||[]; logs = g.data||[]; duels = d.data||[]; hlg = hg.data || null; cinv = {}; (ci.data||[]).forEach(r => cinv[r.card_id] = r.qty);
+  inv = i.data||[]; shelves = s.data||[]; people = all.data||[]; lb = l.data||[]; logs = g.data||[]; duels = d.data||[]; hlg = hg.data || null; cinv = {}; (ci.data||[]).forEach(r => cinv[r.card_id] = r.qty); Object.keys(shin).forEach(k => cinv[k] = (cinv[k] || 0) + shin[k]);
   S = {...DEF}; (st.data||[]).forEach(r => S[r.key] = r.value);
   render();
 }
@@ -379,7 +427,7 @@ function render(){
   renderHome(); renderGames(); renderPortfolio(); renderCards();
   $('#bankinfo').innerHTML = `You owe <b class="${prof.owed?'dn':''}">${prof.owed}</b> cards. Limit ${S.loan_limit}. Interest ${Math.round(S.loan_rate*100)}% up front.` + (S.loan_enabled ? '' : '<br><span class="dn">The bank is closed.</span>');
   $('#lb').innerHTML = ranked().map((p,i) => `<div class="lb"><span class="n">${i+1}</span><span style="flex:1">${esc(p.username)}<br><span class="mute">${p.balance} cards, owes ${p.owed}</span></span><b class="px" style="font-size:12px;color:var(--yel)">${p.w}</b></div>`).join('');
-  $('#feed').innerHTML = feed(25); renderBank();
+  $('#feed').innerHTML = feed(25); renderBank(); renderTrade(); renderShow();
   renderAdmin();
 }
 const feed = n => logs.slice(0, n).map(l => `${new Date(l.at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} <b style="color:var(--ink)">${esc(l.username||'?')}</b> ${esc(l.msg)}`).join('<br>') || 'Quiet so far.';
@@ -565,13 +613,14 @@ function renderAdmin(){
     <div><button class="y" data-a="adm" data-u="${u}">${p.is_admin ? 'REMOVE ADMIN' : 'MAKE ADMIN'}</button> <button class="y" data-a="ban" data-u="${u}">${p.banned ? 'UNFREEZE' : 'FREEZE ACCOUNT'}</button>
     <button class="r" data-a="wipe" data-u="${u}">WIPE</button> <button class="r" data-a="del" data-u="${u}">DELETE ACCOUNT</button></div></div></details>`; };
   const odds = S.egg_odds, tot = odds.reduce((a,b) => a + +b, 0) || 1, ev = ((odds[1]*1 + odds[2]*2 + odds[3]*3 + odds[4]*10) / tot * 100).toFixed(0);
-  const T = [['ov','OVERVIEW'],['pl','PLAYERS'],['cp','CARDS+PACKS'],['gm','GAMES'],['mk','MARKET'],['bk','BANK'],['lg','LOGS']];
+  const T = [['ov','OVERVIEW'],['pl','PLAYERS'],['cp','CARDS+PACKS'],['gm','GAMES'],['mk','MARKET'],['bk','BANK'],['tr','TRADES+SHINY'],['lg','LOGS']];
   const stat = rows => `<div class="stats">${rows.map(([l,v]) => `<div class="stat"><span class="mute">${l}</span><b>${v}</b></div>`).join('')}</div>`;
   const packRow = p => { const k = p.k || 'NEW', id = x => `pe-${k}-${x}`;
     return `<div class="card" style="margin:10px 0"><h3 style="margin-top:0">${p.k ? 'PACK ' + p.k : 'NEW PACK'}</h3><div class="grid">
     ${p.k ? '' : `<label>Letter <input type="text" id="pe-NEW-k" maxlength="1" style="width:50px"></label>`}
     <label>Name <input type="text" id="${id('n')}" value="${esc(p.name || '')}"> Cards <input type="number" id="${id('c')}" value="${p.n || 5}" style="width:60px"> Price <input type="number" id="${id('p')}" value="${p.price || 50}" style="width:80px"></label>
     <label>Guaranteed rarity (1-6) <input type="number" id="${id('g')}" value="${p.g || 1}" style="width:60px"> Color <input type="text" id="${id('col')}" value="${p.col || '#3aa655'}" style="width:100px"> <label><input type="checkbox" id="${id('a')}" ${p.on === false ? '' : 'checked'}> Open</label></label>
+    <div>Limited time (optional): from <input type="datetime-local" id="${id('s')}" value="${toLoc(p.s)}"> until <input type="datetime-local" id="${id('e')}" value="${toLoc(p.e)}"></div>
     <div class="mute">Odds weights: ${RN.join(' / ')}</div><div>${[0,1,2,3,4,5].map(i => `<input type="number" step="any" id="${id('w' + i)}" value="${(p.w || [60,30,8,2,0,0])[i]}" style="width:62px">`).join(' ')}</div>
     <div><button class="y" data-a="savepack" data-k="${k}">SAVE PACK</button></div></div></div>`; };
   const secs = {
@@ -587,7 +636,7 @@ function renderAdmin(){
       <label>Value <input type="number" id="ce-v" value="1" style="width:80px"> Packs (letters) <input type="text" id="ce-p" value="A" style="width:90px"></label>
       <div><button class="y" data-a="savecard">SAVE CARD</button> <button class="r" data-a="delcard">DELETE CARD</button></div></div></div>
       <div class="card"><h2>PACKS</h2>${PACKS.map(packRow).join('')}${packRow({})}</div>`,
-    gm: `<div class="card"><h2>GAMES</h2><div class="grid"><div>${TG('egg_enabled','Eggs')} ${TG('g_hl','Higher/Lower')} ${TG('g_color','Color Spin')} ${TG('g_slots','Slots')} ${TG('g_duel','Duels')}</div>${A('max_bet','Max bet')}
+    gm: `<div class="card"><h2>GAMES</h2><div class="grid"><div>${TG('egg_enabled','Eggs')} ${TG('g_hl','Higher/Lower')} ${TG('g_color','Color Spin')} ${TG('g_slots','Slots')} ${TG('g_duel','Duels')} ${TG('g_flip','Penny Flip')} ${TG('g_dice','Lucky Dice')} ${TG('g_boxes','Boxes')} ${TG('g_wheel','Wheel')}</div>${A('max_bet','Max bet')}${A('shiny_odds','Shiny chance (0.02 = 2%)')}${TG('trades_on','Player trading')}${A('trade_max','Max money per trade')}
       <div class="mute">Egg odds weights (pebble, chick, bird, unicorn, dragon). Payback now ${ev}%.</div>
       <div>${odds.map((o,i) => `<input type="number" id="eo${i}" value="${o}" style="width:60px">`).join(' ')} <button data-a="saveodds">SAVE ODDS</button></div>
       <h3>OPEN DUELS</h3>${duels.filter(d => d.status === 'open').map(d => `<div class="row"><span>${who(d.creator)} / ${d.stake}</span><button class="r" data-a="dcancel" data-u="${d.id}">CANCEL AND REFUND</button></div>`).join('') || '<span class="mute">None.</span>'}</div></div>`,
@@ -599,6 +648,8 @@ function renderAdmin(){
     bk: `<div class="card"><h2>LOANS</h2><div class="grid">${TG('loan_enabled','Bank')}${A('loan_rate','Interest (0.1 = 10%)')}${A('loan_limit','Max owed')}</div></div>
       <div class="card"><h2>TRANSFERS</h2><div class="grid">${TG('tr_on','Sending')}${TG('tr_debt','Block while in debt')}${A('tr_fee','Fee (0.05 = 5%)')}${A('tr_min','Min per send')}${A('tr_max','Max per send')}${A('tr_daily','Daily cap per player')}</div>
       <h3>RECENT TRANSFERS</h3>${TRX.slice(0,15).map(t => `<div class="row"><span>${who(t.from_id)} to ${who(t.to_id)}${t.note ? ' / ' + esc(t.note) : ''}</span><span>${t.amt} ${t.reversed ? '(reversed)' : `<button class="r" data-a="revtr" data-u="${t.id}">REVERSE</button>`}</span></div>`).join('') || '<span class="mute">None yet.</span>'}</div>`,
+    tr: `<div class="card"><h2>GIVE SHINY CARD</h2><label>To <select id="gs-u">${people.map(p => `<option value="${p.id}">${esc(p.username)}</option>`).join('')}</select> Card <select id="gs-c">${CARDS.map(c => `<option value="${c.id}">${c.id} ${esc(c.n)}</option>`).join('')}</select> <button class="g" data-a="gshiny">GIVE</button></label></div>
+      <div class="card"><h2>TRADES</h2>${TRD.slice(0,25).map(t => `<div class="row"><span>#${t.id} ${who(t.from_id)} to ${who(t.to_id)} (${t.status})</span><span>${fmtT(t.give, t.give_money)} for ${fmtT(t.want, t.want_money)} ${t.status === 'open' ? `<button class="r" data-a="tcancel" data-u="${t.id}">CANCEL</button>` : ''}</span></div>`).join('') || '<span class="mute">No trades yet.</span>'}</div>`,
     lg: `<div class="card"><h2>ADMIN LOG</h2><div class="mute">${ALOG.map(l => `${new Date(l.at).toLocaleString([], {hour12:false})} ${esc(l.msg)}`).join('<br>') || 'Nothing yet.'}</div></div>
       <div class="card"><h2>DANGER ZONE</h2><button class="r" data-a="resetall">RESET EVERYONE TO ZERO</button> <button class="r" data-a="clrlog">CLEAR ACTIVITY LOG</button></div>`
   };
@@ -634,7 +685,9 @@ $('#t-admin').onclick = async e => { if (e.target.dataset.at) { atab = e.target.
     case 'savecard': return call('admin_save_card', {p_id: +gv('ce-id') || CARDS.reduce((m, c) => Math.max(m, c.id), 0) + 1, p_name: gv('ce-n'), p_rar: +gv('ce-r'), p_col: +gv('ce-c'), p_val: +gv('ce-v'), p_packs: gv('ce-p')});
     case 'delcard': return +gv('ce-id') && ok('Delete this card from the game and everyone\'s collection?') && call('admin_delete_card', {p_id: +gv('ce-id')});
     case 'savepack': { const k = d.k === 'NEW' ? gv('pe-NEW-k').trim().toUpperCase() : d.k; if (k.length !== 1) return toast('Pack key must be one letter');
-      return call('admin_save_pack', {p_k: k, p_name: gv(`pe-${d.k}-n`), p_n: +gv(`pe-${d.k}-c`), p_w: [0,1,2,3,4,5].map(i => +gv(`pe-${d.k}-w${i}`) || 0), p_g: +gv(`pe-${d.k}-g`), p_col: gv(`pe-${d.k}-col`), p_price: +gv(`pe-${d.k}-p`), p_active: document.getElementById(`pe-${d.k}-a`).checked}); }
+      return call('admin_save_pack', {p_k: k, p_name: gv(`pe-${d.k}-n`), p_n: +gv(`pe-${d.k}-c`), p_w: [0,1,2,3,4,5].map(i => +gv(`pe-${d.k}-w${i}`) || 0), p_g: +gv(`pe-${d.k}-g`), p_col: gv(`pe-${d.k}-col`), p_price: +gv(`pe-${d.k}-p`), p_active: document.getElementById(`pe-${d.k}-a`).checked, p_starts: gv(`pe-${d.k}-s`) ? new Date(gv(`pe-${d.k}-s`)).toISOString() : null, p_ends: gv(`pe-${d.k}-e`) ? new Date(gv(`pe-${d.k}-e`)).toISOString() : null}); }
+    case 'gshiny': return call('admin_give_shiny', {p_uid: gv('gs-u'), p_card: +gv('gs-c')});
+    case 'tcancel': return call('admin_cancel_trade', {p_id: +d.u});
     case 'revtr': return ok('Reverse this transfer?') && call('admin_reverse_transfer', {p_id: +d.u});
     case 'givepack': return call('admin_give_pack', {p_uid: gv('gp-u'), p_pack: gv('gp-k'), p_count: +gv('gp-n') || 1});
     case 'saveodds': return setS('egg_odds', [0,1,2,3,4].map(i => Math.max(0, n('eo' + i) || 0)));
@@ -723,7 +776,7 @@ const lockedEl = c => `<div class="tc locked ${csel === c.id ? 'sel' : ''}" data
 function renderCards(){
   const own = CARDS.filter(c => cinv[c.id] > 0), dup = CARDS.reduce((a,c) => a + Math.max(0, (cinv[c.id]||0) - 1), 0);
   $('#packs').innerHTML = PACKS.map((p, i) => { const pool = CARDS.filter(c => c.p.includes(p.k)), sp = pool.filter(c => c.p.length === 1).length, tot = p.w.reduce((a,b) => a + b, 0);
-    return `<div class="pack ${['D','H'].includes(p.k) ? 'd' : ''}"><img src="${packArt(p.col)}" alt=""><br><b class="px" style="font-size:9px">${p.name}</b><p class="mute" style="margin:8px 0">${p.n} cards / ${pool.length} possible / ${sp} special${p.g > 1 ? ' / 1 ' + RN[p.g-1] + ' or better guaranteed' : ''}</p><div class="odds">${p.w.map((w,j) => w ? `<span style="color:${RC[j]}">${RN[j]} ${(w/tot*100).toFixed(1)}%</span>` : '').filter(Boolean).join('<br>')}</div><p><button class="y" data-pack="${p.k}" ${S.packs_on && p.on ? '' : 'disabled'}>OPEN FOR ${priceOf(i)}</button></p></div>`; }).join('');
+    return `<div class="pack ${['D','H'].includes(p.k) ? 'd' : ''}"><img src="${packArt(p.col)}" alt=""><br><b class="px" style="font-size:9px">${p.name}</b><p class="mute" style="margin:8px 0">${p.n} cards / ${pool.length} possible / ${sp} special${p.g > 1 ? ' / 1 ' + RN[p.g-1] + ' or better guaranteed' : ''}</p><div class="odds">${p.w.map((w,j) => w ? `<span style="color:${RC[j]}">${RN[j]} ${(w/tot*100).toFixed(1)}%</span>` : '').filter(Boolean).join('<br>')}</div><p><button class="y" data-pack="${p.k}" ${S.packs_on && p.on && live(p) ? '' : 'disabled'}>OPEN FOR ${priceOf(i)}</button></p></div>`; }).join('');
   const best = own.slice().sort((a,b) => b.v - a.v)[0];
   $('#cstats').innerHTML = [['COLLECTED', own.length + '/' + CARDS.length],['VALUE', cardVal()],['DUPLICATES', dup],['BEST CARD', best ? best.n : '-']].map(([l,v]) => `<div class="stat"><span class="mute">${l}</span><b style="font-size:${l === 'BEST CARD' ? 8 : 12}px">${esc(v)}</b></div>`).join('');
   const f = $('#cfilter').value, list = CARDS.filter(c => f === 'all' || (f === 'owned' && cinv[c.id] > 0) || (f === 'missing' && !cinv[c.id]) || (f[0] === 'r' && c.r === +f[1]) || (f === 'special' && c.p.length === 1));
@@ -744,7 +797,7 @@ async function openPackFx(k){
   if (animating) return; animating = true; skipFx = false; const W = ms => sleep(skipFx ? 1 : ms);
   try {
     const pk = PACKS.find(p => p.k === k), r = await gcall('open_pack', {p_pack: k}); if (!r) return;
-    const cs = r.map(x => ({c: CID[x.id], nw: x.new})), best = Math.max(...cs.map(x => x.c.r));
+    const cs = r.map(x => ({c: CID[x.id], nw: x.new, sh: x.shiny})), best = Math.max(...cs.map(x => x.c.r));
     const ov = $('#packfx'), pack = $('#pfpack'), msg = $('#pfmsg'), box = $('#pfcards');
     ov.classList.remove('hide', 'shk'); box.innerHTML = ''; box.onclick = null; $('#pfsum').innerHTML = ''; ['pfagain','pfclose'].forEach(i => $('#'+i).classList.add('hide')); $('#pfskip').classList.remove('hide');
     $('#pfrays').classList.toggle('hide', best < 4); $('#pfrays').style.setProperty('--rc', RC[best-1]);
@@ -755,11 +808,12 @@ async function openPackFx(k){
     const pb = pack.getBoundingClientRect(); screenFlash('#fff'); burst(pb.left + pb.width/2, pb.top + pb.height/2, rcols(best), 60 + best*25, 9);
     pack.className = 'pf-pack hide'; tone(120, .4, 'sawtooth', .08); if (best >= 5) { ov.classList.add('shk'); setTimeout(() => ov.classList.remove('shk'), 700); }
     msg.textContent = 'TAP A CARD TO FLIP IT';
-    box.innerHTML = cs.map((x, i) => `<div class="fc" style="--i:${i}"><div class="fci"><div class="face fb"><div class="bk">UNO</div></div><div class="face ff">${cardEl(x.c, 0, '', false)}${x.nw ? '<i class="nw">NEW</i>' : ''}</div></div></div>`).join('');
+    box.innerHTML = cs.map((x, i) => `<div class="fc" style="--i:${i}"><div class="fci"><div class="face fb"><div class="bk">UNO</div></div><div class="face ff">${cardEl(x.c, 0, x.sh ? 'shiny' : '', false)}${x.nw ? '<i class="nw">NEW</i>' : ''}</div></div></div>`).join('');
     const els = [...box.children];
     const flip = async i => { if (els[i].dataset.f) return; els[i].dataset.f = 1; const c = cs[i].c, rr = c.r;
       if (rr >= 4 && !skipFx) { els[i].classList.add('pulse'); els[i].style.setProperty('--rc', RC[rr-1]); tone(300, .6, 'triangle', .05); msg.style.color = RC[rr-1]; msg.textContent = rr >= 6 ? '. . . ?' : '. . .'; await sleep(rr >= 5 ? 1300 : 700); els[i].classList.remove('pulse'); }
-      els[i].classList.add('flipped', 'h' + rr); chime(rr); await sleep(skipFx ? 1 : 380);
+      els[i].classList.add('flipped', 'h' + rr); chime(rr);
+      if (cs[i].sh) { els[i].classList.add('hs'); screenFlash('#fff'); tone(1320, .5, 'triangle', .06); if (rr < 4) { msg.style.color = '#fff'; msg.textContent = 'SHINY! ' + c.n.toUpperCase(); } } await sleep(skipFx ? 1 : 380);
       const b = els[i].getBoundingClientRect(); burst(b.left + b.width/2, b.top + b.height/2, rcols(rr), [0,0,10,25,50,110,260][rr], 8);
       if (rr >= 5) { screenFlash(rr >= 6 ? '#ff4fd8' : '#f7d117'); ov.classList.add('shk'); setTimeout(() => ov.classList.remove('shk'), 600); }
       if (rr >= 4) { msg.style.color = RC[rr-1]; msg.textContent = (rr === 6 ? 'MYTHIC!!! ' : rr === 5 ? 'LEGENDARY! ' : 'EPIC! ') + c.n.toUpperCase(); msg.classList.remove('pop'); void msg.offsetWidth; msg.classList.add('pop'); } };
@@ -801,6 +855,57 @@ document.addEventListener('click', async e => { const q = e.target.dataset && e.
 $('#t-admin').addEventListener('input', e => { if (e.target.id !== 'psearch') return; const v = e.target.value.toLowerCase(); document.querySelectorAll('#t-admin .pc').forEach(d => d.classList.toggle('hide', !d.dataset.n.includes(v))); });
 $('#t-admin').addEventListener('change', e => { if (e.target.id !== 'ce-id') return; const c = CID[e.target.value] || {n:'',r:1,c:0,v:1,p:'A'};
   ['n','r','c','v','p'].forEach(k => document.getElementById('ce-' + k).value = c[k]); });
+
+
+/* ---------- shiny / showcase / trading / new games ---------- */
+let TRD = [], SHW = [], shin = {}, tgive = [], twant = [];
+const live = p => (!p.s || Date.now() >= new Date(p.s)) && (!p.e || Date.now() <= new Date(p.e));
+const toLoc = t => t ? new Date(new Date(t) - new Date(t).getTimezoneOffset() * 60000).toISOString().slice(0, 16) : '';
+const fmtT = (items, m) => ((items || []).map(i => `${esc((CID[i.id] || {n: '?'}).n)}${i.s ? ' (shiny)' : ''} x${i.q}`).concat(m ? [m + ' cards'] : [])).join(', ') || 'nothing';
+function fillSel(el, opts) { const h = opts.join(''); if (el.dataset.h !== h) { const old = el.value; el.innerHTML = h; el.dataset.h = h; if (old) el.value = old; return true; } return false; }
+const ownOpts = () => CARDS.flatMap(c => { const sq = shin[c.id] || 0, pq = (cinv[c.id] || 0) - sq, o = []; if (pq > 0) o.push(`<option value="${c.id}:0">${esc(c.n)} (x${pq})</option>`); if (sq > 0) o.push(`<option value="${c.id}:1">\u2605 ${esc(c.n)} SHINY (x${sq})</option>`); return o; });
+function renderShow() {
+  const mine = ((SHW.find(x => x.user_id === me.id) || {}).items) || [], o = '<option value="">- empty -</option>' + ownOpts().join('');
+  [0, 1, 2].forEach(i => { const el = $('#sc' + i); if (fillSel(el, [o])) el.value = mine[i] ? `${mine[i].id}:${mine[i].s ? 1 : 0}` : ''; });
+  $('#scmine').innerHTML = mine.filter(x => CID[x.id]).map(x => cardEl(CID[x.id], 0, x.s ? 'shiny' : '', false)).join('') || '<span class="mute">Nothing pinned yet.</span>';
+  $('#shwall').innerHTML = people.map(p => { const it = ((SHW.find(x => x.user_id === p.id) || {}).items || []).filter(x => CID[x.id]);
+    return `<div style="margin:8px 0"><b>${esc(p.username)}</b><div class="cgrid">${it.map(x => cardEl(CID[x.id], 0, x.s ? 'shiny' : '', false)).join('') || '<span class="mute">No showcase yet.</span>'}</div></div>`; }).join('');
+}
+function renderTrade() {
+  fillSel($('#trwho'), people.filter(p => p.id !== me.id && !p.banned).map(p => `<option value="${p.id}">${esc(p.username)}</option>`));
+  fillSel($('#tgc'), ownOpts()); fillSel($('#twc'), CARDS.flatMap(c => [`<option value="${c.id}:0">${esc(c.n)}</option>`, `<option value="${c.id}:1">\u2605 ${esc(c.n)} SHINY</option>`]));
+  const lst = (a, k) => a.map((i, n) => `${esc(CID[i.id].n)}${i.s ? ' (shiny)' : ''} x${i.q} <button class="r" data-trm="${k}:${n}">X</button>`).join(' / ') || 'no cards yet';
+  $('#tgl').innerHTML = lst(tgive, 'g'); $('#twl').innerHTML = lst(twant, 'w');
+  const mine = TRD.filter(t => (t.from_id === me.id || t.to_id === me.id) && (t.status === 'open' || TRD.indexOf(t) < 8));
+  $('#tlist').innerHTML = mine.map(t => { const out = t.from_id === me.id, st = t.status === 'open';
+    return `<div class="row"><span>${out ? 'You offer ' + who(t.to_id) : who(t.from_id) + ' offers you'}: ${fmtT(t.give, t.give_money)} for ${fmtT(t.want, t.want_money)} (${t.status})</span><span>${st && !out ? `<button class="y" data-tacc="${t.id}">ACCEPT</button> <button class="r" data-tcan="${t.id}">DECLINE</button>` : ''}${st && out ? `<button class="r" data-tcan="${t.id}">CANCEL</button>` : ''}</span></div>`; }).join('') || '<span class="mute">No offers yet.</span>';
+}
+document.addEventListener('click', async e => { const d = e.target.dataset || {};
+  if (e.target.id === 'scsave') { const items = [0, 1, 2].map(i => $('#sc' + i).value).filter(Boolean).map(v => ({id: +v.split(':')[0], s: v.endsWith(':1')})); if (await call('set_showcase', {p_items: items})) toast('Showcase saved!'); }
+  if (e.target.id === 'tgadd' || e.target.id === 'twadd') { const g = e.target.id === 'tgadd', v = $(g ? '#tgc' : '#twc').value, q = Math.max(1, parseInt($(g ? '#tgq' : '#twq').value) || 1); if (!v) return;
+    const id = +v.split(':')[0], sx = v.endsWith(':1'), a = g ? tgive : twant, f = a.find(x => x.id === id && x.s === sx); f ? f.q += q : a.push({id, s: sx, q}); renderTrade(); }
+  if (d.trm) { const [k, n] = d.trm.split(':'); (k === 'g' ? tgive : twant).splice(+n, 1); renderTrade(); }
+  if (e.target.id === 'tclear') { tgive = []; twant = []; $('#tgm').value = 0; $('#twm').value = 0; renderTrade(); }
+  if (e.target.id === 'tsend') { const to = $('#trwho').value; if (!to) return toast('Pick a player');
+    if (await call('trade_offer', {p_to: to, p_give: tgive, p_want: twant, p_gm: +$('#tgm').value || 0, p_wm: +$('#twm').value || 0})) { tgive = []; twant = []; $('#tgm').value = 0; $('#twm').value = 0; toast('Offer sent!'); renderTrade(); } }
+  if (d.tacc) { if (await call('trade_accept', {p_id: +d.tacc})) { tone(880, .12); toast('Trade done!'); } }
+  if (d.tcan) await call('trade_cancel', {p_id: +d.tcan});
+});
+
+const spin = async (el, vals, n = 10) => { for (let i = 0; i < n; i++) { el.textContent = vals[i % vals.length]; tone(300 + i * 40, .05, 'square', .03); await sleep(70 + i * 14); } };
+const stakeOf = id => parseInt($(id).value) || 0;
+const done = (m, r, st) => { $(m).textContent = r.payout > 0 ? (r.payout > st ? `YOU WIN +${r.payout - st}!` : `Cards back: ${r.payout}`) : `Lost ${st}. Try again!`; if (r.payout > st) { tone(880, .15); tone(1100, .2); } };
+$('#dchance').oninput = () => { const c = +$('#dchance').value; $('#dpct').textContent = c + '%'; $('#dinfo').textContent = `Roll 1-${c} to win. Pays ${(95 / c).toFixed(2)}x`; }; $('#dchance').oninput();
+$('#t-games').addEventListener('click', e => { const t = e.target, d = t.dataset || {};
+  if (d.flip) guard(async () => { const st = stakeOf('#fstake'); if (st < 1) return toast('Bet at least 1 card'); const r = await gcall('play_flip', {p_stake: st, p_pick: d.flip}); if (!r) return;
+    await spin($('#coin'), ['H', 'T']); $('#coin').textContent = r.face === 'heads' ? 'H' : 'T'; done('#fmsg', r, st); });
+  if (t.id === 'droll-go') guard(async () => { const st = stakeOf('#dstake'), c = +$('#dchance').value; if (st < 1) return toast('Bet at least 1 card'); const r = await gcall('play_dice', {p_stake: st, p_chance: c}); if (!r) return;
+    await spin($('#droll'), ['12', '57', '88', '34', '70', '9'], 12); $('#droll').textContent = r.roll; done('#dmsg', r, st); });
+  if (d.box) guard(async () => { const st = stakeOf('#bstake'); if (st < 1) return toast('Bet at least 1 card'); const r = await gcall('play_boxes', {p_stake: st, p_pick: +d.box}); if (!r) return;
+    [1, 2, 3].forEach(i => $('#b' + i).textContent = '?'); await sleep(500); [1, 2, 3].forEach(i => { $('#b' + i).textContent = i === r.prize ? '$' : 'x'; }); done('#bmsg', r, st); });
+  if (t.id === 'wspin') guard(async () => { const st = stakeOf('#wstake'); if (st < 1) return toast('Bet at least 1 card'); const r = await gcall('play_wheel', {p_stake: st}); if (!r) return;
+    await spin($('#wres'), ['0x', '2x', '0.5x', '10x', '1x', '1.5x', '0x'], 16); $('#wres').textContent = r.mult + 'x'; done('#wmsg', r, st); });
+});
 
 /* ---------- login ---------- */
 const email = u => u.trim().toLowerCase().replace(/[^a-z0-9]/g, '') + '@pond.local';
