@@ -143,6 +143,10 @@ button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(2
 @keyframes shn{from{background-position:130% 0}to{background-position:-130% 0}}
 .fc.hs .tc{animation:shn2 .6s steps(6) 2}@keyframes shn2{50%{filter:brightness(2)}}
 @media(prefers-reduced-motion:reduce){.tc.shiny::after,.tc.shiny .tart img{animation:none!important}}
+
+.packwrap{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start}.packwrap .packs{flex:2 1 300px;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
+.pack{cursor:pointer}.pack.sel{border-color:var(--yel);box-shadow:0 0 0 3px #000,0 0 12px var(--yel)}
+.pdet{flex:1 1 230px;background:#0d0b14;border:4px solid var(--line);padding:12px}
 </style>
 </head>
 <body>
@@ -164,7 +168,7 @@ button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(2
   <div id="tapewrap"><span id="tape"></span></div>
   <div id="ban" class="hide"><span id="bant"></span></div>
   <nav id="tabs">
-    <button data-t="home">HOME</button><button data-t="games">GAMES</button><button data-t="market">MARKET</button><button data-t="cards">CARDS</button>
+    <button data-t="home">HOME</button><button data-t="games">GAMES</button><button data-t="market">MARKET</button><button data-t="cards">CARDS</button><button data-t="trade">TRADE</button>
     <button data-t="bank">BANK</button><button data-t="board">BOARD</button><button data-t="admin" class="hide">ADMIN</button>
   </nav>
 
@@ -273,13 +277,18 @@ button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(2
 
   <!-- CARDS -->
   <section id="t-cards" class="hide">
-    <div class="card"><h2>CARD PACKS</h2><p class="mute">Collect every Uno creature. Pick a pack and open it any time. The Ultra Wild Pack is the hardest to crack. <span id="ptax"></span></p><div class="packs" id="packs"></div></div>
+    <div class="card"><h2>CARD PACKS</h2><p class="mute">Collect every Uno creature. Pick a pack and open it any time. The Ultra Wild Pack is the hardest to crack. <span id="ptax"></span></p><div class="packwrap"><div class="packs" id="packs"></div><div class="pdet" id="packdetail"></div></div></div>
     <div class="card"><h2>MY COLLECTION</h2><div class="stats" id="cstats"></div>
       <p>SHOW <select id="cfilter"><option value="all">All cards</option><option value="owned">Owned</option><option value="missing">Missing</option><option value="r1">Common</option><option value="r2">Uncommon</option><option value="r3">Rare</option><option value="r4">Epic</option><option value="r5">Legendary</option><option value="r6">Mythic</option><option value="special">Special (one pack only)</option></select>
       <button class="y" id="sellext">SELL ALL DUPLICATES</button></p>
       <div id="cdetail"></div><div class="cgrid" id="cgrid"></div></div>
     <div class="card"><h2>MY SHOWCASE</h2><p class="mute">Pin up to 3 favorite cards. Everyone sees them on the BOARD tab. Shiny cards sparkle!</p>
       <p><select id="sc0"></select> <select id="sc1"></select> <select id="sc2"></select> <button class="y" id="scsave">SAVE</button></p><div class="cgrid" id="scmine"></div></div>
+    <details class="card rules"><summary>HOW IT WORKS</summary><p class="mute">There are loads of creatures in 6 rarities: common, uncommon, rare, epic, legendary and the super rare MYTHIC. Each card has its own value. Skip Pack is cheap and mostly commons. Reverse Pack guarantees an uncommon or better. Wild Draw Four Pack guarantees a rare or better and holds some cards you cannot find anywhere else. The Ultra Wild Pack costs a lot, guarantees an epic or better and is the only way to get a MYTHIC (about 1 in 80 cards). SPECIAL cards can only be found in one pack. Sell any card back for its value, or sell all extra copies at once and keep one of each. Your collection value counts toward your net worth. Click a card to see it up close, and move your mouse over a card to tilt it.</p></details>
+  </section>
+
+  <!-- BANK -->
+  <section id="t-trade" class="hide">
     <div class="card"><h2>TRADING POST</h2><p class="mute">Swap cards with another player, or trade cards for money. Nothing moves until they accept. <span id="ttax"></span></p>
       <p>TRADE WITH <select id="trwho"></select></p>
       <h3>I GIVE</h3><div id="tgl" class="mute"></div>
@@ -289,12 +298,9 @@ button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(2
       <p><select id="twc"></select> x<input id="twq" type="number" min="1" value="1" style="width:60px"> <button id="twadd">ADD</button> + <input id="twm" type="number" min="0" value="0" style="width:80px"> MONEY</p>
       <p><button class="y" id="tsend">SEND OFFER</button> <button id="tclear">CLEAR</button></p>
       <h3>OFFERS</h3><div id="tlist"></div></div>
-    <div class="card"><h2>HOW IT WORKS</h2><p class="mute">There are loads of creatures in 6 rarities: common, uncommon, rare, epic, legendary and the super rare MYTHIC. Each card has its own value. Skip Pack is cheap and mostly commons. Reverse Pack guarantees an uncommon or better. Wild Draw Four Pack guarantees a rare or better and holds some cards you cannot find anywhere else. The Ultra Wild Pack costs a lot, guarantees an epic or better and is the only way to get a MYTHIC (about 1 in 80 cards). SPECIAL cards can only be found in one pack. Sell any card back for its value, or sell all extra copies at once and keep one of each. Your collection value counts toward your net worth. Click a card to see it up close, and move your mouse over a card to tilt it.</p></div>
   </section>
 
-  <!-- BANK -->
   <section id="t-bank" class="hide">
-    <div class="card"><h2>TAXES</h2><div id="taxbox"></div></div>
     <div class="card"><h2>SEND CARDS</h2><p class="mute" id="trinfo"></p>
       <p><select id="trto"></select> <input id="tramt" type="number" min="1" value="10"> <input id="trnote" type="text" placeholder="note (optional)" style="width:150px" maxlength="60"> <button class="y" id="trsend">SEND</button></p>
       <p class="trq"><button data-tq="5">5</button> <button data-tq="10">10</button> <button data-tq="25">25</button> <button data-tq="100">100</button> <button data-tq="all">ALL</button></p>
@@ -303,6 +309,7 @@ button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(2
       <p><input id="bor" type="number" min="1" value="10"> <button class="y" id="borrow">BORROW</button></p>
       <p><input id="rep" type="number" min="1" value="10"> <button class="g" id="repay">REPAY</button></p></div>
     <div class="card"><h2>REAL UNO CARDS</h2><p class="mute">Only the admin can add or remove cards when real Uno cards are swapped. Ask the admin to update your balance.</p></div>
+    <div class="card"><h2>TAXES</h2><div id="taxbox"></div></div>
   </section>
 
   <section id="t-board" class="hide">
@@ -591,7 +598,7 @@ $('#repay').onclick = async () => { if (await call('repay_loan', {amt: parseInt(
 
 /* ---------- navigation ---------- */
 function go(k){ document.querySelectorAll('section').forEach(s => s.classList.toggle('hide', s.id !== 't-'+k));
-  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === k)); if (k !== 'games') showGame(null); if (k === 'board' || k === 'admin') load(); }
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === k)); if (k !== 'games') showGame(null); if (k === 'board' || k === 'admin' || k === 'trade') load(); }
 $('#tabs').onclick = e => e.target.dataset.t && go(e.target.dataset.t);
 $('#t-home').onclick = e => { const k = e.target.dataset.go; if (k) { go(k); if (e.target.dataset.g) showGame(e.target.dataset.g); } };
 
@@ -781,8 +788,10 @@ const lockedEl = c => `<div class="tc locked ${csel === c.id ? 'sel' : ''}" data
 /* collection UI */
 function renderCards(){
   const own = CARDS.filter(c => cinv[c.id] > 0), dup = CARDS.reduce((a,c) => a + Math.max(0, (cinv[c.id]||0) - 1), 0);
-  $('#packs').innerHTML = PACKS.map((p, i) => { const pool = CARDS.filter(c => c.p.includes(p.k)), sp = pool.filter(c => c.p.length === 1).length, tot = p.w.reduce((a,b) => a + b, 0);
-    return `<div class="pack ${['D','H'].includes(p.k) ? 'd' : ''}"><img src="${packArt(p.col)}" alt=""><br><b class="px" style="font-size:9px">${p.name}</b><p class="mute" style="margin:8px 0">${p.n} cards / ${pool.length} possible / ${sp} special${p.g > 1 ? ' / 1 ' + RN[p.g-1] + ' or better guaranteed' : ''}</p><div class="odds">${p.w.map((w,j) => w ? `<span style="color:${RC[j]}">${RN[j]} ${(w/tot*100).toFixed(1)}%</span>` : '').filter(Boolean).join('<br>')}</div><p><button class="y" data-pack="${p.k}" ${S.packs_on && p.on && live(p) ? '' : 'disabled'}>OPEN FOR ${priceOf(i)}</button></p></div>`; }).join('');
+  $('#packs').innerHTML = PACKS.map((p, i) => `<div class="pack ${['D','H'].includes(p.k) ? 'd' : ''} ${psel === p.k ? 'sel' : ''}" data-psel="${p.k}"><img src="${packArt(p.col)}" alt=""><br><b class="px" style="font-size:8px">${p.name}</b><p class="mute" style="margin:6px 0 0"><b class="up">${priceOf(i)}</b>${S.packs_on && p.on && live(p) ? '' : ' (closed)'}</p></div>`).join('');
+  const sp0 = PACKS.find(p => p.k === psel);
+  $('#packdetail').innerHTML = !sp0 ? '<span class="mute">Tap a pack to see what is inside and your chances.</span>' : (() => { const p = sp0, i = PACKS.indexOf(p), pool = CARDS.filter(c => c.p.includes(p.k)), sp = pool.filter(c => c.p.length === 1).length, tot = p.w.reduce((a, b) => a + b, 0), tx = S.tax_on === false ? 0 : Math.floor(priceOf(i) * (+S.tax_pack || 0));
+    return `<div style="text-align:center"><img src="${packArt(p.col)}" alt="" style="width:64px;height:82px;image-rendering:pixelated"><br><b class="px" style="font-size:9px">${p.name}</b></div><p class="mute" style="margin:8px 0">${p.n} cards / ${pool.length} possible / ${sp} special${p.g > 1 ? ' / 1 ' + RN[p.g-1] + ' or better guaranteed' : ''}${p.e ? ' / ends ' + new Date(p.e).toLocaleString() : ''}</p><div class="odds">${p.w.map((w, j) => w ? `<span style="color:${RC[j]}">${RN[j]} ${(w / tot * 100).toFixed(1)}%</span>` : '').filter(Boolean).join('<br>')}</div><p style="text-align:center"><button class="y" data-pack="${p.k}" ${S.packs_on && p.on && live(p) ? '' : 'disabled'}>OPEN FOR ${priceOf(i)}${tx ? ' +' + tx + ' tax' : ''}</button></p>`; })();
   const best = own.slice().sort((a,b) => b.v - a.v)[0];
   $('#cstats').innerHTML = [['COLLECTED', own.length + '/' + CARDS.length],['VALUE', cardVal()],['DUPLICATES', dup],['BEST CARD', best ? best.n : '-']].map(([l,v]) => `<div class="stat"><span class="mute">${l}</span><b style="font-size:${l === 'BEST CARD' ? 8 : 12}px">${esc(v)}</b></div>`).join('');
   const f = $('#cfilter').value, list = CARDS.filter(c => f === 'all' || (f === 'owned' && cinv[c.id] > 0) || (f === 'missing' && !cinv[c.id]) || (f[0] === 'r' && c.r === +f[1]) || (f === 'special' && c.p.length === 1));
@@ -834,7 +843,8 @@ async function openPackFx(k){
     ['pfagain','pfclose'].forEach(i => $('#'+i).classList.remove('hide')); $('#pfskip').classList.add('hide');
   } finally { animating = false; await load(); }
 }
-$('#packs').onclick = e => { const k = e.target.dataset.pack; if (k) { tone(440, .08); openPackFx(k); } };
+$('#packs').onclick = e => { const t = e.target.closest('[data-psel]'); if (t) { psel = t.dataset.psel; tone(440, .08); renderCards(); } };
+$('#packdetail').onclick = e => { const k = e.target.dataset.pack; if (k) { tone(440, .08); openPackFx(k); } };
 $('#pfskip').onclick = () => { skipFx = true; };
 $('#pfagain').onclick = e => openPackFx(e.target.dataset.k);
 $('#pfclose').onclick = () => $('#packfx').classList.add('hide');
@@ -878,6 +888,7 @@ function renderShow() {
     return `<div style="margin:8px 0"><b>${esc(p.username)}</b><div class="cgrid">${it.map(x => cardEl(CID[x.id], 0, x.s ? 'shiny' : '', false)).join('') || '<span class="mute">No showcase yet.</span>'}</div></div>`; }).join('');
 }
 function renderTrade() {
+  const nin = TRD.filter(t => t.to_id === me.id && t.status === 'open').length; document.querySelector('[data-t=trade]').textContent = 'TRADE' + (nin ? ' (' + nin + ')' : '');
   fillSel($('#trwho'), people.filter(p => p.id !== me.id && !p.banned).map(p => `<option value="${p.id}">${esc(p.username)}</option>`));
   fillSel($('#tgc'), ownOpts()); fillSel($('#twc'), wantOpts()); fetchTheirs();
   const lst = (a, k) => a.map((i, n) => `${esc(CID[i.id].n)}${i.s ? ' (shiny)' : ''} x${i.q} <button class="r" data-trm="${k}:${n}">X</button>`).join(' / ') || 'no cards yet';
@@ -958,6 +969,7 @@ document.addEventListener('click', e => { const t = e.target.closest('[data-tw]'
   if (a) { if (a.q < max) a.q++; } else twant.push({id: +id, s: sh, q: 1}); renderTrade(); toast('Added to what you want'); });
 document.addEventListener('change', e => { if (e.target.id === 'trwho') { theirs = null; theirFor = null; twant = []; renderTheirs(); renderTrade(); fetchTheirs(true); } if (e.target.id === 'tfilter') renderTheirs(); });
 
+let psel = null;
 /* ---------- login ---------- */
 const email = u => u.trim().toLowerCase().replace(/[^a-z0-9]/g, '') + '@pond.local';
 async function enter(user){ me = user; $('#auth').classList.add('hide'); $('#app').classList.remove('hide'); $('#critter').src = sprite('egg'); go('home'); await sb.rpc('settle_my_tax'); await load();
