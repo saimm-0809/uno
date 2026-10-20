@@ -188,7 +188,7 @@ button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(2
     <div id="hub">
       <div class="card"><h2>GAMES ROOM</h2><p class="mute">Pick a game. Every result is decided by the server, so nobody can cheat. Each game has a HOW TO PLAY box.</p>
         <div class="hub" id="hubtiles"></div></div>
-      <div class="card"><h2>HOUSE RULES</h2><p class="mute">Max bet: <span id="maxbet"></span> cards. Your bet is taken when you press the button. Games can be closed by the admin. If a game is not fun anymore, stop. These are only play cards between brothers.</p></div>
+      <div class="card"><h2>HOUSE RULES</h2><p class="mute">Max bet: <span id="maxbet"></span> cards. Your bet is taken when you press the button. Games can be closed by the admin. If a game is not fun anymore, stop. These are only play cards between brothers. <span id="gtax"></span></p></div>
     </div>
 
     <div id="g-eggs" class="hide gp"><div class="card"><h2>MYSTERY EGGS</h2><button data-back>BACK</button>
@@ -273,14 +273,14 @@ button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(2
 
   <!-- CARDS -->
   <section id="t-cards" class="hide">
-    <div class="card"><h2>CARD PACKS</h2><p class="mute">Collect every Uno creature. Pick a pack and open it any time. The Ultra Wild Pack is the hardest to crack.</p><div class="packs" id="packs"></div></div>
+    <div class="card"><h2>CARD PACKS</h2><p class="mute">Collect every Uno creature. Pick a pack and open it any time. The Ultra Wild Pack is the hardest to crack. <span id="ptax"></span></p><div class="packs" id="packs"></div></div>
     <div class="card"><h2>MY COLLECTION</h2><div class="stats" id="cstats"></div>
       <p>SHOW <select id="cfilter"><option value="all">All cards</option><option value="owned">Owned</option><option value="missing">Missing</option><option value="r1">Common</option><option value="r2">Uncommon</option><option value="r3">Rare</option><option value="r4">Epic</option><option value="r5">Legendary</option><option value="r6">Mythic</option><option value="special">Special (one pack only)</option></select>
       <button class="y" id="sellext">SELL ALL DUPLICATES</button></p>
       <div id="cdetail"></div><div class="cgrid" id="cgrid"></div></div>
     <div class="card"><h2>MY SHOWCASE</h2><p class="mute">Pin up to 3 favorite cards. Everyone sees them on the BOARD tab. Shiny cards sparkle!</p>
       <p><select id="sc0"></select> <select id="sc1"></select> <select id="sc2"></select> <button class="y" id="scsave">SAVE</button></p><div class="cgrid" id="scmine"></div></div>
-    <div class="card"><h2>TRADING POST</h2><p class="mute">Swap cards with another player, or trade cards for money. Nothing moves until they accept.</p>
+    <div class="card"><h2>TRADING POST</h2><p class="mute">Swap cards with another player, or trade cards for money. Nothing moves until they accept. <span id="ttax"></span></p>
       <p>TRADE WITH <select id="trwho"></select></p>
       <h3>I GIVE</h3><div id="tgl" class="mute"></div>
       <p><select id="tgc"></select> x<input id="tgq" type="number" min="1" value="1" style="width:60px"> <button id="tgadd">ADD</button> + <input id="tgm" type="number" min="0" value="0" style="width:80px"> MONEY</p>
@@ -293,6 +293,7 @@ button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(2
 
   <!-- BANK -->
   <section id="t-bank" class="hide">
+    <div class="card"><h2>TAXES</h2><div id="taxbox"></div></div>
     <div class="card"><h2>SEND CARDS</h2><p class="mute" id="trinfo"></p>
       <p><select id="trto"></select> <input id="tramt" type="number" min="1" value="10"> <input id="trnote" type="text" placeholder="note (optional)" style="width:150px" maxlength="60"> <button class="y" id="trsend">SEND</button></p>
       <p class="trq"><button data-tq="5">5</button> <button data-tq="10">10</button> <button data-tq="25">25</button> <button data-tq="100">100</button> <button data-tq="all">ALL</button></p>
@@ -330,7 +331,7 @@ const sb = supabase.createClient('https://nmspdwrpwuigiwjnrevt.supabase.co', 'sb
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let me, prof, people = [], hold = {}, cost = {}, inv = [], shelves = [], lb = [], logs = [], duels = [], hlg = null, cinv = {}, S = {}, sel = 'CARR', built = false, pick = 'red', animating = false;
-const DEF = {pack_prices:[8,28,100,300],packs_on:true,egg_enabled:true,g_hl:true,g_color:true,g_slots:true,g_duel:true,max_bet:1000,egg_odds:[55,22,13,7,3],market_open:true,market_mult:1,stock_mult:{},freeze_at:0,demand:1,banner:'',loan_enabled:true,loan_rate:.1,loan_limit:50,tr_on:true,tr_fee:0,tr_min:1,tr_max:1000,tr_daily:500,tr_debt:true,g_flip:true,g_dice:true,g_boxes:true,g_wheel:true,trades_on:true,trade_max:10000,shiny_odds:0.02};
+const DEF = {pack_prices:[8,28,100,300],packs_on:true,egg_enabled:true,g_hl:true,g_color:true,g_slots:true,g_duel:true,max_bet:1000,egg_odds:[55,22,13,7,3],market_open:true,market_mult:1,stock_mult:{},freeze_at:0,demand:1,banner:'',loan_enabled:true,loan_rate:.1,loan_limit:50,tr_on:true,tr_fee:0,tr_min:1,tr_max:1000,tr_daily:500,tr_debt:true,g_flip:true,g_dice:true,g_boxes:true,g_wheel:true,trades_on:true,trade_max:10000,shiny_odds:0.02,tax_on:true,tax_send:0.02,tax_recv:0.01,tax_trade:0.03,tax_gamble:0.10,tax_sell:0.05,tax_market:0.03,tax_bank:0.05,tax_pack:0.05,tax_income:0.05};
 
 /* ---------- pixel sprites (8x8) ---------- */
 const PAL = {x:'#efe6c8',a:'#e5352b',y:'#f7d117',o:'#e8892b',k:'#14111c',g:'#8c8a99',d:'#5d5b6b',w:'#f4f4f8',p:'#e86aa8',G:'#3aa655',r:'#e5352b',b:'#1f6fd0'};
@@ -405,8 +406,8 @@ async function load(){
   if (cd.data && cd.data.length) { CARDS = cd.data.map(a => ({id:a.id,n:a.name,r:a.rarity,c:a.color,v:a.val,p:a.packs})); Object.keys(CID).forEach(k => delete CID[k]); CARDS.forEach(c => CID[c.id] = c); }
   if (pk.data && pk.data.length) PACKS = pk.data.map(a => ({k:a.k,name:a.name.toUpperCase() + (a.ends_at ? ' (LIMITED)' : ''),n:a.n,w:a.w,g:a.g,col:a.col,price:a.price,on:a.active,s:a.starts_at,e:a.ends_at}));
   TRX = tr.data || []; ALOG = al.data || [];
-  const [sh, tz, sw] = await Promise.all([sb.from('shiny_inv').select('*'), sb.from('trades').select('*').order('id', {ascending: false}).limit(60), sb.from('showcase').select('*')]);
-  shin = {}; (sh.data || []).forEach(r => { if (r.user_id === me.id) shin[r.card_id] = r.qty; }); TRD = tz.data || []; SHW = sw.data || [];
+  const [sh, tz, sw, ts] = await Promise.all([sb.from('shiny_inv').select('*'), sb.from('trades').select('*').order('id', {ascending: false}).limit(60), sb.from('showcase').select('*'), sb.rpc('tax_summary')]);
+  shin = {}; (sh.data || []).forEach(r => { if (r.user_id === me.id) shin[r.card_id] = r.qty; }); TRD = tz.data || []; SHW = sw.data || []; TAXS = ts.data || null;
   prof = p.data; hold = {}; cost = {}; (h.data||[]).forEach(r => { hold[r.symbol] = r.qty; cost[r.symbol] = r.cost; });
   inv = i.data||[]; shelves = s.data||[]; people = all.data||[]; lb = l.data||[]; logs = g.data||[]; duels = d.data||[]; hlg = hg.data || null; cinv = {}; (ci.data||[]).forEach(r => cinv[r.card_id] = r.qty); Object.keys(shin).forEach(k => cinv[k] = (cinv[k] || 0) + shin[k]);
   S = {...DEF}; (st.data||[]).forEach(r => S[r.key] = r.value);
@@ -427,7 +428,7 @@ function render(){
   renderHome(); renderGames(); renderPortfolio(); renderCards();
   $('#bankinfo').innerHTML = `You owe <b class="${prof.owed?'dn':''}">${prof.owed}</b> cards. Limit ${S.loan_limit}. Interest ${Math.round(S.loan_rate*100)}% up front.` + (S.loan_enabled ? '' : '<br><span class="dn">The bank is closed.</span>');
   $('#lb').innerHTML = ranked().map((p,i) => `<div class="lb"><span class="n">${i+1}</span><span style="flex:1">${esc(p.username)}<br><span class="mute">${p.balance} cards, owes ${p.owed}</span></span><b class="px" style="font-size:12px;color:var(--yel)">${p.w}</b></div>`).join('');
-  $('#feed').innerHTML = feed(25); renderBank(); renderTrade(); renderShow();
+  $('#feed').innerHTML = feed(25); renderBank(); renderTrade(); renderShow(); renderTax();
   renderAdmin();
 }
 const feed = n => logs.slice(0, n).map(l => `${new Date(l.at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} <b style="color:var(--ink)">${esc(l.username||'?')}</b> ${esc(l.msg)}`).join('<br>') || 'Quiet so far.';
@@ -613,7 +614,7 @@ function renderAdmin(){
     <div><button class="y" data-a="adm" data-u="${u}">${p.is_admin ? 'REMOVE ADMIN' : 'MAKE ADMIN'}</button> <button class="y" data-a="ban" data-u="${u}">${p.banned ? 'UNFREEZE' : 'FREEZE ACCOUNT'}</button>
     <button class="r" data-a="wipe" data-u="${u}">WIPE</button> <button class="r" data-a="del" data-u="${u}">DELETE ACCOUNT</button></div></div></details>`; };
   const odds = S.egg_odds, tot = odds.reduce((a,b) => a + +b, 0) || 1, ev = ((odds[1]*1 + odds[2]*2 + odds[3]*3 + odds[4]*10) / tot * 100).toFixed(0);
-  const T = [['ov','OVERVIEW'],['pl','PLAYERS'],['cp','CARDS+PACKS'],['gm','GAMES'],['mk','MARKET'],['bk','BANK'],['tr','TRADES+SHINY'],['lg','LOGS']];
+  const T = [['ov','OVERVIEW'],['pl','PLAYERS'],['cp','CARDS+PACKS'],['gm','GAMES'],['mk','MARKET'],['bk','BANK'],['tr','TRADES+SHINY'],['tx','TAXES'],['lg','LOGS']];
   const stat = rows => `<div class="stats">${rows.map(([l,v]) => `<div class="stat"><span class="mute">${l}</span><b>${v}</b></div>`).join('')}</div>`;
   const packRow = p => { const k = p.k || 'NEW', id = x => `pe-${k}-${x}`;
     return `<div class="card" style="margin:10px 0"><h3 style="margin-top:0">${p.k ? 'PACK ' + p.k : 'NEW PACK'}</h3><div class="grid">
@@ -646,8 +647,11 @@ function renderAdmin(){
       ${A('market_mult','Global price x')}
       <div class="mute">Price x per stock:</div><div>${STOCKS.map(s => `${s.sym} <input type="number" step="any" id="sm-${s.sym}" value="${(S.stock_mult||{})[s.sym] ?? 1}" style="width:64px">`).join(' ')} <button data-a="savesm">SAVE</button></div></div></div>`,
     bk: `<div class="card"><h2>LOANS</h2><div class="grid">${TG('loan_enabled','Bank')}${A('loan_rate','Interest (0.1 = 10%)')}${A('loan_limit','Max owed')}</div></div>
-      <div class="card"><h2>TRANSFERS</h2><div class="grid">${TG('tr_on','Sending')}${TG('tr_debt','Block while in debt')}${A('tr_fee','Fee (0.05 = 5%)')}${A('tr_min','Min per send')}${A('tr_max','Max per send')}${A('tr_daily','Daily cap per player')}</div>
+      <div class="card"><h2>TRANSFERS</h2><div class="grid">${TG('tr_on','Sending')}${TG('tr_debt','Block while in debt')}${A('tr_min','Min per send')}${A('tr_max','Max per send')}${A('tr_daily','Daily cap per player')}</div>
       <h3>RECENT TRANSFERS</h3>${TRX.slice(0,15).map(t => `<div class="row"><span>${who(t.from_id)} to ${who(t.to_id)}${t.note ? ' / ' + esc(t.note) : ''}</span><span>${t.amt} ${t.reversed ? '(reversed)' : `<button class="r" data-a="revtr" data-u="${t.id}">REVERSE</button>`}</span></div>`).join('') || '<span class="mute">None yet.</span>'}</div>`,
+    tx: `<div class="card"><h2>TAX RATES</h2><p class="mute">Rates are fractions: 0.05 = 5%. Set a rate to 0 to turn that tax off.</p><div class="grid">${TG('tax_on','All taxes enabled')}${TAXES.map(([k, n]) => A(k, n + ' rate')).join('')}</div></div>
+      <div class="card"><h2>TAX COLLECTED</h2>${stat(Object.entries((TAXS || {}).all || {}).map(([k, v]) => [k.toUpperCase(), v]).concat([['TOTAL', Object.values((TAXS || {}).all || {}).reduce((a, b) => a + b, 0)]]))}
+      <p><button class="y" data-a="runtax" data-v="0">COLLECT DAILY TAX NOW</button> <button class="r" data-a="runtax" data-v="1">COLLECT INCLUDING TODAY</button></p><p class="mute">Daily income and gamble tax is collected automatically from each player when they log in on a new day. These buttons collect it from everyone right now.</p></div>`,
     tr: `<div class="card"><h2>GIVE SHINY CARD</h2><label>To <select id="gs-u">${people.map(p => `<option value="${p.id}">${esc(p.username)}</option>`).join('')}</select> Card <select id="gs-c">${CARDS.map(c => `<option value="${c.id}">${c.id} ${esc(c.n)}</option>`).join('')}</select> <button class="g" data-a="gshiny">GIVE</button></label></div>
       <div class="card"><h2>TRADES</h2>${TRD.slice(0,25).map(t => `<div class="row"><span>#${t.id} ${who(t.from_id)} to ${who(t.to_id)} (${t.status})</span><span>${fmtT(t.give, t.give_money)} for ${fmtT(t.want, t.want_money)} ${t.status === 'open' ? `<button class="r" data-a="tcancel" data-u="${t.id}">CANCEL</button>` : ''}</span></div>`).join('') || '<span class="mute">No trades yet.</span>'}</div>`,
     lg: `<div class="card"><h2>ADMIN LOG</h2><div class="mute">${ALOG.map(l => `${new Date(l.at).toLocaleString([], {hour12:false})} ${esc(l.msg)}`).join('<br>') || 'Nothing yet.'}</div></div>
@@ -686,6 +690,7 @@ $('#t-admin').onclick = async e => { if (e.target.dataset.at) { atab = e.target.
     case 'delcard': return +gv('ce-id') && ok('Delete this card from the game and everyone\'s collection?') && call('admin_delete_card', {p_id: +gv('ce-id')});
     case 'savepack': { const k = d.k === 'NEW' ? gv('pe-NEW-k').trim().toUpperCase() : d.k; if (k.length !== 1) return toast('Pack key must be one letter');
       return call('admin_save_pack', {p_k: k, p_name: gv(`pe-${d.k}-n`), p_n: +gv(`pe-${d.k}-c`), p_w: [0,1,2,3,4,5].map(i => +gv(`pe-${d.k}-w${i}`) || 0), p_g: +gv(`pe-${d.k}-g`), p_col: gv(`pe-${d.k}-col`), p_price: +gv(`pe-${d.k}-p`), p_active: document.getElementById(`pe-${d.k}-a`).checked, p_starts: gv(`pe-${d.k}-s`) ? new Date(gv(`pe-${d.k}-s`)).toISOString() : null, p_ends: gv(`pe-${d.k}-e`) ? new Date(gv(`pe-${d.k}-e`)).toISOString() : null}); }
+    case 'runtax': { const r = await call('admin_run_tax', {p_today: d.v === '1'}); if (r !== null) toast('Collected ' + r + ' cards in tax.'); return; }
     case 'gshiny': return call('admin_give_shiny', {p_uid: gv('gs-u'), p_card: +gv('gs-c')});
     case 'tcancel': return call('admin_cancel_trade', {p_id: +d.u});
     case 'revtr': return ok('Reverse this transfer?') && call('admin_reverse_transfer', {p_id: +d.u});
@@ -782,7 +787,7 @@ function renderCards(){
   const f = $('#cfilter').value, list = CARDS.filter(c => f === 'all' || (f === 'owned' && cinv[c.id] > 0) || (f === 'missing' && !cinv[c.id]) || (f[0] === 'r' && c.r === +f[1]) || (f === 'special' && c.p.length === 1));
   $('#cgrid').innerHTML = list.map(c => cinv[c.id] > 0 ? cardEl(c, cinv[c.id], csel === c.id ? 'sel' : '') : lockedEl(c)).join('') || '<span class="mute">Nothing here yet.</span>';
   const c = CID[csel], q = c ? (cinv[c.id] || 0) : 0;
-  $('#cdetail').innerHTML = c ? `<div class="card" style="margin:10px 0"><div style="display:flex;gap:18px;flex-wrap:wrap;align-items:center">${q ? cardEl(c, q, '', false) : lockedEl(c)}<div><h2 style="color:var(--ink)">${q ? esc(c.n) : '???'}</h2><p>${RN[c.r-1]} / value ${c.v}<br>Found in pack${c.p.length > 1 ? 's' : ''} ${c.p.split('').join(', ')}${c.p.length === 1 ? ' (SPECIAL: only there)' : ''}</p>${q ? `<p>You own ${q}.</p><button class="y" data-sell="1">SELL 1 FOR ${c.v}</button> ${q > 1 ? `<button data-sell="x">SELL ${q-1} EXTRA</button>` : ''}` : '<p class="mute">You do not own this one yet.</p>'}</div></div></div>` : '';
+  $('#cdetail').innerHTML = c ? `<div class="card" style="margin:10px 0"><div style="display:flex;gap:18px;flex-wrap:wrap;align-items:center">${q ? cardEl(c, q, '', false) : lockedEl(c)}<div><h2 style="color:var(--ink)">${q ? esc(c.n) : '???'}</h2><p>${RN[c.r-1]} / value ${c.v}<br>Found in pack${c.p.length > 1 ? 's' : ''} ${c.p.split('').join(', ')}${c.p.length === 1 ? ' (SPECIAL: only there)' : ''}</p>${q ? `<p>You own ${q}.</p><button class="y" data-sell="1">SELL 1 FOR ${c.v} (-${pct(S.tax_sell)} tax)</button> ${q > 1 ? `<button data-sell="x">SELL ${q-1} EXTRA</button>` : ''}` : '<p class="mute">You do not own this one yet.</p>'}</div></div></div>` : '';
 }
 function renderHomeCards(){ const own = CARDS.filter(c => cinv[c.id] > 0), best = own.slice().sort((a,b) => b.v - a.v)[0];
   $('#hcol').innerHTML = `<div class="row"><span>Collected</span><b>${own.length}/${CARDS.length}</b></div><div class="row"><span>Collection value</span><b>${cardVal()}</b></div><div class="row"><span>Best card</span><span>${best ? esc(best.n) : '-'}</span></div><p style="margin-bottom:0"><button class="y" data-go="cards">OPEN PACKS</button></p>`; }
@@ -841,7 +846,7 @@ const gv = id => document.getElementById(id).value;
 function renderBank(){
   const others = people.filter(p => p.id !== me.id && !p.banned), h = others.map(p => `<option value="${p.id}">${esc(p.username)}</option>`).join(''), el = $('#trto');
   if (el.dataset.h !== h) { const old = el.value; el.innerHTML = h; el.dataset.h = h; if (old) el.value = old; }
-  $('#trinfo').textContent = S.tr_on ? `Send cards to another player. Limit ${S.tr_max} per send, ${S.tr_daily} per day${+S.tr_fee ? ', fee ' + Math.round(S.tr_fee*100) + '%' : ''}.` + (S.tr_debt ? ' Repay your loan first.' : '') : 'Sending is closed by the admin.';
+  $('#trinfo').textContent = S.tr_on ? `Send cards to another player. Limit ${S.tr_max} per send, ${S.tr_daily} per day, send tax ${pct(S.tax_send)} (paid by you) and receive tax ${pct(S.tax_recv)} (paid by them).` + (S.tr_debt ? ' Repay your loan first.' : '') : 'Sending is closed by the admin.';
   $('#trsend').disabled = !S.tr_on || !others.length;
   $('#trlog').innerHTML = TRX.filter(t => t.from_id === me.id || t.to_id === me.id).slice(0, 10).map(t => { const out = t.from_id === me.id;
     return `<div class="row"><span>${out ? 'SENT to ' + who(t.to_id) : 'GOT from ' + who(t.from_id)}${t.note ? ' / ' + esc(t.note) : ''}${t.reversed ? ' (reversed)' : ''}</span><b class="${out ? 'dn' : 'up'}">${out ? '-' : '+'}${out ? t.amt : t.amt - t.fee}</b></div>`; }).join('') || 'No transfers yet.';
@@ -907,9 +912,29 @@ $('#t-games').addEventListener('click', e => { const t = e.target, d = t.dataset
     await spin($('#wres'), ['0x', '2x', '0.5x', '10x', '1x', '1.5x', '0x'], 16); $('#wres').textContent = r.mult + 'x'; done('#wmsg', r, st); });
 });
 
+
+/* ---------- taxes ---------- */
+let TAXS = null;
+const pct = x => (Math.round((+x || 0) * 1000) / 10) + '%';
+const TAXES = [['tax_income','Income tax'],['tax_gamble','Gamble tax'],['tax_sell','Sell tax'],['tax_market','Market tax'],['tax_bank','Bank tax'],['tax_send','Send tax'],['tax_recv','Receive tax'],['tax_trade','Trade tax'],['tax_pack','Pack tax']];
+const TAXINFO = {tax_income:['income','Paid once a day on the cards you earned (net gain) that day.'], tax_gamble:['gamble','Paid once a day on your net winnings from all games. Losing days pay nothing.'], tax_sell:['sell','Taken from the cards you get when you sell cards.'], tax_market:['market','Taken from the cards you get when you sell shares on the market.'], tax_bank:['bank','Taken from every loan you borrow.'], tax_send:['send','Paid by you, on top, when you send cards to a player.'], tax_recv:['recv','Taken from the cards you receive from a player.'], tax_trade:['trade','Each side pays it on the value of what they give in a trade.'], tax_pack:['pack','Added to the price of every pack you open.']};
+function renderTax() {
+  const T = TAXS || {}, mine = T.mine || {}, td = T.today || {net: 0, gamble: 0}, on = S.tax_on !== false;
+  const inc = Math.floor(Math.max(td.net || 0, 0) * (+S.tax_income || 0)), gam = Math.floor(Math.max(td.gamble || 0, 0) * (+S.tax_gamble || 0)), paid = Object.values(mine).reduce((a, b) => a + b, 0);
+  $('#gtax').textContent = on ? `Gamble tax: ${pct(S.tax_gamble)} of your net winnings, paid daily.` : '';
+  $('#ptax').textContent = on ? `Pack tax: ${pct(S.tax_pack)} added at checkout.` : '';
+  $('#ttax').textContent = on ? `Trade tax: ${pct(S.tax_trade)} of the value each side gives.` : '';
+  $('#taxbox').innerHTML = !on ? '<span class="mute">Taxes are switched off right now.</span>' :
+    `<p class="mute">Everything in the game is taxed a little. Taxes are taken automatically and removed from the game. Here is every tax, its rate, and what you have paid so far.</p>` +
+    TAXES.map(([k, n]) => `<div class="row"><span><b>${n.toUpperCase()}</b> ${pct(S[k])}<br><span class="mute">${TAXINFO[k][1]}</span></span><b>${mine[TAXINFO[k][0]] || 0}</b></div>`).join('') +
+    `<div class="row"><span><b>TOTAL TAX PAID</b></span><b class="dn">${paid}</b></div>` +
+    `<h3>TODAY SO FAR</h3><p>Earned today: <b class="${td.net > 0 ? 'up' : ''}">${td.net || 0}</b> cards, so income tax so far is about <b>${inc}</b>.<br>Game winnings today: <b>${td.gamble || 0}</b> cards, so gamble tax so far is about <b>${gam}</b>.<br><span class="mute">Both are paid automatically the next day when you log in. Losses today do not get refunded.</span></p>` +
+    ((T.recent || []).length ? `<h3>RECENT TAXES</h3>` + T.recent.map(r => `<div class="row"><span>${r.kind.toUpperCase()} tax on ${r.base}</span><b class="dn">-${r.amt}</b></div>`).join('') : '');
+}
+
 /* ---------- login ---------- */
 const email = u => u.trim().toLowerCase().replace(/[^a-z0-9]/g, '') + '@pond.local';
-async function enter(user){ me = user; $('#auth').classList.add('hide'); $('#app').classList.remove('hide'); $('#critter').src = sprite('egg'); go('home'); await load();
+async function enter(user){ me = user; $('#auth').classList.add('hide'); $('#app').classList.remove('hide'); $('#critter').src = sprite('egg'); go('home'); await sb.rpc('settle_my_tax'); await load();
   setInterval(() => { tickUI(); const k = Math.floor(Date.now() / 5000); if (k !== lastTick) { lastTick = k; if (prof && !animating) { renderMarket(); if (!typing()) { renderHome(); renderPortfolio(); } } } }, 250); setInterval(() => prof && !animating && load(), 30000);  }
 $('#login').onclick = async () => { const {data, error} = await sb.auth.signInWithPassword({email: email($('#u').value), password: $('#p').value}); error ? toast('Wrong username or password') : enter(data.user); };
 $('#signup').onclick = async () => { const u = $('#u').value.trim(); if (u.length < 2) return toast('Username too short');
