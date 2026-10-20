@@ -285,6 +285,7 @@ button:hover{box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(2
       <h3>I GIVE</h3><div id="tgl" class="mute"></div>
       <p><select id="tgc"></select> x<input id="tgq" type="number" min="1" value="1" style="width:60px"> <button id="tgadd">ADD</button> + <input id="tgm" type="number" min="0" value="0" style="width:80px"> MONEY</p>
       <h3>I WANT</h3><div id="twl" class="mute"></div>
+      <p>THEIR CARDS <select id="tfilter"><option value="all">All</option><option value="miss">Ones I am missing</option><option value="dup">Their duplicates</option></select> <span class="mute">tap a card to ask for it</span></p><div class="cgrid" id="theirgrid"></div>
       <p><select id="twc"></select> x<input id="twq" type="number" min="1" value="1" style="width:60px"> <button id="twadd">ADD</button> + <input id="twm" type="number" min="0" value="0" style="width:80px"> MONEY</p>
       <p><button class="y" id="tsend">SEND OFFER</button> <button id="tclear">CLEAR</button></p>
       <h3>OFFERS</h3><div id="tlist"></div></div>
@@ -878,7 +879,7 @@ function renderShow() {
 }
 function renderTrade() {
   fillSel($('#trwho'), people.filter(p => p.id !== me.id && !p.banned).map(p => `<option value="${p.id}">${esc(p.username)}</option>`));
-  fillSel($('#tgc'), ownOpts()); fillSel($('#twc'), CARDS.flatMap(c => [`<option value="${c.id}:0">${esc(c.n)}</option>`, `<option value="${c.id}:1">\u2605 ${esc(c.n)} SHINY</option>`]));
+  fillSel($('#tgc'), ownOpts()); fillSel($('#twc'), wantOpts()); fetchTheirs();
   const lst = (a, k) => a.map((i, n) => `${esc(CID[i.id].n)}${i.s ? ' (shiny)' : ''} x${i.q} <button class="r" data-trm="${k}:${n}">X</button>`).join(' / ') || 'no cards yet';
   $('#tgl').innerHTML = lst(tgive, 'g'); $('#twl').innerHTML = lst(twant, 'w');
   const mine = TRD.filter(t => (t.from_id === me.id || t.to_id === me.id) && (t.status === 'open' || TRD.indexOf(t) < 8));
@@ -931,6 +932,31 @@ function renderTax() {
     `<h3>TODAY SO FAR</h3><p>Earned today: <b class="${td.net > 0 ? 'up' : ''}">${td.net || 0}</b> cards, so income tax so far is about <b>${inc}</b>.<br>Game winnings today: <b>${td.gamble || 0}</b> cards, so gamble tax so far is about <b>${gam}</b>.<br><span class="mute">Both are paid automatically the next day when you log in. Losses today do not get refunded.</span></p>` +
     ((T.recent || []).length ? `<h3>RECENT TAXES</h3>` + T.recent.map(r => `<div class="row"><span>${r.kind.toUpperCase()} tax on ${r.base}</span><b class="dn">-${r.amt}</b></div>`).join('') : '');
 }
+
+
+/* ---------- see another player's cards (trading) ---------- */
+let theirs = null, theirFor = null, theirAt = 0;
+function wantOpts() { const out = [];
+  CARDS.forEach(c => { const p = (theirs && theirs.plain[c.id]) || 0, sh = (theirs && theirs.shiny[c.id]) || 0;
+    if (!theirs || p) out.push(`<option value="${c.id}:0">${esc(c.n)}${theirs ? ` (they have x${p})` : ''}</option>`);
+    if (!theirs || sh) out.push(`<option value="${c.id}:1">\u2605 ${esc(c.n)} SHINY${theirs ? ` (x${sh})` : ''}</option>`); });
+  return out.length ? out : ['<option value="">They have no cards yet</option>']; }
+async function fetchTheirs(force) { const w = $('#trwho').value;
+  if (!w) { theirs = null; renderTheirs(); return; }
+  if (!force && w === theirFor && Date.now() - theirAt < 10000) return;
+  theirFor = w; theirAt = Date.now();
+  const {data} = await sb.rpc('player_cards', {p_uid: w}); if (w !== $('#trwho').value) return;
+  theirs = data || {plain: {}, shiny: {}}; fillSel($('#twc'), wantOpts()); renderTheirs(); }
+function renderTheirs() { const el = $('#theirgrid');
+  if (!theirs) { el.innerHTML = '<span class="mute">Pick a player to see their cards.</span>'; return; }
+  const f = $('#tfilter').value, list = [];
+  CARDS.forEach(c => ['0', '1'].forEach(s => { const q = (s === '1' ? theirs.shiny : theirs.plain)[c.id] || 0; if (!q) return;
+    if (f === 'miss' && (cinv[c.id] || 0) > 0) return; if (f === 'dup' && q < 2) return; list.push([c, q, s]); }));
+  el.innerHTML = list.map(([c, q, s]) => `<div data-tw="${c.id}:${s}" style="cursor:pointer">${cardEl(c, q, s === '1' ? 'shiny' : '', false)}</div>`).join('') || '<span class="mute">No cards match.</span>'; }
+document.addEventListener('click', e => { const t = e.target.closest('[data-tw]'); if (!t || !theirs) return;
+  const [id, sx] = t.dataset.tw.split(':'), sh = sx === '1', max = (sh ? theirs.shiny : theirs.plain)[id] || 1, a = twant.find(x => x.id === +id && x.s === sh);
+  if (a) { if (a.q < max) a.q++; } else twant.push({id: +id, s: sh, q: 1}); renderTrade(); toast('Added to what you want'); });
+document.addEventListener('change', e => { if (e.target.id === 'trwho') { theirs = null; theirFor = null; twant = []; renderTheirs(); renderTrade(); fetchTheirs(true); } if (e.target.id === 'tfilter') renderTheirs(); });
 
 /* ---------- login ---------- */
 const email = u => u.trim().toLowerCase().replace(/[^a-z0-9]/g, '') + '@pond.local';
