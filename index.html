@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0d0b14">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="UNO MONEY">
+<link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>Uno Money</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <style>
@@ -216,6 +221,10 @@ section:not(.hide)>.card:nth-child(2){animation-delay:.04s}section:not(.hide)>.c
  .lvlchip{min-width:96px}
 }
 @media(prefers-reduced-motion:reduce){section:not(.hide),section:not(.hide)>.card,#toast{animation:none!important}}
+
+.pl{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}.pl:hover{color:var(--yel)}
+@media(max-width:900px){nav#tabs{padding-bottom:calc(6px + env(safe-area-inset-bottom))}body{padding-bottom:calc(92px + env(safe-area-inset-bottom))}}
+@media(display-mode:standalone){body{padding-top:calc(16px + env(safe-area-inset-top))}}
 </style>
 </head>
 <body>
@@ -232,14 +241,14 @@ section:not(.hide)>.card:nth-child(2){animation-delay:.04s}section:not(.hide)>.c
 <div id="app" class="hide">
   <div class="top">
     <div class="logo"><div class="roundel"><i>UNO</i></div><h1>UNO MONEY</h1></div>
-    <div class="topr"><span id="hdrlvl" class="lvlchip"></span><span class="bal" id="bal"></span> <button id="sndbtn">SOUND ON</button> <button class="r" id="out">EXIT</button></div>
+    <div class="topr"><span id="hdrlvl" class="lvlchip"></span><span class="bal" id="bal"></span><button id="instbtn" class="y" style="font-size:8px">INSTALL APP</button> <button id="sndbtn">SOUND ON</button> <button class="r" id="out">EXIT</button></div>
   </div>
   <div id="tapewrap"><span id="tape"></span></div>
   <div id="ban" class="hide"><span id="bant"></span></div>
   <nav id="tabs">
     <div class="ng"><span class="nl">PLAY</span><button data-t="home"><img class="ic" data-ic="home" alt=""><span class="nt">HOME</span></button><button data-t="games"><img class="ic" data-ic="games" alt=""><span class="nt">GAMES</span></button><button data-t="jobs"><img class="ic" data-ic="jobs" alt=""><span class="nt">JOBS</span></button></div>
     <div class="ng"><span class="nl">COLLECT</span><button data-t="cards"><img class="ic" data-ic="cards" alt=""><span class="nt">CARDS</span></button><button data-t="trade"><img class="ic" data-ic="trade" alt=""><span class="nt">TRADE</span></button><button data-t="shop"><img class="ic" data-ic="shop" alt=""><span class="nt">SHOP</span></button></div>
-    <div class="ng"><span class="nl">MONEY</span><button data-t="market"><img class="ic" data-ic="market" alt=""><span class="nt">MARKET</span></button><button data-t="bank"><img class="ic" data-ic="bank" alt=""><span class="nt">BANK</span></button></div>
+    <div class="ng"><span class="nl">MONEY</span><button data-t="market"><img class="ic" data-ic="market" alt=""><span class="nt">MARKET</span></button><button data-t="bank"><img class="ic" data-ic="bank" alt=""><span class="nt">BANK</span></button><button data-t="biz"><img class="ic" data-ic="biz" alt=""><span class="nt">BUSINESS</span></button></div>
     <div class="ng"><span class="nl">SOCIAL</span><button data-t="board"><img class="ic" data-ic="board" alt=""><span class="nt">BOARD</span></button><button data-t="ach"><img class="ic" data-ic="ach" alt=""><span class="nt">ACHIEVE</span></button></div>
     <div class="ng"><button data-t="admin" class="hide"><img class="ic" data-ic="admin" alt=""><span class="nt">ADMIN</span></button></div>
   </nav>
@@ -379,6 +388,11 @@ section:not(.hide)>.card:nth-child(2){animation-delay:.04s}section:not(.hide)>.c
       <h3>OFFERS</h3><div id="tlist"></div></div>
   </section>
 
+  <section id="t-biz" class="hide">
+    <div class="card"><h2>MY BUSINESSES</h2><div id="biztotal"></div><div class="jb" id="bizmine"></div></div>
+    <div class="card"><h2>BUY A BUSINESS</h2><p class="mute">Businesses earn cards all day, even when you are away. Upgrade them to earn more. Each one can be bought once.</p><div class="jb" id="bizshop"></div></div>
+  </section>
+
   <section id="t-jobs" class="hide">
     <div class="card"><h2>MY JOB</h2><div id="myjob"></div></div>
     <div class="card"><h2>OPEN POSITIONS</h2><p class="mute">Work one shift a day: 5 mini games. Better jobs pay more, but the interview, the mini games and the weekly strike limit all get harder. Answer at least 4 of 5 interview questions right to get hired. Fail too many mini games in a week and you lose the job!</p><div class="jb" id="joblist"></div></div>
@@ -458,7 +472,7 @@ const sb = supabase.createClient('https://nmspdwrpwuigiwjnrevt.supabase.co', 'sb
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let me, prof, people = [], hold = {}, cost = {}, inv = [], shelves = [], lb = [], logs = [], duels = [], hlg = null, cinv = {}, S = {}, sel = 'CARR', built = false, pick = 'red', animating = false;
-const DEF = {pack_prices:[8,28,100,300],packs_on:true,egg_enabled:true,g_hl:true,g_color:true,g_slots:true,g_duel:true,max_bet:1000,egg_odds:[55,22,13,7,3],market_open:true,market_mult:1,stock_mult:{},freeze_at:0,demand:1,banner:'',loan_enabled:true,loan_rate:.1,loan_limit:50,tr_on:true,tr_fee:0,tr_min:1,tr_max:1000,tr_daily:500,tr_debt:true,g_flip:true,g_dice:true,g_boxes:true,g_wheel:true,trades_on:true,trade_max:10000,shiny_odds:0.02,tax_on:true,tax_send:0.02,tax_recv:0.01,tax_trade:0.03,tax_gamble:0.10,tax_sell:0.05,tax_market:0.03,tax_bank:0.05,tax_pack:0.05,tax_income:0.05,shop_on:true,irl_on:true,auction_on:true,g_jack:true,shop_sellrate:0.6,tp1:40,tp2:150,tp3:600,cr1:25,cr2:100,cr3:400,jackpot_ticket:10,jackpot_odds:0.02,jackpot_seed:50,jackpot_cut:0.03,tax_shop:0.05,tax_auction:0.05,tax_buy:0.05,jackpot:{pot:50,last:null},job_on:true,job_shifts_day:1,job_cd_hours:6,job_ban_days:3,tax_wage:0.08};
+const DEF = {pack_prices:[8,28,100,300],packs_on:true,egg_enabled:true,g_hl:true,g_color:true,g_slots:true,g_duel:true,max_bet:1000,egg_odds:[55,22,13,7,3],market_open:true,market_mult:1,stock_mult:{},freeze_at:0,demand:1,banner:'',loan_enabled:true,loan_rate:.1,loan_limit:50,tr_on:true,tr_fee:0,tr_min:1,tr_max:1000,tr_daily:500,tr_debt:true,g_flip:true,g_dice:true,g_boxes:true,g_wheel:true,trades_on:true,trade_max:10000,shiny_odds:0.02,tax_on:true,tax_send:0.02,tax_recv:0.01,tax_trade:0.03,tax_gamble:0.10,tax_sell:0.05,tax_market:0.03,tax_bank:0.05,tax_pack:0.05,tax_income:0.05,shop_on:true,irl_on:true,auction_on:true,g_jack:true,shop_sellrate:0.6,tp1:40,tp2:150,tp3:600,cr1:25,cr2:100,cr3:400,jackpot_ticket:10,jackpot_odds:0.02,jackpot_seed:50,jackpot_cut:0.03,tax_shop:0.05,tax_auction:0.05,tax_buy:0.05,jackpot:{pot:50,last:null},job_on:true,job_shifts_day:1,job_cd_hours:6,job_ban_days:3,tax_wage:0.08,promo_perfects:3,promo_raise:0.15,promo_max_raises:3,biz_on:true,biz_cap_hours:24,biz_max_level:5,tax_biz:0.10};
 
 /* ---------- pixel sprites (8x8) ---------- */
 const PAL = {x:'#efe6c8',a:'#e5352b',y:'#f7d117',o:'#e8892b',k:'#14111c',g:'#8c8a99',d:'#5d5b6b',w:'#f4f4f8',p:'#e86aa8',G:'#3aa655',r:'#e5352b',b:'#1f6fd0'};
@@ -542,12 +556,14 @@ async function load(){
   if (AUC.some(a => new Date(a.ends_at) <= Date.now())) { await sb.rpc('settle_auctions'); AUC = (await sb.from('auctions').select('*').eq('status', 'open').order('ends_at')).data || []; }
   const [jb, pj, sf, jc, jq] = await Promise.all([sb.from('jobs').select('*').order('pay'), sb.from('pjob').select('*'), sb.from('shifts').select('*').order('id', {ascending: false}).limit(12), sb.from('job_cd').select('*'), sb.from('job_questions').select('*').order('id')]);
   JOBS = jb.data || []; PJOBS = pj.data || []; SHIFTS = (sf.data || []).filter(x => x.user_id === me.id); JCD = (jc.data || []).filter(x => x.user_id === me.id); JQ = jq.data || [];
+  const [bt, pb] = await Promise.all([sb.from('biz_types').select('*').order('price'), sb.from('pbiz').select('*')]);
+  BIZT = bt.data || []; PBIZ = (pb.data || []).filter(x => x.user_id === me.id);
   prof = p.data; hold = {}; cost = {}; (h.data||[]).forEach(r => { hold[r.symbol] = r.qty; cost[r.symbol] = r.cost; });
   inv = i.data||[]; shelves = s.data||[]; people = all.data||[]; lb = l.data||[]; logs = g.data||[]; duels = d.data||[]; hlg = hg.data || null; cinv = {}; (ci.data||[]).forEach(r => cinv[r.card_id] = r.qty); Object.keys(shin).forEach(k => cinv[k] = (cinv[k] || 0) + shin[k]);
   S = {...DEF}; (st.data||[]).forEach(r => S[r.key] = r.value);
   render();
 }
-const who = id => { const p = people.find(p => p.id === id) || {}; return (titleTag(p.title) ? titleTag(p.title) + ' ' : '') + esc(p.username || '?'); };
+const who = id => { const p = people.find(p => p.id === id) || {}; return '<span class="pl" data-prof="' + id + '">' + (titleTag(p.title) ? titleTag(p.title) + ' ' : '') + esc(p.username || '?') + '</span>'; };
 const typing = () => document.activeElement && document.activeElement.tagName === 'INPUT' && $('#app').contains(document.activeElement);
 const val = p => p.balance - p.owed + Object.entries(p.hold||{}).reduce((a,[k,q]) => a + q*(SY(k) ? price(SY(k)) : 0), 0) + (p.inv||[]).reduce((a,r) => a + r.qty*((CAT.find(c=>c.item===r.item)||{fair:0}).fair), 0) + (p.cardval||0);
 const ranked = () => lb.map(p => ({...p, w: val(p)})).sort((a,b) => b.w - a.w);
@@ -562,7 +578,7 @@ function render(){
   renderHome(); renderGames(); renderPortfolio(); renderCards();
   $('#bankinfo').innerHTML = `You owe <b class="${prof.owed?'dn':''}">${prof.owed}</b> cards. Limit ${S.loan_limit}. Interest ${Math.round(S.loan_rate*100)}% up front.` + (S.loan_enabled ? '' : '<br><span class="dn">The bank is closed.</span>');
   $('#lb').innerHTML = ranked().map((p,i) => `<div class="lb"><span class="n">${i+1}</span><span style="flex:1">${esc(p.username)}<br><span class="mute">${p.balance} cards, owes ${p.owed}</span></span><b class="px" style="font-size:12px;color:var(--yel)">${p.w}</b></div>`).join('');
-  $('#feed').innerHTML = feed(25); renderBank(); renderTrade(); renderShow(); renderTax(); renderShop(); renderAch(); renderJack(); renderLevel(); checkAch(); renderJobs();
+  $('#feed').innerHTML = feed(25); renderBank(); renderTrade(); renderShow(); renderTax(); renderShop(); renderAch(); renderJack(); renderLevel(); checkAch(); renderJobs(); renderBiz();
   renderAdmin();
 }
 const feed = n => logs.slice(0, n).map(l => `${new Date(l.at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} <b style="color:var(--ink)">${esc(l.username||'?')}</b> ${esc(l.msg)}`).join('<br>') || 'Quiet so far.';
@@ -724,7 +740,7 @@ $('#repay').onclick = async () => { if (await call('repay_loan', {amt: parseInt(
 
 /* ---------- navigation ---------- */
 function go(k){ uiTab(); document.querySelectorAll('section').forEach(s => s.classList.toggle('hide', s.id !== 't-'+k));
-  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === k)); if (k !== 'games') showGame(null); if (k === 'board' || k === 'admin' || k === 'trade' || k === 'shop' || k === 'ach' || k === 'jobs') load(); }
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === k)); if (k !== 'games') showGame(null); if (k === 'board' || k === 'admin' || k === 'trade' || k === 'shop' || k === 'ach' || k === 'jobs' || k === 'biz') load(); }
 $('#tabs').onclick = e => e.target.dataset.t && go(e.target.dataset.t);
 $('#t-home').onclick = e => { const k = e.target.dataset.go; if (k) { go(k); if (e.target.dataset.g) showGame(e.target.dataset.g); } };
 
@@ -748,7 +764,7 @@ function renderAdmin(){
     <div><button class="y" data-a="adm" data-u="${u}">${p.is_admin ? 'REMOVE ADMIN' : 'MAKE ADMIN'}</button> <button class="y" data-a="ban" data-u="${u}">${p.banned ? 'UNFREEZE' : 'FREEZE ACCOUNT'}</button>
     <button class="r" data-a="wipe" data-u="${u}">WIPE</button> <button class="r" data-a="del" data-u="${u}">DELETE ACCOUNT</button></div></div></details>`; };
   const odds = S.egg_odds, tot = odds.reduce((a,b) => a + +b, 0) || 1, ev = ((odds[1]*1 + odds[2]*2 + odds[3]*3 + odds[4]*10) / tot * 100).toFixed(0);
-  const T = [['ov','OVERVIEW'],['pl','PLAYERS'],['cp','CARDS+PACKS'],['gm','GAMES'],['mk','MARKET'],['bk','BANK'],['tr','TRADES+SHINY'],['jb','JOBS'],['sh','SHOP+JACKPOT'],['ac','ACHIEVEMENTS'],['tx','TAXES'],['lg','LOGS']];
+  const T = [['ov','OVERVIEW'],['pl','PLAYERS'],['cp','CARDS+PACKS'],['gm','GAMES'],['mk','MARKET'],['bk','BANK'],['tr','TRADES+SHINY'],['jb','JOBS'],['bz','BUSINESSES'],['sh','SHOP+JACKPOT'],['ac','ACHIEVEMENTS'],['tx','TAXES'],['lg','LOGS']];
   const stat = rows => `<div class="stats">${rows.map(([l,v]) => `<div class="stat"><span class="mute">${l}</span><b>${v}</b></div>`).join('')}</div>`;
   const packRow = p => { const k = p.k || 'NEW', id = x => `pe-${k}-${x}`;
     return `<div class="card" style="margin:10px 0"><h3 style="margin-top:0">${p.k ? 'PACK ' + p.k : 'NEW PACK'}</h3><div class="grid">
@@ -783,7 +799,12 @@ function renderAdmin(){
     bk: `<div class="card"><h2>LOANS</h2><div class="grid">${TG('loan_enabled','Bank')}${A('loan_rate','Interest (0.1 = 10%)')}${A('loan_limit','Max owed')}</div></div>
       <div class="card"><h2>TRANSFERS</h2><div class="grid">${TG('tr_on','Sending')}${TG('tr_debt','Block while in debt')}${A('tr_min','Min per send')}${A('tr_max','Max per send')}${A('tr_daily','Daily cap per player')}</div>
       <h3>RECENT TRANSFERS</h3>${TRX.slice(0,15).map(t => `<div class="row"><span>${who(t.from_id)} to ${who(t.to_id)}${t.note ? ' / ' + esc(t.note) : ''}</span><span>${t.amt} ${t.reversed ? '(reversed)' : `<button class="r" data-a="revtr" data-u="${t.id}">REVERSE</button>`}</span></div>`).join('') || '<span class="mute">None yet.</span>'}</div>`,
-    jb: `<div class="card"><h2>JOB SETTINGS</h2><div class="grid">${TG('job_on','Jobs open')}${A('job_shifts_day','Shifts per player per day')}${A('job_cd_hours','Hours to wait after a failed interview')}${A('job_ban_days','Days banned from a job after being fired')}${A('tax_wage','Wage tax (0.08 = 8%)')}</div></div>
+    bz: `<div class="card"><h2>BUSINESS SETTINGS</h2><div class="grid">${TG('biz_on','Businesses open')}${A('biz_cap_hours','Hours a business can store income')}${A('biz_max_level','Max business level')}${A('tax_biz','Business tax (0.10 = 10%)')}</div></div>
+      <div class="card"><h2>BUSINESS EDITOR</h2><div class="grid"><label>Business <select id="bz-id"><option value="">NEW BUSINESS</option>${BIZT.map(t => `<option value="${t.id}">${t.id} ${esc(t.name)}</option>`).join('')}</select></label>
+        <label>Name <input id="bz-n" type="text"> Price <input id="bz-p" type="number" value="100" style="width:90px"> Income per day <input id="bz-i" type="number" value="10" style="width:80px"></label>
+        <label>Min level <input id="bz-l" type="number" value="1" style="width:60px"> Art 0-5 <input id="bz-a" type="number" value="0" style="width:50px"> <label><input type="checkbox" id="bz-c" checked> For sale</label></label>
+        <div><button class="y" data-a="savebiz">SAVE BUSINESS</button> <button class="r" data-a="delbiz">DELETE BUSINESS</button></div></div></div>`,
+    jb: `<div class="card"><h2>JOB SETTINGS</h2><div class="grid">${TG('job_on','Jobs open')}${A('job_shifts_day','Shifts per player per day')}${A('job_cd_hours','Hours to wait after a failed interview')}${A('job_ban_days','Days banned from a job after being fired')}${A('tax_wage','Wage tax (0.08 = 8%)')}${A('promo_perfects','Perfect shifts needed for a promotion')}${A('promo_raise','Raise per promotion (0.15 = 15%)')}${A('promo_max_raises','Max raises per job')}</div></div>
       <div class="card"><h2>JOB EDITOR</h2><div class="grid"><label>Job <select id="jb-id"><option value="">NEW JOB</option>${JOBS.map(j => `<option value="${j.id}">${j.id} ${esc(j.name)}</option>`).join('')}</select></label>
         <label>Name <input type="text" id="jb-n"> Pay per shift <input type="number" id="jb-p" value="20" style="width:90px"> Difficulty 1-5 <input type="number" id="jb-d" value="1" style="width:60px"></label>
         <label>Min level <input type="number" id="jb-l" value="1" style="width:70px"> Strike limit per week <input type="number" id="jb-f" value="8" style="width:70px"> Questions needed (of 5) <input type="number" id="jb-q" value="4" style="width:60px"> <label><input type="checkbox" id="jb-a" checked> Hiring</label></label>
@@ -850,6 +871,8 @@ $('#t-admin').onclick = async e => { if (e.target.dataset.at) { atab = e.target.
     case 'savepack': { const k = d.k === 'NEW' ? gv('pe-NEW-k').trim().toUpperCase() : d.k; if (k.length !== 1) return toast('Pack key must be one letter');
       return call('admin_save_pack', {p_k: k, p_name: gv(`pe-${d.k}-n`), p_n: +gv(`pe-${d.k}-c`), p_w: [0,1,2,3,4,5].map(i => +gv(`pe-${d.k}-w${i}`) || 0), p_g: +gv(`pe-${d.k}-g`), p_col: gv(`pe-${d.k}-col`), p_price: +gv(`pe-${d.k}-p`), p_active: document.getElementById(`pe-${d.k}-a`).checked, p_starts: gv(`pe-${d.k}-s`) ? new Date(gv(`pe-${d.k}-s`)).toISOString() : null, p_ends: gv(`pe-${d.k}-e`) ? new Date(gv(`pe-${d.k}-e`)).toISOString() : null}); }
     case 'runtax': { const r = await call('admin_run_tax', {p_today: d.v === '1'}); if (r !== null) toast('Collected ' + r + ' cards in tax.'); return; }
+    case 'savebiz': return call('admin_save_biz', {p_id: +gv('bz-id') || BIZT.reduce((m, t) => Math.max(m, t.id), 0) + 1, p_name: gv('bz-n'), p_price: +gv('bz-p') || 1, p_income: +gv('bz-i') || 0, p_min: +gv('bz-l') || 1, p_art: +gv('bz-a') || 0, p_active: document.getElementById('bz-c').checked});
+    case 'delbiz': return +gv('bz-id') && ok('Delete this business? Everyone who owns it loses it.') && call('admin_delete_biz', {p_id: +gv('bz-id')});
     case 'savejob': return call('admin_save_job', {p_id: +gv('jb-id') || JOBS.reduce((m, j) => Math.max(m, j.id), 0) + 1, p_name: gv('jb-n'), p_pay: +gv('jb-p') || 0, p_diff: +gv('jb-d') || 1, p_min: +gv('jb-l') || 1, p_fail: +gv('jb-f') || 1, p_pass: +gv('jb-q') || 4, p_active: document.getElementById('jb-a').checked});
     case 'deljob': return +gv('jb-id') && ok('Delete this job? Everyone with it loses it.') && call('admin_delete_job', {p_id: +gv('jb-id')});
     case 'saveq': return call('admin_save_question', {p_id: +gv('jq-id') || JQ.reduce((m, q) => Math.max(m, q.id), 0) + 1, p_diff: +gv('jq-d') || 1, p_q: gv('jq-q'), p_opts: [0, 1, 2, 3].map(i => gv('jq-' + i)), p_ans: +gv('jq-a')});
@@ -1094,8 +1117,8 @@ $('#t-games').addEventListener('click', e => { const t = e.target, d = t.dataset
 /* ---------- taxes ---------- */
 let TAXS = null;
 const pct = x => (Math.round((+x || 0) * 1000) / 10) + '%';
-const TAXES = [['tax_income','Income tax'],['tax_gamble','Gamble tax'],['tax_sell','Sell tax'],['tax_market','Market tax'],['tax_bank','Bank tax'],['tax_send','Send tax'],['tax_recv','Receive tax'],['tax_trade','Trade tax'],['tax_pack','Pack tax'],['tax_shop','Shop sale tax'],['tax_auction','Auction tax'],['tax_buy','Shop purchase tax'],['tax_wage','Wage tax']];
-const TAXINFO = {tax_income:['income','Paid once a day on the cards you earned (net gain) that day.'], tax_gamble:['gamble','Paid once a day on your net winnings from all games. Losing days pay nothing.'], tax_sell:['sell','Taken from the cards you get when you sell cards.'], tax_market:['market','Taken from the cards you get when you sell shares on the market.'], tax_bank:['bank','Taken from every loan you borrow.'], tax_send:['send','Paid by you, on top, when you send cards to a player.'], tax_recv:['recv','Taken from the cards you receive from a player.'], tax_trade:['trade','Each side pays it on the value of what they give in a trade.'], tax_pack:['pack','Added to the price of every pack you open.'], tax_shop:['shop','Taken from the cards you earn when you sell in the player market or sell real stuff.'], tax_auction:['auction','Taken from the winning bid when your card sells at auction.'], tax_buy:['buy','Added to everything you buy from the shop (title packs, crates, titles).'], tax_wage:['wage','Taken from your pay after every shift at your job.']};
+const TAXES = [['tax_income','Income tax'],['tax_gamble','Gamble tax'],['tax_sell','Sell tax'],['tax_market','Market tax'],['tax_bank','Bank tax'],['tax_send','Send tax'],['tax_recv','Receive tax'],['tax_trade','Trade tax'],['tax_pack','Pack tax'],['tax_shop','Shop sale tax'],['tax_auction','Auction tax'],['tax_buy','Shop purchase tax'],['tax_wage','Wage tax'],['tax_biz','Business tax']];
+const TAXINFO = {tax_income:['income','Paid once a day on the cards you earned (net gain) that day.'], tax_gamble:['gamble','Paid once a day on your net winnings from all games. Losing days pay nothing.'], tax_sell:['sell','Taken from the cards you get when you sell cards.'], tax_market:['market','Taken from the cards you get when you sell shares on the market.'], tax_bank:['bank','Taken from every loan you borrow.'], tax_send:['send','Paid by you, on top, when you send cards to a player.'], tax_recv:['recv','Taken from the cards you receive from a player.'], tax_trade:['trade','Each side pays it on the value of what they give in a trade.'], tax_pack:['pack','Added to the price of every pack you open.'], tax_shop:['shop','Taken from the cards you earn when you sell in the player market or sell real stuff.'], tax_auction:['auction','Taken from the winning bid when your card sells at auction.'], tax_buy:['buy','Added to everything you buy from the shop (title packs, crates, titles).'], tax_wage:['wage','Taken from your pay after every shift at your job.'], tax_biz:['biz','Taken from the cards you collect from your businesses.']};
 function renderTax() {
   const T = TAXS || {}, mine = T.mine || {}, td = T.today || {net: 0, gamble: 0}, on = S.tax_on !== false;
   const inc = Math.floor(Math.max(td.net || 0, 0) * (+S.tax_income || 0)), gam = Math.floor(Math.max(td.gamble || 0, 0) * (+S.tax_gamble || 0)), paid = Object.values(mine).reduce((a, b) => a + b, 0);
@@ -1139,7 +1162,7 @@ let psel = null;
 
 /* ---------- shop, market, auctions, achievements, levels, jackpot ---------- */
 let ITEMS = [], IMAP = {}, IINV = {}, LST = [], AUC = [], ACHL = [], ADONE = new Set(), ACHP = {}, stab = 'store', lastLvl = null, achAt = 0;
-const ACHK = ['packs','games','wins','jackpots','unique_cards','shinies','mythics','balance','trades','level','tax_paid','collectibles','transfers','auc_won','auc_sold','shop_sold','shifts'];
+const ACHK = ['packs','games','wins','jackpots','unique_cards','shinies','mythics','balance','trades','level','tax_paid','collectibles','transfers','auc_won','auc_sold','shop_sold','shifts','biz','promos'];
 const lvlOf = x => 1 + Math.floor(Math.sqrt((x || 0) / 40)), xpFor = L => 40 * (L - 1) * (L - 1);
 const titleTag = id => IMAP[id] ? `<span style="color:${RC[IMAP[id].rarity - 1]}">[${esc(IMAP[id].name)}]</span>` : '';
 const lname = l => l.kind === 'irl' ? l.name : l.kind === 'item' ? (IMAP[l.item_id] || {}).name : (CID[l.item_id] || {}).n;
@@ -1205,7 +1228,7 @@ function renderAch() {
     return `<div class="row"><span><b style="color:${done ? '#3aa655' : '#fff'}">${done ? '\u2714 ' : ''}${esc(x.name)}</b><br><span class="mute">${esc(x.descr)} / +${x.reward} cards, +${x.xp} XP${x.title && IMAP[x.title] ? ', title ' + esc(IMAP[x.title].name) : ''}</span>${done ? '' : `<div class="meter" style="height:8px"><i style="width:${Math.round(v / x.goal * 100)}%"></i></div>`}</span><b>${done ? 'DONE' : v + '/' + x.goal}</b></div>`; }).join('');
   $('#plist').innerHTML = people.slice().sort((x, y) => y.xp - x.xp).map(p => `<div class="row"><span>${who(p.id)}</span><span>LEVEL ${lvlOf(p.xp)} <span class="mute">${p.xp} XP</span></span></div>`).join('');
 }
-function renderLevel() { const L = lvlOf(prof.xp), a0 = xpFor(L), b0 = xpFor(L + 1); $('#hdrlvl').innerHTML = `LV ${L} ${titleTag(prof.title)}<span class="lb2"><i style="width:${Math.min(100, Math.round((prof.xp - a0) / (b0 - a0) * 100))}%"></i></span>`; if (lastLvl === null) lastLvl = L; else if (L > lastLvl) { lastLvl = L; fan('LEVEL UP! LEVEL ' + L + ' (+' + L * 10 + ' CARDS)', 'level'); } }
+function renderLevel() { const L = lvlOf(prof.xp), a0 = xpFor(L), b0 = xpFor(L + 1); $('#hdrlvl').dataset.prof = me.id; $('#hdrlvl').style.cursor = 'pointer'; $('#hdrlvl').innerHTML = `LV ${L} ${titleTag(prof.title)}<span class="lb2"><i style="width:${Math.min(100, Math.round((prof.xp - a0) / (b0 - a0) * 100))}%"></i></span>`; if (lastLvl === null) lastLvl = L; else if (L > lastLvl) { lastLvl = L; fan('LEVEL UP! LEVEL ' + L + ' (+' + L * 10 + ' CARDS)', 'level'); } }
 async function checkAch() { if (Date.now() - achAt < 12000) return; achAt = Date.now(); const {data} = await sb.rpc('check_achievements'); if (!data) return;
   ACHP = data.progress || {}; const nw = data.new || []; nw.forEach((a, i) => setTimeout(() => fan('ACHIEVEMENT: ' + a.name + (a.reward ? ' +' + a.reward + ' CARDS' : ''), 'ach'), i * 2700)); if (nw.length) { achAt = 0; load(); } else renderAch(); }
 function renderJack() { if (!$('#jpbar')) return; const j = S.jackpot || {pot: 0}, last = j.last;
@@ -1254,6 +1277,7 @@ const ICONS = {
  bank:['..aaaa..','.aooooa.','aoaaaaoa','aoaooaoa','aoaooaoa','aoaaaaoa','.aooooa.','..aaaa..'],
  board:['.aaaaaa.','aaaaaaaa','a.aaaa.a','.aaaaaa.','..aaaa..','...aa...','..aaaa..','.aaaaaa.'],
  ach:['...aa...','...aa...','aaaaaaaa','.aaaaaa.','..aaaa..','.aa..aa.','aa....aa','........'],
+ biz:['.oooooo.','oaaaaaao','oooooooo','o.o..o.o','oooooooo','o.o..o.o','o.o..o.o','oooooooo'],
  admin:['...oo...','.o.oo.o.','..oooo..','oo....oo','oo....oo','..oooo..','.o.oo.o.','...oo...']};
 function drawIcons() { const pal = {o: '#e9e4f7', a: '#f7d117', b: '#4f8ff0', r: '#ff5a50', g: '#5fe08a'};
   document.querySelectorAll('img[data-ic]').forEach(im => { const cv = document.createElement('canvas'); cv.width = cv.height = 8; const g = cv.getContext('2d');
@@ -1269,8 +1293,9 @@ function renderJobs() {
   const pj = PJOBS.find(p => p.user_id === me.id), job = pj && JOBS.find(j => j.id === pj.job_id), lv = lvlOf(prof.xp), per = +S.job_shifts_day || 1;
   const todays = SHIFTS.filter(x => x.day === todayS()), finished = todays.filter(x => x.done), open = todays.find(x => !x.done), full = finished.length >= per && !open;
   if (!job) el.innerHTML = '<p>You do not have a job. Pick one below and pass the interview!</p>';
-  else { const wf = pj.wk === wkStart() ? pj.wfails : 0, lastS = finished[0];
-    el.innerHTML = `<div class="jobc mine"><b>${esc(job.name)}</b><div class="pay">${job.pay} CARDS / SHIFT</div><div class="mute">A perfect shift (5 of 5) pays 20% extra. Wage tax ${pct(S.tax_wage)}.</div>
+  else { const wf = pj.wk === wkStart() ? pj.wfails : 0, lastS = finished[0], rp = +S.promo_raise || .15, effPay = Math.floor(job.pay * (1 + rp * pj.raises)), need = +S.promo_perfects || 3, ready = pj.perfects >= need, nextJ = JOBS.filter(j => j.active && j.pay > job.pay && j.min_level <= lv).sort((a, b) => a.pay - b.pay)[0];
+    const promo = ready ? `<div class="jobc" style="border-color:var(--yel)"><b>PROMOTION AVAILABLE!</b><div class="mute">Your boss loves your work. Pick one:</div><div>${pj.raises < (+S.promo_max_raises || 3) ? `<button class="y" data-promo="raise">TAKE A RAISE (+${Math.round(rp * 100)}% PAY)</button> ` : ''}${nextJ ? `<button class="g" data-promo="job">MOVE UP TO ${esc(nextJ.name.toUpperCase())} (${nextJ.pay})</button>` : '<span class="mute">No better job is open to you yet.</span>'}</div></div>` : `<div class="mute">Perfect shifts toward a promotion: <b>${pj.perfects} / ${need}</b></div>`;
+    el.innerHTML = `<div class="jobc mine"><b>${esc(job.name)}</b><div class="pay">${effPay} CARDS / SHIFT${pj.raises ? ' (+' + Math.round(pj.raises * rp * 100) + '% raise)' : ''}</div><div class="mute">A perfect shift (5 of 5) pays 20% extra. Wage tax ${pct(S.tax_wage)}.</div>${promo}
       <div>STRIKES THIS WEEK: <b class="${wf >= job.fail_limit - 2 ? 'dn' : ''}">${wf} / ${job.fail_limit}</b></div><div class="strikes">${Array.from({length: job.fail_limit}, (_, i) => `<i class="${i < wf ? 'x' : ''}"></i>`).join('')}</div>
       <div class="mute">Every mini game you fail is a strike. Hit the limit and you are fired. Strikes reset every Monday.</div>
       <div>${full ? `<button disabled>WORKED TODAY${lastS ? ' (' + lastS.passed + '/5, +' + lastS.pay + ')' : ''}</button>` : `<button class="y" data-job="work">${open ? 'CONTINUE SHIFT' : 'START SHIFT'}</button>`} <button class="r" data-job="quit">QUIT</button></div></div>`; }
@@ -1316,6 +1341,7 @@ async function doShift() {
   ov.box.innerHTML = '<p class="mute">Your boss is checking your work...</p>'; const res = await gcall('finish_shift', {p_id: r.id, p_answers: answers});
   if (!res) { ov.close(); await load(); return; } const sm = res.summary;
   ov.box.innerHTML = `<h2>SHIFT OVER</h2><p class="big">${(res.results || []).map(x => x ? '\u2714' : '\u2718').join(' ') || 'TOO SLOW'}</p><p>You passed <b>${sm.passed} of 5</b>. Pay: <b class="up">+${sm.pay}</b> cards${sm.tax ? ` (wage tax ${sm.tax} taken)` : ''}.</p><p>Strikes this week: <b class="${sm.fired ? 'dn' : ''}">${sm.fails} / ${sm.limit}</b></p>${sm.fired ? '<p class="dn"><b>You hit the strike limit and got fired!</b> You can apply again later.</p>' : ''}<p><button class="y" id="jclose">OK</button></p>`;
+  if (sm.promo) ov.box.insertAdjacentHTML('afterbegin', '<p class="up"><b>PROMOTION READY! Check the JOBS tab.</b></p>');
   if (sm.fired) uiErr(); else if (sm.passed === 5) fan('PERFECT SHIFT! +' + sm.pay, 'ach'); else if (sm.pay > 0) uiOk();
   ov.box.querySelector('#jclose').onclick = ov.close; await load(); }
 document.addEventListener('click', async e => { const v = e.target.dataset && e.target.dataset.job; if (!v) return;
@@ -1323,6 +1349,51 @@ document.addEventListener('click', async e => { const v = e.target.dataset && e.
 document.addEventListener('change', e => { const t = e.target;
   if (t.id === 'jb-id') { const j = JOBS.find(x => x.id === +t.value) || {name: '', pay: 20, diff: 1, min_level: 1, fail_limit: 8, pass_mark: 4, active: true}; $('#jb-n').value = j.name; $('#jb-p').value = j.pay; $('#jb-d').value = j.diff; $('#jb-l').value = j.min_level; $('#jb-f').value = j.fail_limit; $('#jb-q').value = j.pass_mark; $('#jb-a').checked = !!j.active; }
   if (t.id === 'jq-id') { const q = JQ.find(x => x.id === +t.value) || {q: '', diff: 1, opts: ['', '', '', ''], ans: 0}; $('#jq-q').value = q.q; $('#jq-d').value = q.diff; [0, 1, 2, 3].forEach(i => $('#jq-' + i).value = q.opts[i]); $('#jq-a').value = q.ans; } });
+
+
+/* ---------- v12: businesses, profiles, promotions, install ---------- */
+let BIZT = [], PBIZ = [];
+const bizInc = (t, l) => Math.floor(t.income * (1 + .5 * (l - 1)));
+const bizPend = (t, b) => Math.floor(bizInc(t, b.lvl) * Math.min((Date.now() - new Date(b.last_collect)) / 3600000, +S.biz_cap_hours || 24) / 24);
+function renderBiz() {
+  const el = $('#bizmine'); if (!el) return; const lv = lvlOf(prof.xp), maxL = +S.biz_max_level || 5, cap = +S.biz_cap_hours || 24;
+  const mine = PBIZ.map(b => ({b, t: BIZT.find(t => t.id === b.biz_id)})).filter(x => x.t), art = (t, l) => `<img class="pix" src="${itemArt({art: t.art, rarity: Math.min(6, 1 + l)})}" alt="" style="width:48px;height:48px;image-rendering:pixelated">`;
+  $('#biztotal').innerHTML = mine.length ? `<p>Income: <b class="up">${mine.reduce((a, x) => a + bizInc(x.t, x.b.lvl), 0)}</b> cards a day. Waiting: <b class="up" id="bizall">${mine.reduce((a, x) => a + bizPend(x.t, x.b), 0)}</b> <button class="y" data-biz="all">COLLECT ALL</button></p><p class="mute">Businesses fill up for ${cap} hours, so collect at least once a day! Business tax: ${pct(S.tax_biz)}.</p>` : '<p class="mute">You do not own a business yet. Buy your first one below!</p>';
+  el.innerHTML = mine.map(({b, t}) => `<div class="jobc">${art(t, b.lvl)}<b>${esc(t.name)}</b><div class="stars">${starsOf(Math.min(5, b.lvl))}</div><div class="mute">Level ${b.lvl} / ${maxL}, earns ${bizInc(t, b.lvl)} a day</div><div>Ready: <b class="up" data-pend="${t.id}">${bizPend(t, b)}</b></div><div><button class="y" data-biz="c:${t.id}">COLLECT</button> ${b.lvl < maxL ? `<button data-biz="u:${t.id}">UPGRADE ${Math.floor(t.price * .5 * b.lvl)}</button>` : '<span class="mute">MAX LEVEL</span>'}</div></div>`).join('');
+  $('#bizshop').innerHTML = BIZT.filter(t => t.active && !PBIZ.some(b => b.biz_id === t.id)).map(t => `<div class="jobc">${art(t, 1)}<b>${esc(t.name)}</b><div class="pay">${t.price}</div><div class="mute">Earns ${t.income} a day / needs level ${t.min_level}</div>${lv < t.min_level ? `<button disabled>NEEDS LEVEL ${t.min_level}</button>` : `<button class="y" data-biz="b:${t.id}">BUY</button>`}</div>`).join('') || '<span class="mute">You own every business!</span>';
+}
+setInterval(() => { let all = 0; PBIZ.forEach(b => { const t = BIZT.find(x => x.id === b.biz_id), e = document.querySelector('[data-pend="' + b.biz_id + '"]'); if (!t) return; const v = bizPend(t, b); all += v; if (e) e.textContent = v; }); const a = document.getElementById('bizall'); if (a) a.textContent = all; }, 1000);
+
+async function openProfile(id) {
+  const p = await gcall('player_profile', {p_uid: id}); if (!p) return; const L = lvlOf(p.xp), a = xpFor(L), b = xpFor(L + 1), st = p.stats || {}, ov = makeOv(), mine = id === me.id;
+  ov.box.innerHTML = `<h2>${titleTag(p.title)} ${esc(p.username)}</h2><p><b class="big">LEVEL ${L}</b> <span class="mute">${p.xp} XP</span></p><div class="meter"><i style="width:${Math.min(100, Math.round((p.xp - a) / (b - a) * 100))}%"></i></div>
+    <p>${p.job ? 'WORKS AS <b>' + esc(p.job.name) + '</b>' + (p.job.raises ? ' (' + p.job.raises + ' raise' + (p.job.raises > 1 ? 's' : '') + ')' : '') : '<span class="mute">Unemployed</span>'}</p>
+    <div class="stats">${[['CARDS', p.cards + ' / ' + CARDS.length], ['SHINIES', p.shinies], ['PACKS OPENED', st.packs || 0], ['GAMES', st.games || 0], ['WINS', st.wins || 0], ['SHIFTS', st.shifts || 0], ['JACKPOTS', st.jackpots || 0], ['AUCTIONS SOLD', st.auc_sold || 0]].map(([l, v]) => `<div class="stat"><span class="mute">${l}</span><b>${v}</b></div>`).join('')}</div>
+    <h3>SHOWCASE</h3><div class="cgrid">${(p.showcase || []).filter(x => CID[x.id]).map(x => cardEl(CID[x.id], 0, x.s ? 'shiny' : '', false)).join('') || '<span class="mute">Nothing pinned.</span>'}</div>
+    <h3>BUSINESSES</h3><div>${(p.biz || []).map(x => `<span class="stars">${esc(x.name)} (lv ${x.lvl})</span>`).join(' / ') || '<span class="mute">None.</span>'}</div>
+    <h3>ACHIEVEMENTS (${(p.achs || []).length})</h3><div class="mute">${(p.achs || []).map(esc).join(' / ') || 'None yet.'}</div>
+    <p>${mine ? '' : '<button class="y" id="pftrade">TRADE</button> <button class="y" id="pfsend">SEND CARDS</button> '}<button id="pfclose">CLOSE</button></p>`;
+  ov.box.querySelector('#pfclose').onclick = ov.close;
+  if (!mine) { ov.box.querySelector('#pftrade').onclick = () => { ov.close(); go('trade'); const sel = $('#trwho'); sel.value = id; sel.dispatchEvent(new Event('change', {bubbles: true})); };
+    ov.box.querySelector('#pfsend').onclick = () => { ov.close(); go('bank'); $('#trto').value = id; }; }
+}
+document.addEventListener('click', async e => { const pf = e.target.closest && e.target.closest('[data-prof]'); if (pf) { openProfile(pf.dataset.prof); return; }
+  const d = e.target.dataset || {};
+  if (d.promo) { const r = await call('claim_promotion', {p_choice: d.promo}); if (r && r !== true) fan(r.kind === 'raise' ? 'RAISE! MORE PAY!' : 'PROMOTED TO ' + r.job.toUpperCase() + '!', 'level'); return; }
+  if (d.biz) { const [k, id] = d.biz.split(':'); let r;
+    if (k === 'all') r = await call('collect_all_biz', {}); else if (k === 'c') r = await call('collect_biz', {p_id: +id}); else if (k === 'u') { if (await call('upgrade_biz', {p_id: +id})) toast('Upgraded!'); return; } else if (k === 'b') { if (await call('buy_biz', {p_id: +id})) { fan('NEW BUSINESS!', 'ach'); } return; }
+    if (r && r !== true) toast(r.gross ? 'Collected ' + (r.gross - r.tax) + ' cards' + (r.tax ? ' (business tax ' + r.tax + ')' : '') : 'Nothing to collect yet'); } });
+document.addEventListener('change', e => { if (e.target.id !== 'bz-id') return; const t = BIZT.find(x => x.id === +e.target.value) || {name: '', price: 100, income: 10, min_level: 1, art: 0, active: true};
+  $('#bz-n').value = t.name; $('#bz-p').value = t.price; $('#bz-i').value = t.income; $('#bz-l').value = t.min_level; $('#bz-a').value = t.art; $('#bz-c').checked = !!t.active; });
+
+/* install as an app */
+let deferredInstall = null;
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; });
+addEventListener('appinstalled', () => $('#instbtn').classList.add('hide'));
+if (matchMedia('(display-mode: standalone)').matches || navigator.standalone) $('#instbtn').classList.add('hide');
+$('#instbtn').onclick = async () => { if (deferredInstall) { deferredInstall.prompt(); await deferredInstall.userChoice; deferredInstall = null; return; }
+  const ov = makeOv(); ov.box.innerHTML = '<h2>INSTALL UNO MONEY</h2><p>Put the game on your home screen so it opens like a real app, full screen:</p><p><b>iPhone / iPad (Safari):</b> tap the Share button, then <b>Add to Home Screen</b>.</p><p><b>Android (Chrome):</b> tap the menu with the three dots, then <b>Install app</b> or <b>Add to Home screen</b>.</p><p><b>Computer (Chrome or Edge):</b> click the install icon at the right end of the address bar.</p><p><button class="y" id="iclose">GOT IT</button></p>'; ov.box.querySelector('#iclose').onclick = ov.close; };
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
 
 /* ---------- login ---------- */
 const email = u => u.trim().toLowerCase().replace(/[^a-z0-9]/g, '') + '@pond.local';
